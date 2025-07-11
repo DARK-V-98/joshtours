@@ -28,7 +28,8 @@ export function useLocalStorage<T>(
   useEffect(() => {
     // This effect runs on the client after hydration
     setValue(getValue(key, defaultValue));
-  }, [key, defaultValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
 
 
   useEffect(() => {
