@@ -51,7 +51,7 @@ const BookingForm = () => (
 export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+      <div className="grid lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
           <h1 className="text-5xl lg:text-6xl font-headline font-bold !leading-tight">
             Rent A Car, <br /> Drive With Ease!
@@ -65,26 +65,24 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative h-full">
-           <div className="relative bg-card/50 backdrop-blur-sm p-4 rounded-3xl shadow-lg border-border/50 h-full flex items-center">
+        <div className="relative h-full min-h-[400px]">
+           <div className="relative h-full flex items-center justify-center">
             <div className="absolute top-8 right-8 flex flex-col items-end gap-4 z-10">
                <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Wide Range Of Vehicles</Badge>
                <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Affordable Pricing</Badge>
             </div>
             <Image
-              src="https://placehold.co/800x500.png"
-              alt="White sedan car"
+              src="/car.png"
+              alt="Car"
               width={800}
               height={500}
-              data-ai-hint="white sedan front view"
               className="object-contain"
               priority
             />
            </div>
         </div>
       </div>
-
-       <section>
+      <section className="mt-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {stats.map((stat) => (
             <div key={stat.label}>
