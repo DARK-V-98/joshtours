@@ -192,62 +192,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Special Offers Section */}
-      <section className="py-20 bg-card">
-        <div className="container mx-auto px-4 text-center relative">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-              Special Offers & Deals
-            </h2>
-            <p className="text-xl text-muted-foreground mb-12">
-              Save big with our current promotions and limited-time offers
-            </p>
-            
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <Card className="bg-background/90 border-primary/20 hover:border-primary transition-colors">
-                <CardHeader>
-                  <CardTitle className="text-primary">Weekend Special</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold mb-2">20% OFF</div>
-                  <p className="text-muted-foreground">Friday to Sunday rentals</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-background/90 border-primary/20 hover:border-primary transition-colors">
-                <CardHeader>
-                  <CardTitle className="text-primary">Weekly Deals</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold mb-2">7th Day</div>
-                  <p className="text-muted-foreground">Completely FREE</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-background/90 border-primary/20 hover:border-primary transition-colors">
-                <CardHeader>
-                  <CardTitle className="text-primary">First Timer</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold mb-2">15% OFF</div>
-                  <p className="text-muted-foreground">Your first rental with us</p>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="group">
-                <Phone className="mr-2 h-5 w-5 group-hover:animate-pulse" />
-                Call Now: +1 (555) 123-4567
-              </Button>
-              <Button variant="secondary" size="lg">
-                Book Online
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Testimonials Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
