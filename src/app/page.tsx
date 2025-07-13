@@ -61,6 +61,16 @@ const Index = () => {
               </div>
             </div>
           </div>
+          <div className="relative hidden lg:block">
+            <Image
+              src="/car.png"
+              alt="Hero Car"
+              width={800}
+              height={500}
+              className="object-contain"
+              priority
+            />
+          </div>
         </div>
       </section>
 
@@ -301,5 +311,3 @@ const Index = () => {
 };
 
 export default Index;
-
-    
