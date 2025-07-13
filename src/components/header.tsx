@@ -8,10 +8,8 @@ import { Heart } from "lucide-react";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About Us" },
   { href: "/cars", label: "Cars" },
-  { href: "/futures", label: "Futures" },
-  { href: "/help", label: "Help" },
+  { href: "/contact", label: "Contact Us" },
 ];
 
 export function Header() {
@@ -26,7 +24,7 @@ export function Header() {
           </Link>
         </div>
 
-        <nav className="hidden md:flex items-center space-x-1 text-sm font-medium bg-white/80 p-1 rounded-full shadow-sm">
+        <nav className="hidden md:flex items-center space-x-1 text-sm font-medium bg-card/80 p-1 rounded-full shadow-sm">
           {navLinks.map((link) => (
             <Link
               key={link.href}

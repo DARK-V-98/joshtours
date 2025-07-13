@@ -66,11 +66,11 @@ export default function Home() {
         </div>
 
         <div className="relative h-full min-h-[350px] lg:min-h-[450px]">
-          <div className="absolute inset-0 bg-gray-200/50 rounded-3xl" />
+          <div className="absolute inset-0 bg-secondary/30 rounded-3xl" />
           <div className="relative w-full h-full flex flex-col justify-between items-center p-8">
             <div className="w-full flex justify-end gap-4">
-              <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Wide Range Of Vehicles</Badge>
-              <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Affordable Pricing</Badge>
+              <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-background/70 shadow">Wide Range Of Vehicles</Badge>
+              <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-background/70 shadow">Affordable Pricing</Badge>
             </div>
             <div className="absolute bottom-0 w-[90%] lg:w-full">
               <Image
