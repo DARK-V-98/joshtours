@@ -20,7 +20,7 @@ const Index = () => {
             </Badge>
             
             <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-              another normal text
+              
             </h1>
             
             <p className="text-xl text-muted-foreground max-w-lg">
