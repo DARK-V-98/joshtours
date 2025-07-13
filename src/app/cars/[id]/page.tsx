@@ -62,13 +62,6 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
           <h1 className="text-4xl font-headline font-bold mb-1">{car.name}</h1>
           <p className="text-lg text-muted-foreground mb-4">{car.type}</p>
 
-          <div className="mb-6">
-            <p className="text-4xl font-bold text-primary">
-              ${car.pricePerDay}
-              <span className="text-lg font-normal text-foreground"> / day</span>
-            </p>
-          </div>
-
           <div className="flex items-stretch gap-4 mb-6">
             <Button size="lg" className="flex-1 h-12 text-lg">
               Rent Now

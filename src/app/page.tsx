@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Button } from "@/components/ui/button";
@@ -136,7 +135,6 @@ const Index = () => {
                 dataAiHint: "red sports car",
                 category: "Sports Car",
                 name: "Sports Coupe",
-                price: "$199/day",
                 features: ["Powerful Engine", "Sporty Design", "Comfortable Interior", "Modern Tech"]
               },
               {
@@ -144,7 +142,6 @@ const Index = () => {
                 dataAiHint: "black suv",
                 category: "Family SUV",
                 name: "Spacious SUV",
-                price: "$129/day",
                 features: ["7 Seats", "All-Wheel Drive", "Ample Storage", "Safety Features"]
               },
               {
@@ -152,7 +149,6 @@ const Index = () => {
                 dataAiHint: "white sedan",
                 category: "Economy",
                 name: "Comfort Sedan",
-                price: "$89/day",
                 features: ["Great Comfort", "Fuel Efficient", "Smooth Ride", "Safety First"]
               }
             ].map((car, index) => (
@@ -173,7 +169,6 @@ const Index = () => {
                 <CardHeader>
                   <CardTitle className="flex justify-between items-center">
                     {car.name}
-                    <span className="text-primary font-bold">{car.price}</span>
                   </CardTitle>
                 </CardHeader>
                 

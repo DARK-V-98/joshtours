@@ -96,12 +96,8 @@ export function CarCard({ car }: CarCardProps) {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="p-4 flex justify-between items-center border-t">
-        <p className="text-lg font-bold">
-          ${car.pricePerDay}
-          <span className="text-sm font-normal text-muted-foreground">/day</span>
-        </p>
-        <Button asChild size="sm">
+      <CardFooter className="p-4 pt-0">
+        <Button asChild className="w-full">
           <Link href={`/cars/${car.id}`}>Rent Now</Link>
         </Button>
       </CardFooter>

@@ -2,7 +2,6 @@ export interface Car {
   id: number;
   name: string;
   type: string;
-  pricePerDay: number;
   image: string;
   dataAiHint: string;
   specs: {
@@ -18,7 +17,6 @@ export const cars: Car[] = [
     id: 1,
     name: "Toyota Corolla",
     type: "Sedan",
-    pricePerDay: 75,
     image: "https://placehold.co/600x400.png",
     dataAiHint: "white sedan",
     specs: {
@@ -32,7 +30,6 @@ export const cars: Car[] = [
     id: 2,
     name: "Honda CR-V",
     type: "SUV",
-    pricePerDay: 90,
     image: "https://placehold.co/600x400.png",
     dataAiHint: "red suv",
     specs: {
@@ -46,7 +43,6 @@ export const cars: Car[] = [
     id: 3,
     name: "Ford Mustang",
     type: "Sports Car",
-    pricePerDay: 150,
     image: "https://placehold.co/600x400.png",
     dataAiHint: "yellow sportscar",
     specs: {
@@ -60,7 +56,6 @@ export const cars: Car[] = [
     id: 4,
     name: "Tesla Model 3",
     type: "Electric",
-    pricePerDay: 120,
     image: "https://placehold.co/600x400.png",
     dataAiHint: "blue electric car",
     specs: {
@@ -74,7 +69,6 @@ export const cars: Car[] = [
     id: 5,
     name: "Jeep Wrangler",
     type: "Off-road",
-    pricePerDay: 110,
     image: "https://placehold.co/600x400.png",
     dataAiHint: "green offroad jeep",
     specs: {
@@ -88,7 +82,6 @@ export const cars: Car[] = [
     id: 6,
     name: "BMW 3 Series",
     type: "Luxury Sedan",
-    pricePerDay: 135,
     image: "https://placehold.co/600x400.png",
     dataAiHint: "black luxury sedan",
     specs: {
@@ -102,7 +95,6 @@ export const cars: Car[] = [
     id: 7,
     name: "Kia Carnival",
     type: "Minivan",
-    pricePerDay: 95,
     image: "https://placehold.co/600x400.png",
     dataAiHint: "silver minivan",
     specs: {
@@ -116,7 +108,6 @@ export const cars: Car[] = [
     id: 8,
     name: "Ford F-150",
     type: "Truck",
-    pricePerDay: 125,
     image: "https://placehold.co/600x400.png",
     dataAiHint: "gray truck",
     specs: {
