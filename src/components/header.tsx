@@ -19,10 +19,13 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-sm">
-      <div className="container flex h-20 items-center">
-        <Link href="/" className="mr-auto flex items-center">
-          <span className="text-2xl font-bold font-headline tracking-tighter">I-CAR</span>
-        </Link>
+      <div className="container flex h-20 items-center justify-between">
+        <div className="flex items-center">
+          <Link href="/" className="flex items-center">
+            <span className="text-2xl font-bold font-headline tracking-tighter">I-CAR</span>
+          </Link>
+        </div>
+
         <nav className="hidden md:flex items-center space-x-1 text-sm font-medium bg-white/80 p-1 rounded-full shadow-sm">
           {navLinks.map((link) => (
             <Link
@@ -37,7 +40,8 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        
+        <div className="flex items-center justify-end space-x-4">
            <Button variant="ghost" asChild>
             <Link href="/saved" className="flex items-center gap-2">
               <Heart className="h-5 w-5" />
