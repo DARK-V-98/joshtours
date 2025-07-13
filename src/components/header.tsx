@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Car, Heart, Phone } from "lucide-react";
+import { Car, Phone } from "lucide-react";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -37,15 +37,6 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-           <Link
-              href="/saved"
-              className={cn(
-                "text-foreground/80 hover:text-primary transition-colors flex items-center gap-2",
-                pathname === "/saved" && "text-primary font-semibold"
-              )}
-            >
-              <Heart className="h-5 w-5" /> Saved
-            </Link>
         </nav>
 
         <div className="flex items-center space-x-4">

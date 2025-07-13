@@ -11,10 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "./ui/button";
-import { Users, Gauge, Settings, Heart } from "lucide-react";
-import { useLocalStorage } from "@/hooks/use-local-storage";
-import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+import { Users, Gauge, Settings } from "lucide-react";
 import React from "react";
 
 interface CarCardProps {
@@ -22,28 +19,6 @@ interface CarCardProps {
 }
 
 export function CarCard({ car }: CarCardProps) {
-  const [savedCars, setSavedCars] = useLocalStorage<number[]>("savedCars", []);
-  const { toast } = useToast();
-  const isSaved = savedCars.includes(car.id);
-
-  const toggleSave = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (isSaved) {
-      setSavedCars(savedCars.filter((id) => id !== car.id));
-      toast({
-        title: "Removed from saved",
-        description: `${car.name} has been removed from your saved list.`,
-      });
-    } else {
-      setSavedCars([...savedCars, car.id]);
-      toast({
-        title: "Saved for later!",
-        description: `${car.name} has been added to your saved list.`,
-      });
-    }
-  };
-
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       <CardHeader className="p-0 relative">
@@ -57,20 +32,6 @@ export function CarCard({ car }: CarCardProps) {
             className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-105"
           />
         </Link>
-        <Button
-          variant="secondary"
-          size="icon"
-          className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/70 backdrop-blur-sm"
-          onClick={toggleSave}
-        >
-          <Heart
-            className={cn(
-              "h-4 w-4 transition-colors",
-              isSaved ? "fill-primary text-primary" : "text-foreground"
-            )}
-          />
-          <span className="sr-only">Save car</span>
-        </Button>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <CardTitle className="text-xl mb-2 font-headline">
