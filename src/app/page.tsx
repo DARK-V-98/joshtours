@@ -65,21 +65,24 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative h-full min-h-[400px]">
-           <div className="relative h-full flex items-center justify-center">
-            <div className="absolute top-8 right-8 flex flex-col items-end gap-4 z-10">
-               <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Wide Range Of Vehicles</Badge>
-               <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Affordable Pricing</Badge>
+        <div className="relative h-full min-h-[400px] flex items-center justify-center">
+          <div className="absolute inset-0 bg-gray-200/50 rounded-3xl" />
+          <div className="relative w-full h-full flex flex-col justify-between items-center p-8">
+            <div className="flex w-full justify-end gap-4">
+              <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Wide Range Of Vehicles</Badge>
+              <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Affordable Pricing</Badge>
             </div>
-            <Image
-              src="/car.png"
-              alt="Car"
-              width={800}
-              height={500}
-              className="object-contain"
-              priority
-            />
-           </div>
+            <div className="relative -mt-8">
+              <Image
+                src="/car.png"
+                alt="Car"
+                width={800}
+                height={500}
+                className="object-contain"
+                priority
+              />
+            </div>
+          </div>
         </div>
       </div>
       <section className="mt-16">
