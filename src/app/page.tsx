@@ -10,20 +10,17 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
-      <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
-        </div>
+      <section id="home" className="relative min-h-[70vh] md:min-h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-10" />
         
-        <div className="relative container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center z-20">
           <div className="space-y-8">
             <Badge variant="secondary" className="w-fit text-primary border-primary/20">
               Trusted Car Rental Service
             </Badge>
             
             <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-              Drive Your
-              <span className="text-primary block">Dreams</span>
+              another normal text
             </h1>
             
             <p className="text-xl text-muted-foreground max-w-lg">
@@ -56,15 +53,20 @@ const Index = () => {
               </div>
             </div>
           </div>
-          <div className="relative hidden lg:block">
-            <Image
-              src="/car.png"
-              alt="Hero Car"
-              width={800}
-              height={500}
-              className="object-contain"
-              priority
-            />
+          <div className="relative hidden lg:block min-h-[400px] lg:min-h-[500px]">
+             <div className="absolute inset-0 bg-card/10 backdrop-blur-sm rounded-3xl -rotate-6 transform"></div>
+             <div className="absolute inset-0 flex items-center justify-center">
+                <Image
+                  src="/car.png"
+                  alt="Hero Car"
+                  width={800}
+                  height={500}
+                  className="object-contain z-10"
+                  priority
+                />
+             </div>
+             <Badge variant="secondary" className="absolute top-1/4 left-0 -translate-x-1/4 -translate-y-1/2 p-3 text-lg z-20">Wide Range of Vehicles</Badge>
+             <Badge variant="secondary" className="absolute bottom-1/4 right-0 translate-x-1/4 translate-y-1/2 p-3 text-lg z-20">Affordable Pricing</Badge>
           </div>
         </div>
       </section>
