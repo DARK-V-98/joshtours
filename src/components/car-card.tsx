@@ -45,7 +45,7 @@ export function CarCard({ car }: CarCardProps) {
   };
 
   return (
-    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-1">
+    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       <CardHeader className="p-0 relative">
         <Link href={`/cars/${car.id}`} className="block aspect-video overflow-hidden">
           <Image
@@ -60,7 +60,7 @@ export function CarCard({ car }: CarCardProps) {
         <Button
           variant="secondary"
           size="icon"
-          className="absolute top-2 right-2 h-8 w-8 rounded-full"
+          className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/70 backdrop-blur-sm"
           onClick={toggleSave}
         >
           <Heart
@@ -73,7 +73,7 @@ export function CarCard({ car }: CarCardProps) {
         </Button>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
-        <CardTitle className="text-xl mb-2">
+        <CardTitle className="text-xl mb-2 font-headline">
           <Link
             href={`/cars/${car.id}`}
             className="hover:text-primary transition-colors"

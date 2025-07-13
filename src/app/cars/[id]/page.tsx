@@ -1,6 +1,6 @@
 "use client";
 
-import { cars, Car as CarType } from "@/lib/data";
+import { cars } from "@/lib/data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { useLocalStorage } from "@/hooks/use-local-storage";
