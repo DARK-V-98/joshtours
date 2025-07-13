@@ -65,14 +65,14 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative h-full min-h-[400px] flex items-center justify-center">
+        <div className="relative h-full min-h-[400px] lg:min-h-[500px]">
           <div className="absolute inset-0 bg-gray-200/50 rounded-3xl" />
           <div className="relative w-full h-full flex flex-col justify-between items-center p-8">
-            <div className="flex w-full justify-end gap-4">
+            <div className="w-full flex justify-end gap-4">
               <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Wide Range Of Vehicles</Badge>
               <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Affordable Pricing</Badge>
             </div>
-            <div className="relative -mt-8">
+            <div className="absolute bottom-0 w-[90%] lg:w-full">
               <Image
                 src="/car.png"
                 alt="Car"
