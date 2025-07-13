@@ -1,56 +1,65 @@
+
 "use client";
 
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Heart } from "lucide-react";
+import { Car, Heart, Phone } from "lucide-react";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/cars", label: "Cars" },
-  { href: "/contact", label: "Contact Us" },
+  { href: "/cars", label: "Fleet" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-sm">
-      <div className="container flex h-20 items-center justify-between">
-        <div className="flex items-center">
-          <Link href="/" className="flex items-center">
-            <span className="text-2xl font-bold font-headline tracking-tighter">I-CAR</span>
-          </Link>
-        </div>
-
-        <nav className="hidden md:flex items-center space-x-1 text-sm font-medium bg-card/80 p-1 rounded-full shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center space-x-2">
+          <Car className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl font-bold text-foreground">Josh's Car Rental</h1>
+        </Link>
+        
+        <nav className="hidden md:flex items-center space-x-6">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "transition-colors hover:text-primary px-4 py-2 rounded-full",
-                pathname === link.href ? "bg-muted text-primary" : "text-foreground/60"
+                "text-foreground/80 hover:text-primary transition-colors",
+                pathname === link.href && "text-primary font-semibold"
               )}
             >
               {link.label}
             </Link>
           ))}
-        </nav>
-        
-        <div className="flex items-center justify-end space-x-4">
-           <Button variant="ghost" asChild>
-            <Link href="/saved" className="flex items-center gap-2">
-              <Heart className="h-5 w-5" />
-              <span>Saved</span>
+           <Link
+              href="/saved"
+              className={cn(
+                "text-foreground/80 hover:text-primary transition-colors flex items-center gap-2",
+                pathname === "/saved" && "text-primary font-semibold"
+              )}
+            >
+              <Heart className="h-5 w-5" /> Saved
             </Link>
-          </Button>
+        </nav>
+
+        <div className="flex items-center space-x-4">
+          <div className="hidden sm:flex items-center gap-2 text-foreground">
+            <Phone className="h-5 w-5 text-primary" />
+            <span>+1 (555) 123-4567</span>
+          </div>
           <Button asChild>
-            <Link href="/contact">Contact Us</Link>
+            <Link href="/cars">Book Now</Link>
           </Button>
         </div>
       </div>
     </header>
   );
 }
+
+    
