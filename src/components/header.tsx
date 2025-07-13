@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Heart } from "lucide-react";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -37,6 +38,12 @@ export function Header() {
           ))}
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
+           <Button variant="ghost" asChild>
+            <Link href="/saved" className="flex items-center gap-2">
+              <Heart className="h-5 w-5" />
+              <span>Saved</span>
+            </Link>
+          </Button>
           <Button asChild>
             <Link href="/contact">Contact Us</Link>
           </Button>
