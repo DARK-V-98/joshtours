@@ -65,7 +65,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative h-full min-h-[400px] lg:min-h-[500px]">
+        <div className="relative h-full min-h-[350px] lg:min-h-[450px]">
           <div className="absolute inset-0 bg-gray-200/50 rounded-3xl" />
           <div className="relative w-full h-full flex flex-col justify-between items-center p-8">
             <div className="w-full flex justify-end gap-4">
