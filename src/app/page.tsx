@@ -18,10 +18,10 @@ const stats = [
 ];
 
 const BookingForm = () => (
-   <Card className="p-6 shadow-xl">
+   <Card className="p-6 shadow-xl bg-card/80 backdrop-blur-sm border-none">
     <CardContent className="p-0">
       <Tabs defaultValue="distance">
-        <TabsList className="grid w-full grid-cols-3 bg-muted">
+        <TabsList className="grid w-full grid-cols-3 bg-muted/70">
           <TabsTrigger value="distance">Distance</TabsTrigger>
           <TabsTrigger value="hourly">Hourly</TabsTrigger>
           <TabsTrigger value="flat_rate">Flat Rate</TabsTrigger>
@@ -51,7 +51,7 @@ const BookingForm = () => (
 export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
-      <section className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
         <div className="space-y-6">
           <h1 className="text-5xl lg:text-6xl font-headline font-bold !leading-tight">
             Rent A Car, <br /> Drive With Ease!
@@ -65,10 +65,9 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 bg-slate-200/80 rounded-3xl -rotate-3 transform-gpu"></div>
-           <div className="relative bg-white/50 backdrop-blur-sm p-4 rounded-3xl shadow-lg border border-gray-200/50">
-            <div className="flex justify-end gap-4 mb-4">
+        <div className="relative h-full">
+           <div className="relative bg-card/50 backdrop-blur-sm p-4 rounded-3xl shadow-lg border-border/50 h-full flex items-center">
+            <div className="absolute top-8 right-8 flex flex-col items-end gap-4 z-10">
                <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Wide Range Of Vehicles</Badge>
                <Badge variant="secondary" className="text-base py-2 px-4 rounded-lg bg-white shadow">Affordable Pricing</Badge>
             </div>
@@ -77,15 +76,15 @@ export default function Home() {
               alt="White sedan car"
               width={800}
               height={500}
-              data-ai-hint="white sedan side view"
+              data-ai-hint="white sedan front view"
               className="object-contain"
               priority
             />
            </div>
         </div>
-      </section>
+      </div>
 
-       <section className="mt-20">
+       <section>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {stats.map((stat) => (
             <div key={stat.label}>
