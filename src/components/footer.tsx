@@ -1,6 +1,7 @@
 
-import { Car, Mail, MapPin, Phone, Star } from "lucide-react";
+import { Mail, MapPin, Phone, Star } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -9,8 +10,9 @@ export function Footer() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <Car className="h-8 w-8 text-primary" />
-              <h3 className="text-2xl font-bold">Josh's Car Rental</h3>
+              <Link href="/">
+                <Image src="/jt.png" alt="Josh's Car Rental Logo" width={150} height={50} />
+              </Link>
             </div>
             <p className="text-muted-foreground mb-4">
               Your trusted partner for reliable car rentals. Experience comfort, convenience, and great value.
@@ -69,5 +71,3 @@ export function Footer() {
     </footer>
   );
 }
-
-    

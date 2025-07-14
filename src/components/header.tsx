@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Car, Phone } from "lucide-react";
+import { Phone } from "lucide-react";
+import Image from "next/image";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -20,8 +21,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
-          <Car className="h-8 w-8 text-primary" />
-          <h1 className="text-2xl font-bold text-foreground">Josh's Car Rental</h1>
+          <Image src="/jt.png" alt="Josh's Car Rental Logo" width={120} height={40} />
         </Link>
         
         <nav className="hidden md:flex items-center space-x-6">
@@ -52,5 +52,3 @@ export function Header() {
     </header>
   );
 }
-
-    
