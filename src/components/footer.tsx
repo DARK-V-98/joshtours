@@ -11,7 +11,7 @@ export function Footer() {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <Link href="/">
-                <Image src="/jt.png" alt="Josh's Car Rental Logo" width={150} height={50} />
+                <Image src="/jt.png" alt="Josh's Car Rental Logo" width={80} height={80} className="rounded-full" />
               </Link>
             </div>
             <p className="text-muted-foreground mb-4">

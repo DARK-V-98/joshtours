@@ -21,7 +21,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
-          <Image src="/jt.png" alt="Josh's Car Rental Logo" width={120} height={40} />
+          <Image src="/jt.png" alt="Josh's Car Rental Logo" width={50} height={50} className="rounded-full" />
         </Link>
         
         <nav className="hidden md:flex items-center space-x-6">
