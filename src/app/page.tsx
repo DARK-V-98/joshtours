@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Button } from "@/components/ui/button";
@@ -65,8 +66,6 @@ const Index = () => {
                   priority
                 />
              </div>
-             <Badge variant="secondary" className="absolute top-1/4 left-0 -translate-x-1/4 -translate-y-1/2 p-3 text-lg z-20">Wide Range of Vehicles</Badge>
-             <Badge variant="secondary" className="absolute bottom-1/4 right-0 translate-x-1/4 translate-y-1/2 p-3 text-lg z-20">Affordable Pricing</Badge>
           </div>
         </div>
       </section>
