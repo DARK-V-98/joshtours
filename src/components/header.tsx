@@ -20,7 +20,9 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
-          <Image src="/jtr.png" alt="Josh's Car Rental Logo" width={80} height={80} className="rounded-full" />
+          <div className="relative h-16 w-16">
+            <Image src="/jtr.png" alt="Josh's Car Rental Logo" fill className="rounded-full object-cover" />
+          </div>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-6">
