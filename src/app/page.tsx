@@ -54,14 +54,14 @@ const Index = () => {
               </div>
             </div>
           </div>
-          <div className="relative hidden lg:block min-h-[400px] lg:min-h-[500px]">
+          <div className="relative hidden lg:block min-h-[500px] lg:min-h-[600px]">
              <div className="absolute inset-0 bg-card/10 backdrop-blur-sm rounded-3xl -rotate-6 transform"></div>
              <div className="absolute inset-0 flex items-center justify-center">
                 <Image
                   src="/car.png"
                   alt="Hero Car"
-                  width={800}
-                  height={500}
+                  width={1000}
+                  height={625}
                   className="object-contain z-10"
                   priority
                 />
