@@ -1,7 +1,7 @@
 
 "use server";
 
-import { collection, addDoc, serverTimestamp, deleteDoc, doc, getDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, app } from "@/lib/firebase"; 
 import type { Car } from "./data";
@@ -54,6 +54,28 @@ export async function addCar(carData: Omit<Car, "id">) {
   } catch (error) {
     console.error("Error adding document: ", error);
     throw new Error("Failed to add car to the database.");
+  }
+}
+
+// This function updates an existing car document.
+// For now, it won't handle image updates to keep it simple.
+export async function updateCar(carId: string, carData: Partial<Omit<Car, "id" | "images">>) {
+  if (!db) {
+    throw new Error("Database not initialized");
+  }
+
+  const carDocRef = doc(db, 'cars', carId);
+
+  try {
+    await updateDoc(carDocRef, carData);
+    revalidatePath('/admin');
+    revalidatePath(`/admin/edit/${carId}`);
+    revalidatePath(`/cars/${carId}`);
+    revalidatePath('/cars');
+    revalidatePath('/');
+  } catch (error) {
+    console.error("Error updating document:", error);
+    throw new Error("Failed to update car in the database.");
   }
 }
 

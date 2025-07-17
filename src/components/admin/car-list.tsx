@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import Link from "next/link";
 import { getCarsForAdmin, AdminCar } from "@/lib/data";
 import {
   Table,
@@ -190,9 +191,11 @@ export function CarList() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem disabled>
-                                <Pencil className="mr-2 h-4 w-4" />
-                                Edit
+                            <DropdownMenuItem asChild>
+                                <Link href={`/admin/edit/${car.id}`}>
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    Edit
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
