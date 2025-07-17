@@ -51,9 +51,9 @@ const carFormSchema = z.object({
   images: z
     .custom<FileList>()
     .refine((files) => files?.length >= 1, "Please add at least one image.")
-    .refine((files) => Array.from(files).every((file) => file.size <= MAX_FILE_SIZE), `Max file size is 5MB.`)
+    .refine((files) => !files || Array.from(files).every((file) => file.size <= MAX_FILE_SIZE), `Max file size is 5MB.`)
     .refine(
-      (files) => Array.from(files).every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type)),
+      (files) => !files || Array.from(files).every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type)),
       ".jpg, .jpeg, .png and .webp files are accepted."
     ),
   specs: z.object({
