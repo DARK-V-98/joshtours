@@ -21,7 +21,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           <div className="relative h-16 w-16">
-            <Image src="/jtr.png" alt="Josh's Car Rental Logo" fill className="rounded-full object-cover" />
+            <Image src="/jtr.png" alt="Josh Tours Logo" fill className="rounded-full object-cover" />
           </div>
         </Link>
         

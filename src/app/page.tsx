@@ -74,7 +74,7 @@ const Index = () => {
       <section id="services" className="py-20 bg-card">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Why Choose Josh Rent a Car?</h2>
+            <h2 className="text-4xl font-bold mb-4">Why Choose Josh Tours?</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               We provide exceptional service with reliable vehicles and outstanding customer support
             </p>
@@ -194,7 +194,7 @@ const Index = () => {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">What Our Customers Say</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Real experiences from real customers who chose Josh Rent a Car
+              Real experiences from real customers who chose Josh Tours
             </p>
           </div>
           

@@ -6,8 +6,8 @@ import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "Josh's Car Rental Hub",
-  description: "The best cars for rent in town.",
+  title: "Josh Tours",
+  description: "Your adventure starts here.",
 };
 
 export default function RootLayout({

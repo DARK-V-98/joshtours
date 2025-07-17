@@ -12,7 +12,7 @@ export function Footer() {
             <div className="flex items-center space-x-2 mb-4">
               <Link href="/">
                 <div className="relative h-20 w-20">
-                  <Image src="/jtr.png" alt="Josh's Car Rental Logo" fill className="rounded-full object-cover" />
+                  <Image src="/jtr.png" alt="Josh Tours Logo" fill className="rounded-full object-cover" />
                 </div>
               </Link>
             </div>
@@ -35,7 +35,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-5 w-5 text-primary" />
-                <span>info@joshsrental.com</span>
+                <span>info@joshtours.com</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-5 w-5 text-primary" />
@@ -66,7 +66,7 @@ export function Footer() {
         
         <div className="border-t border-border mt-12 pt-8 text-center">
           <p className="text-muted-foreground">
-            © {new Date().getFullYear()} Josh's Car Rental. All rights reserved. | Reliable Car Rental Service
+            © {new Date().getFullYear()} Josh Tours. All rights reserved. | Reliable Car Rental Service
           </p>
         </div>
       </div>
