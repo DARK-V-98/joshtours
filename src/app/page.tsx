@@ -61,7 +61,7 @@ export default async function Index() {
              <div className="absolute inset-0 bg-card/10 backdrop-blur-sm rounded-3xl -rotate-6 transform"></div>
              <div className="absolute inset-0 flex items-center justify-center">
                 <Image
-                  src="/car.png"
+                  src="/car1.png"
                   alt="Hero Car"
                   width={1400}
                   height={875}
