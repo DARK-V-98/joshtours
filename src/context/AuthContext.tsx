@@ -5,6 +5,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { app, db } from '@/lib/firebase';
+import { createUserInFirestore } from '@/lib/userActions';
 
 interface UserProfile {
   uid: string;
@@ -46,16 +47,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                   role: userData.role || 'user', // Set role from Firestore, default to 'user'
               });
           } else {
-              // This case might happen if user was created in Auth but not Firestore
-              console.warn(`No user document found for uid: ${firebaseUser.uid}`);
+              // Document doesn't exist, so create it
+              console.log(`User document for uid: ${firebaseUser.uid} not found. Creating it.`);
+              await createUserInFirestore(firebaseUser);
               setUser({
                   uid: firebaseUser.uid,
                   email: firebaseUser.email,
-                  role: 'user', // Default role if doc not found
+                  role: 'user', // Default role for newly created doc
               });
           }
         } catch (error) {
-            console.error("Error fetching user data from Firestore:", error);
+            console.error("Error fetching or creating user data in Firestore:", error);
             setUser({
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,

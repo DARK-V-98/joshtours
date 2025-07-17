@@ -1,5 +1,4 @@
 
-'use server';
 
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -18,10 +17,10 @@ export async function createUserInFirestore(user: User) {
       email: user.email,
       role: 'user', // Default role for all new users
       createdAt: serverTimestamp(),
-    });
+    }, { merge: true }); // Use merge to avoid overwriting existing data if called accidentally
   } catch (error) {
     console.error("Error creating user document in Firestore:", error);
-    // Re-throwing the error so it can be caught by the signup form
+    // Re-throwing the error so it can be caught by the calling function
     throw new Error("Failed to create user profile in database.");
   }
 }
