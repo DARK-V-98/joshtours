@@ -11,7 +11,7 @@ export function Footer() {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <Link href="/">
-                <div className="relative h-20 w-20">
+                <div className="relative h-14 w-14">
                   <Image src="/jtr.png" alt="Josh Tours Logo" fill className="rounded-full object-cover" />
                 </div>
               </Link>

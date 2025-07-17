@@ -48,7 +48,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
-          <div className="relative h-20 w-20">
+          <div className="relative h-10 w-10">
             <Image src="/jtr.png" alt="Josh Tours Logo" fill className="rounded-full object-cover" />
           </div>
         </Link>
