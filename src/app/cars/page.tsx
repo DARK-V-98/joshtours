@@ -14,7 +14,7 @@ export default function CarsPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-headline font-bold">
-          Explore Our Fleet
+          Explore Our Vehicles
         </h1>
         <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
           Find the perfect car for your next adventure. We have a wide range of
