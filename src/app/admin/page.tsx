@@ -36,8 +36,10 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2, Upload, PlusCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CarList } from "@/components/admin/car-list";
+import { Separator } from "@/components/ui/separator";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -67,6 +69,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const { toast } = useToast();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [formKey, setFormKey] = useState(Date.now());
 
   const form = useForm<z.infer<typeof carFormSchema>>({
     resolver: zodResolver(carFormSchema),
@@ -120,6 +123,8 @@ export default function AdminDashboard() {
       });
       form.reset();
       setSelectedFiles([]);
+      // Force re-render of CarList by changing key
+      setFormKey(Date.now());
     } catch (error) {
       console.error("Failed to add car:", error);
       toast({
@@ -161,7 +166,7 @@ export default function AdminDashboard() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-headline font-bold">Admin Dashboard</h1>
         <p className="text-muted-foreground mb-8">
-          Manage your vehicle inventory from here.
+          Manage your vehicle inventory from here. Add, edit, or remove cars.
         </p>
 
         <Card>
@@ -338,13 +343,22 @@ export default function AdminDashboard() {
                 />
 
                 <Button type="submit" size="lg" disabled={form.formState.isSubmitting} className="w-full">
-                   {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                   {form.formState.isSubmitting ? (
+                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                   ) : (
+                     <PlusCircle className="mr-2 h-4 w-4" />
+                   )}
                   {form.formState.isSubmitting ? 'Adding Car...' : 'Add Car to Fleet'}
                 </Button>
               </form>
             </Form>
           </CardContent>
         </Card>
+
+        <Separator className="my-12" />
+
+        <CarList key={formKey} />
+
       </div>
     </div>
   );

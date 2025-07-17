@@ -1,12 +1,12 @@
 
-import { collection, getDocs, doc, getDoc, query, where, Timestamp } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, query, orderBy, Timestamp } from "firebase/firestore";
 import { db } from "./firebase";
 
 export interface Car {
   id: string; // Firestore document ID
   name: string;
   type: string;
-  images: string[]; // URLs to images, e.g., ['/cars/car1.png', '/cars/car2.png']
+  images: string[]; // URLs to images
   dataAiHint: string;
   isAvailable: boolean;
   specs: {
@@ -18,6 +18,31 @@ export interface Car {
   createdAt?: string; // Stored as a string after conversion
 }
 
+export interface AdminCar extends Omit<Car, 'createdAt'> {
+    createdAt: string | null;
+}
+
+// Helper to convert Firestore data to a Car object
+function toCarObject(doc: any): Car {
+    const data = doc.data();
+    // Convert Firestore Timestamp to a serializable format (ISO string)
+    const createdAt = data.createdAt instanceof Timestamp 
+      ? data.createdAt.toDate().toISOString() 
+      : (data.createdAt || null);
+
+    return {
+      id: doc.id,
+      name: data.name || "",
+      type: data.type || "",
+      images: data.images || [],
+      dataAiHint: data.dataAiHint || "",
+      isAvailable: data.isAvailable === true,
+      specs: data.specs || { engine: "", transmission: "Automatic", seats: 0, fuel: "Gasoline"},
+      createdAt,
+    };
+}
+
+
 // Fetches all cars from Firestore
 export async function getAllCars(): Promise<Car[]> {
   if (!db) {
@@ -25,20 +50,9 @@ export async function getAllCars(): Promise<Car[]> {
     return [];
   }
   const carsCollectionRef = collection(db, "cars");
-  const carsSnapshot = await getDocs(carsCollectionRef);
-  const carsList = carsSnapshot.docs.map(doc => {
-    const data = doc.data();
-    // Convert Firestore Timestamp to a serializable format (ISO string)
-    const createdAt = data.createdAt instanceof Timestamp 
-      ? data.createdAt.toDate().toISOString() 
-      : data.createdAt;
-
-    return {
-      id: doc.id,
-      ...data,
-      createdAt,
-    } as Car;
-  });
+  const q = query(carsCollectionRef, orderBy("createdAt", "desc"));
+  const carsSnapshot = await getDocs(q);
+  const carsList = carsSnapshot.docs.map(toCarObject);
   return carsList;
 }
 
@@ -52,18 +66,34 @@ export async function getCarById(id: string): Promise<Car | null> {
   const carDoc = await getDoc(carDocRef);
 
   if (carDoc.exists()) {
-    const data = carDoc.data();
-    // Convert Firestore Timestamp to a serializable format (ISO string)
-    const createdAt = data.createdAt instanceof Timestamp 
-      ? data.createdAt.toDate().toISOString() 
-      : data.createdAt;
-      
-    return { 
-        id: carDoc.id, 
-        ...data,
-        createdAt
-    } as Car;
+    return toCarObject(carDoc);
   } else {
     return null;
   }
+}
+
+// Fetches cars for the admin panel (less processing needed)
+export async function getCarsForAdmin(): Promise<AdminCar[]> {
+    if (!db) {
+        console.error("Firestore is not initialized.");
+        return [];
+    }
+    const carsCollectionRef = collection(db, "cars");
+    const q = query(carsCollectionRef, orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map(doc => {
+        const data = doc.data();
+        const createdAt = data.createdAt instanceof Timestamp 
+            ? data.createdAt.toDate().toISOString() 
+            : null;
+        
+        return {
+            id: doc.id,
+            name: data.name,
+            type: data.type,
+            isAvailable: data.isAvailable,
+            createdAt: createdAt,
+        } as AdminCar
+    });
 }
