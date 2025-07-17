@@ -37,7 +37,7 @@ const formSchema = z.object({
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const auth = getAuth(app);
+  const auth = app ? getAuth(app) : null;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,12 +48,16 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!auth) {
+        setError('Firebase is not configured correctly. Please check your API keys.');
+        return;
+    }
     setError(null);
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       router.push('/');
     } catch (err: any) {
-      if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+      if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-email') {
         setError('Invalid email or password. Please try again.');
       } else {
         setError('An unexpected error occurred. Please try again later.');
@@ -123,7 +127,7 @@ export default function LoginPage() {
                   type="submit"
                   className="w-full"
                   size="lg"
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting || !auth}
                 >
                   {form.formState.isSubmitting ? 'Logging in...' : 'Login'}
                 </Button>

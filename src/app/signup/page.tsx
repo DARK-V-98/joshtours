@@ -38,7 +38,7 @@ const formSchema = z.object({
 export default function SignupPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const auth = getAuth(app);
+  const auth = app ? getAuth(app) : null;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,6 +49,10 @@ export default function SignupPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!auth) {
+        setError('Firebase is not configured correctly. Please check your API keys.');
+        return;
+    }
     setError(null);
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -57,7 +61,6 @@ export default function SignupPage() {
         values.password
       );
       
-      // Create user document in Firestore
       await createUserInFirestore(userCredential.user);
       
       router.push('/');
@@ -132,7 +135,7 @@ export default function SignupPage() {
                   type="submit"
                   className="w-full"
                   size="lg"
-                  disabled={form.formState.isSubmitting}
+                  disabled={form.formState.isSubmitting || !auth}
                 >
                   {form.formState.isSubmitting ? 'Creating account...' : 'Sign Up'}
                 </Button>

@@ -22,9 +22,15 @@ const AuthContext = createContext<AuthContextType>({ user: null, loading: true }
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const auth = getAuth(app);
 
   useEffect(() => {
+    if (!app || !db) {
+      // Firebase might not be configured
+      setLoading(false);
+      return;
+    }
+
+    const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
       if (firebaseUser) {
         const userDocRef = doc(db, 'users', firebaseUser.uid);
@@ -37,8 +43,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 role: userData.role || 'user',
             });
         } else {
-            // This case might happen if the user document hasn't been created yet.
-            // You could create it here or just sign them out.
             setUser({
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
@@ -52,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => unsubscribe();
-  }, [auth]);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, loading }}>
