@@ -1,5 +1,5 @@
 
-import { collection, getDocs, doc, getDoc, query, where } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, query, where, Timestamp } from "firebase/firestore";
 import { db } from "./firebase";
 
 export interface Car {
@@ -15,6 +15,7 @@ export interface Car {
     seats: number;
     fuel: "Gasoline" | "Diesel" | "Electric";
   };
+  createdAt?: string; // Stored as a string after conversion
 }
 
 // Fetches all cars from Firestore
@@ -25,10 +26,19 @@ export async function getAllCars(): Promise<Car[]> {
   }
   const carsCollectionRef = collection(db, "cars");
   const carsSnapshot = await getDocs(carsCollectionRef);
-  const carsList = carsSnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Car[];
+  const carsList = carsSnapshot.docs.map(doc => {
+    const data = doc.data();
+    // Convert Firestore Timestamp to a serializable format (ISO string)
+    const createdAt = data.createdAt instanceof Timestamp 
+      ? data.createdAt.toDate().toISOString() 
+      : data.createdAt;
+
+    return {
+      id: doc.id,
+      ...data,
+      createdAt,
+    } as Car;
+  });
   return carsList;
 }
 
@@ -42,10 +52,18 @@ export async function getCarById(id: string): Promise<Car | null> {
   const carDoc = await getDoc(carDocRef);
 
   if (carDoc.exists()) {
-    return { id: carDoc.id, ...carDoc.data() } as Car;
+    const data = carDoc.data();
+    // Convert Firestore Timestamp to a serializable format (ISO string)
+    const createdAt = data.createdAt instanceof Timestamp 
+      ? data.createdAt.toDate().toISOString() 
+      : data.createdAt;
+      
+    return { 
+        id: carDoc.id, 
+        ...data,
+        createdAt
+    } as Car;
   } else {
     return null;
   }
 }
-
-    
