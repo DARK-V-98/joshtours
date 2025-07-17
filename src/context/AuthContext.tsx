@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!app || !db) {
       // Firebase might not be configured
+      console.warn("Firebase is not configured, authentication will be disabled.");
       setLoading(false);
       return;
     }
@@ -33,23 +34,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
       if (firebaseUser) {
+        // User is signed in, now fetch their profile from Firestore
         const userDocRef = doc(db, 'users', firebaseUser.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
+        try {
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+              const userData = userDoc.data();
+              setUser({
+                  uid: firebaseUser.uid,
+                  email: firebaseUser.email,
+                  role: userData.role || 'user', // Set role from Firestore, default to 'user'
+              });
+          } else {
+              // This case might happen if user was created in Auth but not Firestore
+              console.warn(`No user document found for uid: ${firebaseUser.uid}`);
+              setUser({
+                  uid: firebaseUser.uid,
+                  email: firebaseUser.email,
+                  role: 'user', // Default role if doc not found
+              });
+          }
+        } catch (error) {
+            console.error("Error fetching user data from Firestore:", error);
             setUser({
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
-                role: userData.role || 'user',
-            });
-        } else {
-            setUser({
-                uid: firebaseUser.uid,
-                email: firebaseUser.email,
-                role: 'user', // Default role if doc not found
+                role: 'user', // Default to user on error
             });
         }
       } else {
+        // User is signed out
         setUser(null);
       }
       setLoading(false);
