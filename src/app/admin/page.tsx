@@ -1,16 +1,15 @@
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useAuth } from "@/context/AuthContext";
-import { addCar } from "@/lib/carActions";
+import { addCar, uploadImages } from "@/lib/carActions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -37,20 +36,24 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { PlusCircle, Trash2, Loader2 } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const carFormSchema = z.object({
   name: z.string().min(2, "Car name must be at least 2 characters."),
   type: z.string().min(2, "Car type must be at least 2 characters."),
   isAvailable: z.boolean().default(true),
   images: z
-    .array(
-      z.object({
-        name: z.string().min(1, "Image filename cannot be empty."),
-      })
-    )
-    .min(1, "Please add at least one image filename."),
+    .custom<FileList>()
+    .refine((files) => files?.length >= 1, "Please add at least one image.")
+    .refine((files) => Array.from(files).every((file) => file.size <= MAX_FILE_SIZE), `Max file size is 5MB.`)
+    .refine(
+      (files) => Array.from(files).every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type)),
+      ".jpg, .jpeg, .png and .webp files are accepted."
+    ),
   specs: z.object({
     engine: z.string().min(1, "Engine spec is required."),
     transmission: z.enum(["Automatic", "Manual"]),
@@ -63,6 +66,7 @@ export default function AdminDashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const form = useForm<z.infer<typeof carFormSchema>>({
     resolver: zodResolver(carFormSchema),
@@ -70,7 +74,6 @@ export default function AdminDashboard() {
       name: "",
       type: "",
       isAvailable: true,
-      images: [{ name: "" }],
       specs: {
         engine: "",
         transmission: "Automatic",
@@ -80,10 +83,7 @@ export default function AdminDashboard() {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "images",
-  });
+  const { ref: fileFieldRef, ...fileFieldRest } = form.register("images");
 
   useEffect(() => {
     if (!loading && (!user || user.role !== "admin")) {
@@ -92,18 +92,34 @@ export default function AdminDashboard() {
   }, [user, loading, router]);
 
   async function onSubmit(values: z.infer<typeof carFormSchema>) {
+    const formData = new FormData();
+    Array.from(values.images).forEach((file) => {
+      formData.append("images", file);
+    });
+
     try {
-      const formattedImages = values.images.map(img => `/cars/${img.name}`);
-      await addCar({ ...values, images: formattedImages });
+      const imageUrls = await uploadImages(formData);
+      if (!imageUrls || imageUrls.length === 0) {
+        throw new Error("Image upload failed, no URLs returned.");
+      }
+      
+      const carData = {
+        name: values.name,
+        type: values.type,
+        isAvailable: values.isAvailable,
+        images: imageUrls,
+        dataAiHint: `${values.type} car`,
+        specs: values.specs,
+      };
+
+      await addCar(carData);
 
       toast({
         title: "Success!",
         description: `The car "${values.name}" has been added successfully.`,
       });
       form.reset();
-      // Ensure the array field resets to one empty input
-      remove();
-      append({ name: "" });
+      setSelectedFiles([]);
     } catch (error) {
       console.error("Failed to add car:", error);
       toast({
@@ -137,7 +153,7 @@ export default function AdminDashboard() {
   }
 
   if (!user || user.role !== "admin") {
-    return null; // or a dedicated "Access Denied" component
+    return null; 
   }
 
   return (
@@ -158,7 +174,6 @@ export default function AdminDashboard() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                {/* Basic Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
@@ -188,7 +203,6 @@ export default function AdminDashboard() {
                   />
                 </div>
 
-                {/* Specs */}
                 <Card className="bg-card/50">
                     <CardHeader><CardTitle className="text-lg">Specifications</CardTitle></CardHeader>
                     <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -260,57 +274,48 @@ export default function AdminDashboard() {
                     </CardContent>
                 </Card>
 
-                {/* Image Filenames */}
-                <div>
-                  <Label className="text-base font-medium">Image Filenames</Label>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Enter the filenames of images located in the `/public/cars/` folder.
-                  </p>
-                  <div className="space-y-4">
-                    {fields.map((field, index) => (
-                      <FormField
-                        key={field.id}
-                        control={form.control}
-                        name={`images.${index}.name`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center gap-2">
-                              <FormControl>
-                                <Input
-                                  placeholder="e.g., my-car-image.png"
-                                  {...field}
-                                />
-                              </FormControl>
-                              {fields.length > 1 && (
-                                <Button
-                                  type="button"
-                                  variant="destructive"
-                                  size="icon"
-                                  onClick={() => remove(index)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    ))}
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="mt-4"
-                    onClick={() => append({ name: "" })}
-                  >
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Another Image
-                  </Button>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="images"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Car Images</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                           <Input 
+                            type="file"
+                            multiple
+                            accept="image/png, image/jpeg, image/webp"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            {...fileFieldRest}
+                            onChange={(event) => {
+                                field.onChange(event.target.files);
+                                if (event.target.files) {
+                                    setSelectedFiles(Array.from(event.target.files));
+                                }
+                            }}
+                          />
+                          <div className="flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-card/50 hover:bg-card/70 transition-colors">
+                              <div className="text-center">
+                                  <Upload className="mx-auto h-8 w-8 text-muted-foreground"/>
+                                  <p className="mt-2 text-sm text-muted-foreground">
+                                      <span className="font-semibold">Click to upload</span> or drag and drop
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">PNG, JPG, WEBP up to 5MB each</p>
+                              </div>
+                          </div>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                      {selectedFiles.length > 0 && (
+                        <div className="mt-2 text-sm text-muted-foreground">
+                            Selected: {selectedFiles.map(file => file.name).join(', ')}
+                        </div>
+                      )}
+                    </FormItem>
+                  )}
+                />
 
-                {/* Availability */}
                 <FormField
                   control={form.control}
                   name="isAvailable"
@@ -344,5 +349,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
-    

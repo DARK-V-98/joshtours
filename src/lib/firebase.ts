@@ -2,6 +2,7 @@
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -20,9 +21,10 @@ const isFirebaseConfigValid = (config: FirebaseOptions) => {
 // Initialize Firebase
 const app = !getApps().length && isFirebaseConfigValid(firebaseConfig) ? initializeApp(firebaseConfig) : (getApps().length > 0 ? getApp() : null);
 
-// Conditionally export auth and db
+// Conditionally export auth, db, and storage
 const auth = app ? getAuth(app) : null;
 const db = app ? getFirestore(app) : null;
+const storage = app ? getStorage(app) : null;
 
 
-export { app, auth, db };
+export { app, auth, db, storage };

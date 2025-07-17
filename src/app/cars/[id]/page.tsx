@@ -3,7 +3,6 @@ import { getCarById, Car } from "@/lib/data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Users, Gauge, Settings, Fuel, CheckCircle, XCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -32,7 +31,6 @@ export default async function CarDetailPage({ params }: { params: { id: string }
                         src={imageSrc}
                         alt={`${car.name} view ${index + 1}`}
                         fill
-                        data-ai-hint={car.dataAiHint}
                         className="object-cover"
                         priority={index === 0}
                       />
@@ -40,8 +38,12 @@ export default async function CarDetailPage({ params }: { params: { id: string }
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-4" />
-              <CarouselNext className="right-4" />
+               {car.images.length > 1 && (
+                  <>
+                    <CarouselPrevious className="left-4" />
+                    <CarouselNext className="right-4" />
+                  </>
+                )}
             </Carousel>
           </Card>
         </div>

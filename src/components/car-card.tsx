@@ -22,7 +22,7 @@ interface CarCardProps {
 
 export function CarCard({ car }: CarCardProps) {
   return (
-    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+    <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
       <CardHeader className="p-0 relative">
         <Link href={`/cars/${car.id}`} className="block aspect-video overflow-hidden">
           <Image
@@ -80,5 +80,3 @@ export function CarCard({ car }: CarCardProps) {
     </Card>
   );
 }
-
-    
