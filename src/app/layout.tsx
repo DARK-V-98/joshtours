@@ -1,9 +1,11 @@
+
 import type { Metadata } from "next";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Josh Tours",
@@ -34,13 +36,13 @@ export default function RootLayout({
           "min-h-screen bg-background font-body antialiased flex flex-col"
         )}
       >
-        <Header />
-        <main className="flex-grow">{children}</main>
-        <Footer />
-        <Toaster />
+        <AuthProvider>
+          <Header />
+          <main className="flex-grow">{children}</main>
+          <Footer />
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );
 }
-
-    

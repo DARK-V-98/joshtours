@@ -5,8 +5,20 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Phone } from "lucide-react";
+import { Phone, User as UserIcon, LogOut, LayoutDashboard } from "lucide-react";
 import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
+import { getAuth, signOut } from "firebase/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "./ui/skeleton";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -16,6 +28,18 @@ const navLinks = [
 
 export function Header() {
   const pathname = usePathname();
+  const { user, loading } = useAuth();
+  const auth = getAuth();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+  
+  const getInitials = (email: string | null | undefined) => {
+    if (!email) return 'U';
+    return email.substring(0, 2).toUpperCase();
+  };
+
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
@@ -46,9 +70,52 @@ export function Header() {
             <Phone className="h-5 w-5 text-primary" />
             <span>+94 70 120 9694</span>
           </div>
-          <Button asChild>
-            <Link href="/cars">Book Now</Link>
-          </Button>
+          
+          {loading ? (
+            <Skeleton className="h-10 w-24 rounded-md" />
+          ) : user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">My Account</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {user.role === 'admin' && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </header>
