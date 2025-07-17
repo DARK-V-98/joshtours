@@ -80,7 +80,7 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
                 icon: Shield,
@@ -91,11 +91,6 @@ const Index = () => {
                 icon: Clock,
                 title: "24/7 Support",
                 description: "Round-the-clock assistance whenever you need help"
-              },
-              {
-                icon: Users,
-                title: "Expert Team",
-                description: "Professional staff dedicated to exceptional customer service"
               },
               {
                 icon: Star,
