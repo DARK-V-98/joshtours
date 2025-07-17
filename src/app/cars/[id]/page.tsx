@@ -1,45 +1,18 @@
 
-"use client";
-
-import { useEffect, useState } from "react";
 import { getCarById, Car } from "@/lib/data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Users, Gauge, Settings, Fuel, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Users, Gauge, Settings, Fuel, CheckCircle, XCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import React from "react";
 import { Badge } from "@/components/ui/badge";
+import CarDetailClient from "./CarDetailClient";
 
-export default function CarDetailPage({ params }: { params: { id: string } }) {
-  const [car, setCar] = useState<Car | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
 
-  useEffect(() => {
-    const fetchCar = async () => {
-      setLoading(true);
-      const fetchedCar = await getCarById(params.id);
-      if (!fetchedCar) {
-        notFound();
-      } else {
-        setCar(fetchedCar);
-      }
-      setLoading(false);
-    };
-
-    fetchCar();
-  }, [params.id]);
-
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8 flex justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
+export default async function CarDetailPage({ params }: { params: { id: string } }) {
+  const car = await getCarById(params.id);
 
   if (!car) {
     return notFound();
@@ -131,18 +104,10 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
             <CardTitle>Check Availability</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="rounded-md"
-              disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
-            />
+             <CarDetailClient />
           </CardContent>
         </Card>
       </div>
     </div>
   );
 }
-
-    
