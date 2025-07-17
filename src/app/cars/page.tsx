@@ -1,5 +1,6 @@
+
 import { CarCard } from "@/components/car-card";
-import { cars } from "@/lib/data";
+import { getAllCars } from "@/lib/data";
 import {
   Select,
   SelectContent,
@@ -8,8 +9,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Car } from "lucide-react";
 
-export default function CarsPage() {
+export default async function CarsPage() {
+  const cars = await getAllCars();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-12">
@@ -48,11 +53,23 @@ export default function CarsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {cars.map((car) => (
-          <CarCard key={car.id} car={car} />
-        ))}
-      </div>
+      {cars.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {cars.map((car) => (
+            <CarCard key={car.id} car={car} />
+          ))}
+        </div>
+      ) : (
+        <Alert>
+            <Car className="h-4 w-4" />
+            <AlertTitle>No Vehicles Found</AlertTitle>
+            <AlertDescription>
+                There are currently no vehicles available. Please check back later or contact an administrator.
+            </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }
+
+    

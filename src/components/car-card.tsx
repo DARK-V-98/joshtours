@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -11,7 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "./ui/button";
-import { Users, Gauge, Settings } from "lucide-react";
+import { Badge } from "./ui/badge";
+import { Users, Gauge, Settings, CheckCircle, XCircle } from "lucide-react";
 import React from "react";
 
 interface CarCardProps {
@@ -24,7 +26,7 @@ export function CarCard({ car }: CarCardProps) {
       <CardHeader className="p-0 relative">
         <Link href={`/cars/${car.id}`} className="block aspect-video overflow-hidden">
           <Image
-            src={car.image}
+            src={car.images[0] || "https://placehold.co/600x400.png"} // Display the first image
             alt={car.name}
             width={600}
             height={400}
@@ -32,6 +34,19 @@ export function CarCard({ car }: CarCardProps) {
             className="object-cover w-full h-full transform transition-transform duration-300 group-hover:scale-105"
           />
         </Link>
+        <div className="absolute top-2 right-2">
+             {car.isAvailable ? (
+              <Badge variant="default" className="bg-green-600 hover:bg-green-700">
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Available
+              </Badge>
+            ) : (
+              <Badge variant="destructive">
+                <XCircle className="mr-2 h-4 w-4" />
+                Unavailable
+              </Badge>
+            )}
+        </div>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <CardTitle className="text-xl mb-2 font-headline">
@@ -59,9 +74,11 @@ export function CarCard({ car }: CarCardProps) {
       </CardContent>
       <CardFooter className="p-4 pt-0">
         <Button asChild className="w-full">
-          <Link href={`/cars/${car.id}`}>Rent Now</Link>
+          <Link href={`/cars/${car.id}`}>View Details</Link>
         </Button>
       </CardFooter>
     </Card>
   );
 }
+
+    
