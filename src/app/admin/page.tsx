@@ -86,8 +86,6 @@ export default function AdminDashboard() {
     },
   });
 
-  const { ref: fileFieldRef, ...fileFieldRest } = form.register("images");
-
   useEffect(() => {
     if (!loading && (!user || user.role !== "admin")) {
       router.push("/");
@@ -282,21 +280,22 @@ export default function AdminDashboard() {
                 <FormField
                   control={form.control}
                   name="images"
-                  render={({ field }) => (
+                  render={({ field: { value, onChange, ...fieldProps } }) => (
                     <FormItem>
                       <FormLabel>Car Images</FormLabel>
                       <FormControl>
                         <div className="relative">
                            <Input 
+                            {...fieldProps}
                             type="file"
                             multiple
                             accept="image/png, image/jpeg, image/webp"
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            {...fileFieldRest}
                             onChange={(event) => {
-                                field.onChange(event.target.files);
-                                if (event.target.files) {
-                                    setSelectedFiles(Array.from(event.target.files));
+                                const files = event.target.files;
+                                onChange(files);
+                                if (files) {
+                                    setSelectedFiles(Array.from(files));
                                 }
                             }}
                           />
