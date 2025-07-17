@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -43,7 +44,7 @@ export function Header() {
         <div className="flex items-center space-x-4">
           <div className="hidden sm:flex items-center gap-2 text-foreground">
             <Phone className="h-5 w-5 text-primary" />
-            <span>+1 (555) 123-4567</span>
+            <span>+94 70 120 9694</span>
           </div>
           <Button asChild>
             <Link href="/cars">Book Now</Link>
