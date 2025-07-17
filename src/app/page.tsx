@@ -1,13 +1,18 @@
 
-"use client"
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Phone, Mail, MapPin, Star, Shield, Clock, Users, Car, Zap, CheckCircle } from "lucide-react";
 import Image from "next/image";
+import { getAllCars } from "@/lib/data";
+import Link from "next/link";
+import { CarCard } from "@/components/car-card";
 
-const Index = () => {
+export default async function Index() {
+
+  const allCars = await getAllCars();
+  const featuredCars = allCars.slice(0, 3);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
@@ -21,7 +26,7 @@ const Index = () => {
             </Badge>
             
             <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-              
+              Josh Tours
             </h1>
             
             <p className="text-xl text-muted-foreground max-w-lg">
@@ -30,12 +35,14 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="group">
-                <Zap className="mr-2 h-5 w-5 group-hover:animate-pulse" />
-                Book Instantly
+              <Button size="lg" className="group" asChild>
+                <Link href="/cars">
+                  <Zap className="mr-2 h-5 w-5 group-hover:animate-pulse" />
+                  Book Instantly
+                </Link>
               </Button>
-              <Button variant="secondary" size="lg">
-                View Vehicles
+              <Button variant="secondary" size="lg" asChild>
+                <Link href="/cars">View Vehicles</Link>
               </Button>
             </div>
             
@@ -60,8 +67,8 @@ const Index = () => {
                 <Image
                   src="/car.png"
                   alt="Hero Car"
-                  width={1000}
-                  height={625}
+                  width={1200}
+                  height={750}
                   className="object-contain z-10"
                   priority
                 />
@@ -125,65 +132,14 @@ const Index = () => {
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                image: "https://placehold.co/600x400.png",
-                dataAiHint: "red sports car",
-                category: "Sports Car",
-                name: "Sports Coupe",
-                features: ["Powerful Engine", "Sporty Design", "Comfortable Interior", "Modern Tech"]
-              },
-              {
-                image: "https://placehold.co/600x400.png",
-                dataAiHint: "black suv",
-                category: "Family SUV",
-                name: "Spacious SUV",
-                features: ["7 Seats", "All-Wheel Drive", "Ample Storage", "Safety Features"]
-              },
-              {
-                image: "https://placehold.co/600x400.png",
-                dataAiHint: "white sedan",
-                category: "Economy",
-                name: "Comfort Sedan",
-                features: ["Great Comfort", "Fuel Efficient", "Smooth Ride", "Safety First"]
-              }
-            ].map((car, index) => (
-              <Card key={index} className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-105 bg-card border-border">
-                <div className="relative overflow-hidden h-48">
-                  <Image 
-                    src={car.image} 
-                    alt={car.name}
-                    fill
-                    data-ai-hint={car.dataAiHint}
-                    className="object-cover transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-                    {car.category}
-                  </Badge>
-                </div>
-                
-                <CardHeader>
-                  <CardTitle className="flex justify-between items-center">
-                    {car.name}
-                  </CardTitle>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="space-y-2 mb-6">
-                    {car.features.map((feature, i) => (
-                      <div key={i} className="flex items-center space-x-2">
-                        <CheckCircle className="h-4 w-4 text-primary" />
-                        <span className="text-sm text-muted-foreground">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <Button className="w-full">
-                    Book This Car
-                  </Button>
-                </CardContent>
-              </Card>
+            {featuredCars.map((car) => (
+              <CarCard key={car.id} car={car} />
             ))}
+          </div>
+          <div className="text-center mt-12">
+            <Button asChild size="lg">
+              <Link href="/cars">View All Vehicles</Link>
+            </Button>
           </div>
         </div>
       </section>
@@ -240,5 +196,3 @@ const Index = () => {
     </div>
   );
 };
-
-export default Index;
