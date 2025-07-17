@@ -52,10 +52,6 @@ export default async function Index() {
                 <div className="text-sm text-muted-foreground">Happy Customers</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-primary">100+</div>
-                <div className="text-sm text-muted-foreground">Quality Cars</div>
-              </div>
-              <div className="text-center">
                 <div className="text-2xl font-bold text-primary">24/7</div>
                 <div className="text-sm text-muted-foreground">Support</div>
               </div>
