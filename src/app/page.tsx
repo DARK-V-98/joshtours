@@ -20,8 +20,8 @@ export default async function Index() {
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-10" />
         
         <div className="relative container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center z-20">
-          <div className="space-y-8">
-            <Badge variant="secondary" className="w-fit text-primary border-primary/20">
+          <div className="space-y-8 text-center lg:text-left">
+            <Badge variant="secondary" className="w-fit text-primary border-primary/20 mx-auto lg:mx-0">
               Trusted Car Rental Service
             </Badge>
             
@@ -29,12 +29,12 @@ export default async function Index() {
               Josh Tours
             </h1>
             
-            <p className="text-xl text-muted-foreground max-w-lg">
+            <p className="text-xl text-muted-foreground max-w-lg mx-auto lg:mx-0">
               Experience comfort and reliability with our diverse fleet of vehicles. 
               From economy cars to SUVs, we have the perfect ride for every journey.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button size="lg" className="group" asChild>
                 <Link href="/cars">
                   <Zap className="mr-2 h-5 w-5 group-hover:animate-pulse" />
@@ -46,7 +46,7 @@ export default async function Index() {
               </Button>
             </div>
             
-            <div className="flex items-center space-x-8 pt-4">
+            <div className="flex items-center justify-center lg:justify-start space-x-8 pt-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">500+</div>
                 <div className="text-sm text-muted-foreground">Happy Customers</div>
@@ -57,7 +57,7 @@ export default async function Index() {
               </div>
             </div>
           </div>
-          <div className="relative hidden lg:block min-h-[500px] lg:min-h-[700px]">
+          <div className="relative mt-8 lg:mt-0 lg:block min-h-[300px] lg:min-h-[700px]">
              <div className="absolute inset-0 bg-card/10 backdrop-blur-sm rounded-3xl -rotate-6 transform"></div>
              <div className="absolute inset-0 flex items-center justify-center">
                 <Image
