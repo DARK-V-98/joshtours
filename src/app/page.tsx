@@ -57,14 +57,14 @@ export default async function Index() {
               </div>
             </div>
           </div>
-          <div className="relative hidden lg:block min-h-[500px] lg:min-h-[600px]">
+          <div className="relative hidden lg:block min-h-[500px] lg:min-h-[700px]">
              <div className="absolute inset-0 bg-card/10 backdrop-blur-sm rounded-3xl -rotate-6 transform"></div>
              <div className="absolute inset-0 flex items-center justify-center">
                 <Image
                   src="/car.png"
                   alt="Hero Car"
-                  width={1200}
-                  height={750}
+                  width={1400}
+                  height={875}
                   className="object-contain z-10"
                   priority
                 />
