@@ -61,6 +61,7 @@ export default function SignupPage() {
         values.password
       );
       
+      // This function call saves the user data to Firestore
       await createUserInFirestore(userCredential.user);
       
       router.push('/');

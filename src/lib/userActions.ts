@@ -6,16 +6,22 @@ import { db } from '@/lib/firebase';
 import type { User } from 'firebase/auth';
 
 export async function createUserInFirestore(user: User) {
+  if (!db) {
+    console.error("Firestore is not initialized. Cannot create user profile.");
+    throw new Error("Failed to create user profile due to database connection issue.");
+  }
+
   try {
     const userRef = doc(db, 'users', user.uid);
     await setDoc(userRef, {
       uid: user.uid,
       email: user.email,
-      role: 'user', // Default role
+      role: 'user', // Default role for all new users
       createdAt: serverTimestamp(),
     });
   } catch (error) {
     console.error("Error creating user document in Firestore:", error);
-    throw new Error("Failed to create user profile.");
+    // Re-throwing the error so it can be caught by the signup form
+    throw new Error("Failed to create user profile in database.");
   }
 }
