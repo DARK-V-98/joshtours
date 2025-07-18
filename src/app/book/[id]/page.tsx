@@ -69,6 +69,12 @@ export default function BookingPage() {
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      requests: "",
+    },
   });
 
   useEffect(() => {
@@ -364,4 +370,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
