@@ -10,6 +10,8 @@ import { createUserInFirestore } from '@/lib/userActions';
 interface UserProfile {
   uid: string;
   email: string | null;
+  displayName: string | null;
+  phone: string | null;
   role: 'user' | 'admin';
 }
 
@@ -44,6 +46,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               setUser({
                   uid: firebaseUser.uid,
                   email: firebaseUser.email,
+                  displayName: userData.displayName || firebaseUser.displayName,
+                  phone: userData.phone || firebaseUser.phoneNumber,
                   role: userData.role || 'user', // Set role from Firestore, default to 'user'
               });
           } else {
@@ -53,6 +57,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               setUser({
                   uid: firebaseUser.uid,
                   email: firebaseUser.email,
+                  displayName: firebaseUser.displayName,
+                  phone: firebaseUser.phoneNumber,
                   role: 'user', // Default role for newly created doc
               });
           }
@@ -61,6 +67,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUser({
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
+                displayName: firebaseUser.displayName,
+                phone: firebaseUser.phoneNumber,
                 role: 'user', // Default to user on error
             });
         }

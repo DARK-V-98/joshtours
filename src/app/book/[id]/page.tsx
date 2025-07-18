@@ -39,11 +39,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import Link from "next/link";
 
 const bookingFormSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters."),
-  email: z.string().email("Please enter a valid email address."),
-  phone: z.string().min(10, "Please enter a valid phone number."),
   pickupDate: z.date({
     required_error: "A pickup date is required.",
   }),
@@ -62,6 +61,7 @@ export default function BookingPage() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
   const carId = Array.isArray(params.id) ? params.id[0] : params.id;
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
@@ -70,12 +70,18 @@ export default function BookingPage() {
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
       requests: "",
     },
   });
+
+   useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      // Redirect to login but save the intended destination
+      router.push(`/login?redirect=/book/${carId}`);
+    }
+  }, [user, authLoading, router, carId]);
+
 
   useEffect(() => {
     const fetchCar = async () => {
@@ -92,14 +98,22 @@ export default function BookingPage() {
   }, [carId, router]);
 
   async function onSubmit(values: BookingFormValues) {
-    if (!car) return;
+    if (!car || !user) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "You must be logged in to make a booking request.",
+        });
+        return;
+    }
     try {
       await createBookingRequest({
         carId: car.id,
         carName: car.name,
-        customerName: values.name,
-        customerEmail: values.email,
-        customerPhone: values.phone,
+        userId: user.uid,
+        customerName: user.displayName || user.email || 'N/A',
+        customerEmail: user.email || 'N/A',
+        customerPhone: user.phone || 'N/A',
         pickupDate: format(values.pickupDate, "yyyy-MM-dd"),
         returnDate: format(values.returnDate, "yyyy-MM-dd"),
         requests: values.requests,
@@ -115,7 +129,7 @@ export default function BookingPage() {
     }
   }
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="container mx-auto px-4 py-12">
         <Skeleton className="h-8 w-32 mb-8" />
@@ -127,7 +141,7 @@ export default function BookingPage() {
     );
   }
   
-  if (!car) return null;
+  if (!car || !user) return null;
 
   if (isSubmitted) {
     return (
@@ -138,25 +152,27 @@ export default function BookingPage() {
                     <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
                  </div>
                  <CardTitle className="text-3xl font-headline mt-4">Inquiry Sent Successfully!</CardTitle>
-                 <CardDescription className="text-lg">Thank you, {form.getValues("name")}.</CardDescription>
+                 <CardDescription className="text-lg">Thank you, {user.displayName || user.email}.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 <p className="text-muted-foreground">
-                    Your request to book the <strong>{car.name}</strong> has been received. Our team will review the availability for your selected dates.
+                    Your request to book the <strong>{car.name}</strong> has been received. Our team will review the availability for your selected dates. You can check the status on your bookings page.
                 </p>
                 <Alert>
                     <Mail className="h-4 w-4"/>
                     <AlertTitle>What's Next?</AlertTitle>
                     <AlertDescription>
-                        A confirmation email has been sent to <strong>{form.getValues("email")}</strong>. Please contact us to finalize your booking, discuss pricing, and complete the rental process.
+                        We will contact you shortly to confirm availability and discuss pricing. You can also call us to finalize your booking.
                     </AlertDescription>
                 </Alert>
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                     <Button size="lg" className="flex-1" asChild>
                        <a href="tel:+94701209694"><Phone className="mr-2"/>Call Josh Tours</a>
                     </Button>
-                    <Button size="lg" variant="secondary" className="flex-1" onClick={() => router.push('/cars')}>
-                        <CarIcon className="mr-2"/>Explore Other Cars
+                    <Button size="lg" variant="secondary" className="flex-1" asChild>
+                        <Link href="/my-bookings">
+                            <CarIcon className="mr-2"/>View My Bookings
+                        </Link>
                     </Button>
                 </div>
             </CardContent>
@@ -193,14 +209,23 @@ export default function BookingPage() {
               <p className="text-muted-foreground">{car.type}</p>
             </CardContent>
           </Card>
-          <Card>
+           <Card>
             <CardHeader>
-              <CardTitle>Booking Process</CardTitle>
+              <CardTitle>Your Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm text-muted-foreground">
-                <p>1. Fill out and submit the inquiry form with your details.</p>
-                <p>2. Our team will verify the vehicle's availability for your dates.</p>
-                <p>3. Contact us via phone or email to confirm your booking, discuss the final price, and arrange payment.</p>
+            <CardContent className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <span>{user.displayName || 'N/A'}</span>
+                </div>
+                 <div className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <span>{user.email}</span>
+                </div>
+                 <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span>{user.phone || 'Not provided'}</span>
+                </div>
             </CardContent>
           </Card>
         </div>
@@ -210,52 +235,13 @@ export default function BookingPage() {
           <CardHeader>
             <CardTitle className="text-2xl font-headline">Booking Inquiry</CardTitle>
             <CardDescription>
-              Complete the form below to request a booking for the {car.name}.
+              Confirm your dates to request a booking for the {car.name}.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., John Doe" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="you@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., +1 234 567 890" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+                
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}

@@ -4,7 +4,7 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { User } from 'firebase/auth';
 
-export async function createUserInFirestore(user: User) {
+export async function createUserInFirestore(user: User, additionalData: { displayName?: string } = {}) {
   if (!db) {
     console.error("Firestore is not initialized. Cannot create user profile.");
     throw new Error("Failed to create user profile due to database connection issue.");
@@ -15,6 +15,8 @@ export async function createUserInFirestore(user: User) {
     await setDoc(userRef, {
       uid: user.uid,
       email: user.email,
+      displayName: additionalData.displayName || user.displayName || null,
+      phone: user.phoneNumber || null,
       role: 'user', // Default role for all new users
       createdAt: serverTimestamp(),
     }, { merge: true }); // Use merge to avoid overwriting existing data if called accidentally
