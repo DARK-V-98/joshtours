@@ -71,7 +71,7 @@ export default function SignupPage() {
       // This function call saves the user data to Firestore
       await createUserInFirestore(userCredential.user, { displayName: values.name });
       
-      router.push('/');
+      router.push('/my-bookings');
     } catch (err: any) {
       if (err.code === 'auth/email-already-in-use') {
         setError('An account with this email already exists.');
