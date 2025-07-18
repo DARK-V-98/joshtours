@@ -10,7 +10,6 @@ import { useAuth } from "@/context/AuthContext";
 import { addCar, uploadImages } from "@/lib/carActions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -36,7 +35,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Upload, PlusCircle } from "lucide-react";
+import { Loader2, Upload, PlusCircle, DollarSign } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarList } from "@/components/admin/car-list";
 import { Separator } from "@/components/ui/separator";
@@ -48,6 +47,8 @@ const carFormSchema = z.object({
   name: z.string().min(2, "Car name must be at least 2 characters."),
   type: z.string().min(2, "Car type must be at least 2 characters."),
   isAvailable: z.boolean().default(true),
+  pricePerDay: z.coerce.number().min(0, "Price must be a positive number."),
+  priceEnabled: z.boolean().default(true),
   images: z
     .custom<FileList>()
     .refine((files) => files?.length >= 1, "Please add at least one image.")
@@ -77,6 +78,8 @@ export default function AdminDashboard() {
       name: "",
       type: "",
       isAvailable: true,
+      pricePerDay: 50,
+      priceEnabled: true,
       specs: {
         engine: "",
         transmission: "Automatic",
@@ -110,6 +113,8 @@ export default function AdminDashboard() {
         isAvailable: values.isAvailable,
         images: imageUrls,
         dataAiHint: `${values.type} car`,
+        pricePerDay: values.pricePerDay,
+        priceEnabled: values.priceEnabled,
         specs: values.specs,
       };
 
@@ -121,7 +126,6 @@ export default function AdminDashboard() {
       });
       form.reset();
       setSelectedFiles([]);
-      // Force re-render of CarList by changing key
       setFormKey(Date.now());
     } catch (error) {
       console.error("Failed to add car:", error);
@@ -277,6 +281,23 @@ export default function AdminDashboard() {
                     </CardContent>
                 </Card>
 
+                 <FormField
+                  control={form.control}
+                  name="pricePerDay"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price Per Day ($)</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input type="number" placeholder="e.g., 50" className="pl-8" {...field} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="images"
@@ -320,26 +341,48 @@ export default function AdminDashboard() {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="isAvailable"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Availability</FormLabel>
-                        <FormDescription>
-                          Is this car available for rent right now?
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                 <div className="grid grid-cols-2 gap-8">
+                    <FormField
+                    control={form.control}
+                    name="isAvailable"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                            <FormLabel className="text-base">Availability</FormLabel>
+                            <FormDescription>
+                            Is this car available for rent?
+                            </FormDescription>
+                        </div>
+                        <FormControl>
+                            <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            />
+                        </FormControl>
+                        </FormItem>
+                    )}
+                    />
+                     <FormField
+                    control={form.control}
+                    name="priceEnabled"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                            <FormLabel className="text-base">Show Price</FormLabel>
+                            <FormDescription>
+                                Display the price on the website.
+                            </FormDescription>
+                        </div>
+                        <FormControl>
+                            <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            />
+                        </FormControl>
+                        </FormItem>
+                    )}
+                    />
+                </div>
 
                 <Button type="submit" size="lg" disabled={form.formState.isSubmitting} className="w-full">
                    {form.formState.isSubmitting ? (

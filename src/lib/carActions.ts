@@ -58,7 +58,6 @@ export async function addCar(carData: Omit<Car, "id">) {
 }
 
 // This function updates an existing car document.
-// For now, it won't handle image updates to keep it simple.
 export async function updateCar(carId: string, carData: Partial<Omit<Car, "id" | "images">>) {
   if (!db) {
     throw new Error("Database not initialized");

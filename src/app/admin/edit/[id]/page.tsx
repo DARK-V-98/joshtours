@@ -10,7 +10,6 @@ import { getCarById, Car } from "@/lib/data";
 import { updateCar } from "@/lib/carActions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -36,7 +35,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, DollarSign } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -46,6 +45,8 @@ const carFormSchema = z.object({
   name: z.string().min(2, "Car name must be at least 2 characters."),
   type: z.string().min(2, "Car type must be at least 2 characters."),
   isAvailable: z.boolean().default(true),
+  pricePerDay: z.coerce.number().min(0, "Price must be a positive number."),
+  priceEnabled: z.boolean().default(true),
   specs: z.object({
     engine: z.string().min(1, "Engine spec is required."),
     transmission: z.enum(["Automatic", "Manual"]),
@@ -86,11 +87,12 @@ export default function EditCarPage() {
         const carData = await getCarById(carId);
         if (carData) {
           setCar(carData);
-          // Populate form with existing data
           form.reset({
             name: carData.name,
             type: carData.type,
             isAvailable: carData.isAvailable,
+            pricePerDay: carData.pricePerDay,
+            priceEnabled: carData.priceEnabled,
             specs: {
               engine: carData.specs.engine,
               transmission: carData.specs.transmission,
@@ -152,7 +154,7 @@ export default function EditCarPage() {
   }
 
   if (!car) {
-    return null; // Or some other UI indicating car not found
+    return null;
   }
 
   return (
@@ -160,7 +162,7 @@ export default function EditCarPage() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-headline font-bold mb-2">Edit Car</h1>
         <p className="text-muted-foreground mb-8">
-          Modify the details for "{car.name}". Image editing is not yet supported.
+          Modify the details for "{car.name}". Image editing is not supported.
         </p>
 
         <Card>
@@ -273,26 +275,66 @@ export default function EditCarPage() {
                     </CardContent>
                 </Card>
 
-                <FormField
+                 <FormField
                   control={form.control}
-                  name="isAvailable"
+                  name="pricePerDay"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Availability</FormLabel>
-                        <FormDescription>
-                          Is this car available for rent right now?
-                        </FormDescription>
-                      </div>
+                    <FormItem>
+                      <FormLabel>Price Per Day ($)</FormLabel>
                       <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input type="number" placeholder="e.g., 50" className="pl-8" {...field} />
+                        </div>
                       </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
+
+
+                 <div className="grid grid-cols-2 gap-8">
+                    <FormField
+                    control={form.control}
+                    name="isAvailable"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                            <FormLabel className="text-base">Availability</FormLabel>
+                            <FormDescription>
+                            Is this car available for rent?
+                            </FormDescription>
+                        </div>
+                        <FormControl>
+                            <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            />
+                        </FormControl>
+                        </FormItem>
+                    )}
+                    />
+                     <FormField
+                    control={form.control}
+                    name="priceEnabled"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                            <FormLabel className="text-base">Show Price</FormLabel>
+                            <FormDescription>
+                                Display the price on the website.
+                            </FormDescription>
+                        </div>
+                        <FormControl>
+                            <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            />
+                        </FormControl>
+                        </FormItem>
+                    )}
+                    />
+                </div>
 
                 <div className="flex gap-4">
                   <Button type="button" variant="outline" asChild>

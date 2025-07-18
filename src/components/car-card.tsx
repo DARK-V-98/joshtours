@@ -63,6 +63,12 @@ export function CarCard({ car }: CarCardProps) {
               </Badge>
             )}
           </div>
+           {car.priceEnabled && (
+             <div className="absolute bottom-2 left-2 bg-background/80 backdrop-blur-sm text-foreground font-bold p-2 rounded-md">
+                ${car.pricePerDay}
+                <span className="font-normal text-sm text-muted-foreground">/day</span>
+            </div>
+           )}
         </CardHeader>
         <CardContent className="p-4 flex-grow">
           <CardTitle className="text-xl mb-2 font-headline">
@@ -155,6 +161,13 @@ export function CarCard({ car }: CarCardProps) {
                         <span>{car.specs.fuel}</span>
                     </div>
                 </div>
+                
+                {car.priceEnabled && (
+                    <div className="text-3xl font-bold mb-6">
+                        ${car.pricePerDay}
+                        <span className="text-lg font-normal text-muted-foreground">/day</span>
+                    </div>
+                )}
 
                 <div className="mt-auto flex gap-4">
                      <Button size="lg" className="flex-1" asChild>

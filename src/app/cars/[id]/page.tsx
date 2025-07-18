@@ -1,5 +1,5 @@
 
-import { getCarById, Car } from "@/lib/data";
+import { getCarById } from "@/lib/data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -65,6 +65,12 @@ export default async function CarDetailPage({ params }: { params: { id: string }
             )}
           </div>
 
+          {car.priceEnabled && (
+            <div className="text-4xl font-bold mb-4">
+                ${car.pricePerDay}
+                <span className="text-xl font-normal text-muted-foreground">/day</span>
+            </div>
+           )}
 
           <div className="flex items-stretch gap-4 mb-6">
             <Button size="lg" className="flex-1 h-12 text-lg" disabled={!car.isAvailable}>

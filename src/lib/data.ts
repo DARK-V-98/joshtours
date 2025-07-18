@@ -9,6 +9,8 @@ export interface Car {
   images: string[]; // URLs to images
   dataAiHint: string;
   isAvailable: boolean;
+  pricePerDay: number;
+  priceEnabled: boolean;
   specs: {
     engine: string;
     transmission: "Automatic" | "Manual";
@@ -37,6 +39,8 @@ function toCarObject(doc: any): Car {
       images: data.images || [],
       dataAiHint: data.dataAiHint || "",
       isAvailable: data.isAvailable === true,
+      pricePerDay: data.pricePerDay || 0,
+      priceEnabled: data.priceEnabled === true,
       specs: data.specs || { engine: "", transmission: "Automatic", seats: 0, fuel: "Gasoline"},
       createdAt,
     };
@@ -93,6 +97,8 @@ export async function getCarsForAdmin(): Promise<AdminCar[]> {
             name: data.name,
             type: data.type,
             isAvailable: data.isAvailable,
+            pricePerDay: data.pricePerDay || 0,
+            priceEnabled: data.priceEnabled === true,
             createdAt: createdAt,
         } as AdminCar
     });
