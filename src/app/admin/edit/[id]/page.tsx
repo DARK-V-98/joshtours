@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { getCarById, Car } from "@/lib/data";
@@ -39,13 +39,19 @@ import { Loader2, Save, DollarSign } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { Calendar } from "@/components/ui/calendar";
+import { format, parse } from "date-fns";
 
 // Schema for editing, images are not required for update
 const carFormSchema = z.object({
   name: z.string().min(2, "Car name must be at least 2 characters."),
   type: z.string().min(2, "Car type must be at least 2 characters."),
   isAvailable: z.boolean().default(true),
-  pricePerDay: z.coerce.number().min(0, "Price must be a positive number."),
+  pricePerDay: z.object({
+    usd: z.coerce.number().min(0, "Price must be a positive number."),
+    lkr: z.coerce.number().min(0, "Price must be a positive number."),
+    eur: z.coerce.number().min(0, "Price must be a positive number."),
+  }),
   priceEnabled: z.boolean().default(true),
   specs: z.object({
     engine: z.string().min(1, "Engine spec is required."),
@@ -53,6 +59,7 @@ const carFormSchema = z.object({
     seats: z.coerce.number().min(1, "Number of seats is required."),
     fuel: z.enum(["Gasoline", "Diesel", "Electric"]),
   }),
+  bookedDates: z.array(z.string()).default([]),
 });
 
 type CarFormValues = z.infer<typeof carFormSchema>;
@@ -99,6 +106,7 @@ export default function EditCarPage() {
               seats: carData.specs.seats,
               fuel: carData.specs.fuel,
             },
+            bookedDates: carData.bookedDates || [],
           });
         } else {
           toast({ variant: "destructive", title: "Error", description: "Car not found." });
@@ -275,22 +283,89 @@ export default function EditCarPage() {
                     </CardContent>
                 </Card>
 
-                 <FormField
-                  control={form.control}
-                  name="pricePerDay"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Price Per Day ($)</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input type="number" placeholder="e.g., 50" className="pl-8" {...field} />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Card className="bg-card/50">
+                  <CardHeader><CardTitle className="text-lg">Pricing (Per Day)</CardTitle></CardHeader>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="pricePerDay.usd"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>USD ($)</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                              <Input type="number" placeholder="e.g., 50" className="pl-8" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="pricePerDay.lkr"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>LKR (Rs)</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">Rs</span>
+                              <Input type="number" placeholder="e.g., 15000" className="pl-8" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="pricePerDay.eur"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>EUR (€)</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg text-muted-foreground">€</span>
+                              <Input type="number" placeholder="e.g., 45" className="pl-8" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Manage Booked Dates</CardTitle>
+                        <CardDescription>Select dates on the calendar to mark them as booked or available. Booked dates will be disabled for customers.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex justify-center">
+                        <Controller
+                            control={form.control}
+                            name="bookedDates"
+                            render={({ field }) => {
+                                const bookedDateObjects = field.value.map(d => parse(d, 'yyyy-MM-dd', new Date()));
+
+                                return (
+                                    <Calendar
+                                        mode="multiple"
+                                        selected={bookedDateObjects}
+                                        onSelect={(dates) => {
+                                            if (dates) {
+                                                const formattedDates = dates.map(d => format(d, 'yyyy-MM-dd'));
+                                                field.onChange(formattedDates);
+                                            }
+                                        }}
+                                        className="rounded-md border"
+                                    />
+                                );
+                            }}
+                        />
+                    </CardContent>
+                </Card>
 
 
                  <div className="grid grid-cols-2 gap-8">

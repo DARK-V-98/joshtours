@@ -30,12 +30,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useCurrency } from "@/context/CurrencyContext";
 
 interface CarCardProps {
   car: CarType;
 }
 
 export function CarCard({ car }: CarCardProps) {
+  const { currency, getSymbol } = useCurrency();
+
   return (
     <Dialog>
       <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group">
@@ -63,9 +66,9 @@ export function CarCard({ car }: CarCardProps) {
               </Badge>
             )}
           </div>
-           {car.priceEnabled && (
+           {car.priceEnabled && car.pricePerDay && (
              <div className="absolute bottom-2 left-2 bg-background/80 backdrop-blur-sm text-foreground font-bold p-2 rounded-md">
-                ${car.pricePerDay}
+                {getSymbol()}{car.pricePerDay[currency]}
                 <span className="font-normal text-sm text-muted-foreground">/day</span>
             </div>
            )}
@@ -162,9 +165,9 @@ export function CarCard({ car }: CarCardProps) {
                     </div>
                 </div>
                 
-                {car.priceEnabled && (
+                {car.priceEnabled && car.pricePerDay && (
                     <div className="text-3xl font-bold mb-6">
-                        ${car.pricePerDay}
+                        {getSymbol()}{car.pricePerDay[currency]}
                         <span className="text-lg font-normal text-muted-foreground">/day</span>
                     </div>
                 )}

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Phone, User as UserIcon, LogOut, LayoutDashboard } from "lucide-react";
+import { Phone, User as UserIcon, LogOut, LayoutDashboard, Globe } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { getAuth, signOut } from "firebase/auth";
@@ -16,10 +16,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "./ui/skeleton";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { app } from "@/lib/firebase";
+import { useCurrency, Currency } from "@/context/CurrencyContext";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -30,6 +33,7 @@ const navLinks = [
 export function Header() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
+  const { currency, setCurrency } = useCurrency();
   const auth = app ? getAuth(app) : null;
 
   const handleLogout = async () => {
@@ -70,11 +74,23 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex-1 flex justify-end items-center space-x-4">
-          <div className="hidden sm:flex items-center gap-2 text-foreground">
-            <Phone className="h-5 w-5 text-primary" />
-            <span>+94 70 120 9694</span>
-          </div>
+        <div className="flex-1 flex justify-end items-center space-x-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Globe className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Select Currency</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
+                <DropdownMenuRadioItem value="usd">USD ($)</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="lkr">LKR (Rs)</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="eur">EUR (€)</DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           {loading ? (
             <Skeleton className="h-10 w-24 rounded-md" />

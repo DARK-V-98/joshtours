@@ -9,7 +9,11 @@ export interface Car {
   images: string[]; // URLs to images
   dataAiHint: string;
   isAvailable: boolean;
-  pricePerDay: number;
+  pricePerDay: {
+    usd: number;
+    lkr: number;
+    eur: number;
+  };
   priceEnabled: boolean;
   specs: {
     engine: string;
@@ -17,10 +21,11 @@ export interface Car {
     seats: number;
     fuel: "Gasoline" | "Diesel" | "Electric";
   };
+  bookedDates: string[]; // Array of dates in 'YYYY-MM-DD' format
   createdAt?: string; // Stored as a string after conversion
 }
 
-export interface AdminCar extends Omit<Car, 'createdAt'> {
+export interface AdminCar extends Omit<Car, 'createdAt' | 'bookedDates' | 'pricePerDay' | 'specs'> {
     createdAt: string | null;
 }
 
@@ -39,9 +44,10 @@ function toCarObject(doc: any): Car {
       images: data.images || [],
       dataAiHint: data.dataAiHint || "",
       isAvailable: data.isAvailable === true,
-      pricePerDay: data.pricePerDay || 0,
+      pricePerDay: data.pricePerDay || { usd: 0, lkr: 0, eur: 0 },
       priceEnabled: data.priceEnabled === true,
       specs: data.specs || { engine: "", transmission: "Automatic", seats: 0, fuel: "Gasoline"},
+      bookedDates: data.bookedDates || [],
       createdAt,
     };
 }
@@ -97,8 +103,6 @@ export async function getCarsForAdmin(): Promise<AdminCar[]> {
             name: data.name,
             type: data.type,
             isAvailable: data.isAvailable,
-            pricePerDay: data.pricePerDay || 0,
-            priceEnabled: data.priceEnabled === true,
             createdAt: createdAt,
         } as AdminCar
     });

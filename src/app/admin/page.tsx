@@ -35,7 +35,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Upload, PlusCircle, DollarSign } from "lucide-react";
+import { Loader2, Upload, PlusCircle, DollarSign, euro, rupee } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarList } from "@/components/admin/car-list";
 import { Separator } from "@/components/ui/separator";
@@ -47,7 +47,11 @@ const carFormSchema = z.object({
   name: z.string().min(2, "Car name must be at least 2 characters."),
   type: z.string().min(2, "Car type must be at least 2 characters."),
   isAvailable: z.boolean().default(true),
-  pricePerDay: z.coerce.number().min(0, "Price must be a positive number."),
+  pricePerDay: z.object({
+    usd: z.coerce.number().min(0, "Price must be a positive number."),
+    lkr: z.coerce.number().min(0, "Price must be a positive number."),
+    eur: z.coerce.number().min(0, "Price must be a positive number."),
+  }),
   priceEnabled: z.boolean().default(true),
   images: z
     .custom<FileList>()
@@ -78,7 +82,11 @@ export default function AdminDashboard() {
       name: "",
       type: "",
       isAvailable: true,
-      pricePerDay: 50,
+      pricePerDay: {
+        usd: 50,
+        lkr: 15000,
+        eur: 45,
+      },
       priceEnabled: true,
       specs: {
         engine: "",
@@ -116,6 +124,7 @@ export default function AdminDashboard() {
         pricePerDay: values.pricePerDay,
         priceEnabled: values.priceEnabled,
         specs: values.specs,
+        bookedDates: [],
       };
 
       await addCar(carData);
@@ -281,22 +290,60 @@ export default function AdminDashboard() {
                     </CardContent>
                 </Card>
 
-                 <FormField
-                  control={form.control}
-                  name="pricePerDay"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Price Per Day ($)</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input type="number" placeholder="e.g., 50" className="pl-8" {...field} />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Card className="bg-card/50">
+                  <CardHeader><CardTitle className="text-lg">Pricing (Per Day)</CardTitle></CardHeader>
+                  <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="pricePerDay.usd"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>USD ($)</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                              <Input type="number" placeholder="e.g., 50" className="pl-8" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="pricePerDay.lkr"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>LKR (Rs)</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">Rs</span>
+                              <Input type="number" placeholder="e.g., 15000" className="pl-8" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
+                      control={form.control}
+                      name="pricePerDay.eur"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>EUR (€)</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg text-muted-foreground">€</span>
+                              <Input type="number" placeholder="e.g., 45" className="pl-8" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+
 
                 <FormField
                   control={form.control}
@@ -314,8 +361,8 @@ export default function AdminDashboard() {
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                             onChange={(event) => {
                                 const files = event.target.files;
-                                onChange(files);
-                                if (files) {
+                                if (files && files.length > 0) {
+                                    onChange(files);
                                     setSelectedFiles(Array.from(files));
                                 }
                             }}

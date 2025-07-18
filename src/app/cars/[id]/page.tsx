@@ -1,6 +1,8 @@
 
-import { getCarById } from "@/lib/data";
-import { notFound } from "next/navigation";
+"use client";
+
+import { getCarById, Car } from "@/lib/data";
+import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Users, Gauge, Settings, Fuel, CheckCircle, XCircle } from "lucide-react";
@@ -8,13 +10,51 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
 import CarDetailClient from "./CarDetailClient";
+import { useEffect, useState } from "react";
+import { useCurrency } from "@/context/CurrencyContext";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
-export default async function CarDetailPage({ params }: { params: { id: string } }) {
-  const car = await getCarById(params.id);
+export default function CarDetailPage() {
+  const params = useParams();
+  const carId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const { currency, getSymbol } = useCurrency();
+  const [car, setCar] = useState<Car | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!car) {
-    return notFound();
+  useEffect(() => {
+    const fetchCar = async () => {
+      setLoading(true);
+      const fetchedCar = await getCarById(carId);
+      if (!fetchedCar) {
+        notFound();
+      } else {
+        setCar(fetchedCar);
+      }
+      setLoading(false);
+    };
+
+    fetchCar();
+  }, [carId]);
+
+  if (loading || !car) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          <div className="lg:col-span-3">
+            <Skeleton className="aspect-video w-full rounded-lg" />
+          </div>
+          <div className="lg:col-span-2 space-y-4">
+            <Skeleton className="h-10 w-3/4" />
+            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-8 w-1/4" />
+            <Skeleton className="h-10 w-1/3" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-48 w-full" />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -67,7 +107,7 @@ export default async function CarDetailPage({ params }: { params: { id: string }
 
           {car.priceEnabled && (
             <div className="text-4xl font-bold mb-4">
-                ${car.pricePerDay}
+                {getSymbol()}{car.pricePerDay[currency]}
                 <span className="text-xl font-normal text-muted-foreground">/day</span>
             </div>
            )}
@@ -112,7 +152,7 @@ export default async function CarDetailPage({ params }: { params: { id: string }
             <CardTitle>Check Availability</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center">
-             <CarDetailClient />
+             <CarDetailClient bookedDates={car.bookedDates} />
           </CardContent>
         </Card>
       </div>
