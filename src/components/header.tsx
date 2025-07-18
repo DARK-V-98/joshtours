@@ -30,6 +30,11 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
+const loggedInNavLinks = [
+    ...navLinks,
+    { href: "/my-bookings", label: "My Bookings" },
+]
+
 export function Header() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
@@ -55,6 +60,8 @@ export function Header() {
     return email.substring(0, 2).toUpperCase();
   };
 
+  const currentNavLinks = user ? loggedInNavLinks : navLinks;
+
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border">
@@ -68,7 +75,7 @@ export function Header() {
         </div>
         
         <nav className="hidden md:flex items-center justify-center space-x-6">
-          {navLinks.map((link) => (
+          {currentNavLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
