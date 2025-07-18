@@ -124,8 +124,10 @@ export default function CarDetailPage() {
            )}
 
           <div className="flex items-stretch gap-4 mb-6">
-            <Button size="lg" className="flex-1 h-12 text-lg" disabled={!car.isAvailable}>
-              {car.isAvailable ? 'Rent Now' : 'Currently Unavailable'}
+            <Button size="lg" className="flex-1 h-12 text-lg" disabled={!car.isAvailable} asChild>
+                <Link href={`/book/${car.id}`}>
+                    {car.isAvailable ? 'Rent Now' : 'Currently Unavailable'}
+                </Link>
             </Button>
           </div>
 
