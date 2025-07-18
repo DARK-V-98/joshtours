@@ -26,7 +26,7 @@ export default async function Index() {
             </Badge>
             
             <h1 className="text-5xl lg:text-7xl font-bold leading-tight text-primary [text-shadow:0_0_2px_#fff,0_0_4px_#fff,0_0_6px_#fff]">
-              Josh Tours
+              <span className="animate-pulse">Josh</span> Tours
             </h1>
             
             <p className="text-xl text-muted-foreground max-w-lg mx-auto lg:mx-0">
