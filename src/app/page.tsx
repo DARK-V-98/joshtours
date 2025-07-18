@@ -25,7 +25,7 @@ export default async function Index() {
               Trusted Car Rental Service
             </Badge>
             
-            <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
+            <h1 className="text-5xl lg:text-7xl font-bold leading-tight text-primary [text-shadow:0_0_2px_#fff,0_0_4px_#fff,0_0_6px_#fff]">
               Josh Tours
             </h1>
             
