@@ -2,10 +2,10 @@
 "use client";
 
 import { getCarById, Car } from "@/lib/data";
-import { notFound, useParams } from "next/navigation";
+import { notFound, useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Users, Gauge, Settings, Fuel, CheckCircle, XCircle } from "lucide-react";
+import { Users, Gauge, Settings, Fuel, CheckCircle, XCircle, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
@@ -13,10 +13,12 @@ import CarDetailClient from "./CarDetailClient";
 import { useEffect, useState } from "react";
 import { useCurrency } from "@/context/CurrencyContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 
 export default function CarDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const carId = Array.isArray(params.id) ? params.id[0] : params.id;
   const { currency, getSymbol } = useCurrency();
   const [car, setCar] = useState<Car | null>(null);
@@ -40,6 +42,9 @@ export default function CarDetailPage() {
   if (loading || !car) {
     return (
       <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+            <Skeleton className="h-10 w-48" />
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-3">
             <Skeleton className="aspect-video w-full rounded-lg" />
@@ -59,6 +64,12 @@ export default function CarDetailPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+       <div className="mb-8">
+          <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Results
+          </Button>
+        </div>
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <div className="lg:col-span-3">
           <Card className="overflow-hidden">
