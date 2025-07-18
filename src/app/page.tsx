@@ -21,9 +21,6 @@ export default async function Index() {
         
         <div className="relative container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center z-20">
           <div className="space-y-8 text-center lg:text-left">
-            <Badge variant="secondary" className="w-fit text-primary border-primary/20 mx-auto lg:mx-0">
-              Trusted Car Rental Service
-            </Badge>
             
             <h1 className="text-5xl lg:text-7xl font-bold leading-tight text-primary [text-shadow:0_0_2px_#fff,0_0_4px_#fff,0_0_6px_#fff]">
               <span className="animate-pulse">Josh</span> <span className="animate-pulse">Tours</span>
