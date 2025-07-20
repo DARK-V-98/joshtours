@@ -14,7 +14,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Trash2, Calendar, Car, AlertCircle, Info } from "lucide-react";
+import { Loader2, Trash2, Calendar, Car, AlertCircle, Info, CheckCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO } from "date-fns";
@@ -79,7 +79,9 @@ export default function MyBookingsPage() {
       try {
         await cancelBookingRequest(bookingToCancel.id);
         setBookings((prevBookings) =>
-          prevBookings.filter((b) => b.id !== bookingToCancel.id)
+          prevBookings.map((b) =>
+            b.id === bookingToCancel.id ? { ...b, status: "canceled" } : b
+          )
         );
         toast({
           title: "Success",
@@ -174,9 +176,17 @@ export default function MyBookingsPage() {
                         </div>
                     )}
                      {booking.status === 'confirmed' && (
-                        <Alert>
-                            <AlertTitle>Booking Confirmed!</AlertTitle>
+                        <Alert className="border-green-600">
+                             <CheckCircle className="h-4 w-4 text-green-600" />
+                            <AlertTitle className="text-green-600">Booking Confirmed!</AlertTitle>
                             <AlertDescription>Please contact us to finalize payment and pickup details.</AlertDescription>
+                        </Alert>
+                     )}
+                     {booking.status === 'canceled' && (
+                        <Alert variant="destructive">
+                             <AlertCircle className="h-4 w-4"/>
+                            <AlertTitle>Booking Canceled</AlertTitle>
+                            <AlertDescription>This booking request has been canceled.</AlertDescription>
                         </Alert>
                      )}
                 </CardContent>
@@ -200,8 +210,8 @@ export default function MyBookingsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently cancel your booking request for the
-              "{bookingToCancel?.carName}". This action cannot be undone.
+              This will cancel your booking request for the
+              "{bookingToCancel?.carName}".
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

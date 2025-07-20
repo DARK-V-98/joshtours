@@ -1,7 +1,7 @@
 
 "use server";
 
-import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, deleteDoc, getDoc, Timestamp, orderBy } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, getDoc, Timestamp, orderBy, updateDoc,getCountFromServer } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { revalidatePath } from "next/cache";
 
@@ -38,6 +38,7 @@ export async function createBookingRequest(data: BookingRequestData) {
       createdAt: serverTimestamp(),
     });
     revalidatePath('/my-bookings');
+    revalidatePath('/admin/bookings');
   } catch (error) {
     console.error("Error creating booking request:", error);
     throw new Error("Failed to submit booking request.");
@@ -81,17 +82,76 @@ export async function cancelBookingRequest(bookingId: string) {
         throw new Error("Booking request not found.");
     }
 
-    const bookingData = bookingSnap.data();
+    // Instead of deleting, we update the status to 'canceled'
+    try {
+        await updateDoc(bookingDocRef, {
+            status: 'canceled'
+        });
+        revalidatePath('/my-bookings');
+        revalidatePath('/admin/bookings');
+    } catch (error) {
+        console.error("Error canceling booking request:", error);
+        throw new Error("Failed to cancel the booking request.");
+    }
+}
 
-    if (bookingData.status !== 'pending') {
-        throw new Error("Only pending requests can be canceled.");
+
+// ADMIN FUNCTIONS
+
+export async function getAllBookingRequests(): Promise<BookingRequest[]> {
+    if (!db) {
+        throw new Error("Database not initialized");
     }
 
+    const requestsCollection = collection(db, 'bookingRequests');
+    const q = query(requestsCollection, orderBy('createdAt', 'desc'));
+    
+    const querySnapshot = await getDocs(q);
+    
+    return querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        const createdAt = data.createdAt instanceof Timestamp 
+            ? data.createdAt.toDate().toISOString() 
+            : new Date().toISOString();
+
+        return {
+            id: doc.id,
+            ...data,
+            createdAt,
+        } as BookingRequest;
+    });
+}
+
+export async function updateBookingStatus(bookingId: string, status: 'confirmed' | 'canceled') {
+    if (!db) {
+        throw new Error("Database not initialized");
+    }
+
+    const bookingDocRef = doc(db, 'bookingRequests', bookingId);
+    
     try {
-        await deleteDoc(bookingDocRef);
-        revalidatePath('/my-bookings');
+        await updateDoc(bookingDocRef, { status });
+        revalidatePath('/admin/bookings');
+        revalidatePath('/my-bookings'); // Also revalidate user's page
     } catch (error) {
-        console.error("Error deleting booking request:", error);
-        throw new Error("Failed to cancel the booking request.");
+        console.error("Error updating booking status:", error);
+        throw new Error("Failed to update booking status.");
+    }
+}
+
+
+export async function getPendingBookingCount(): Promise<number> {
+    if (!db) {
+        console.error("Database not initialized");
+        return 0;
+    }
+    try {
+        const requestsCollection = collection(db, 'bookingRequests');
+        const q = query(requestsCollection, where('status', '==', 'pending'));
+        const snapshot = await getCountFromServer(q);
+        return snapshot.data().count;
+    } catch (error) {
+        console.error("Error fetching pending booking count:", error);
+        return 0;
     }
 }
