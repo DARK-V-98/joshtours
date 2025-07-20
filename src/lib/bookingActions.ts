@@ -16,6 +16,7 @@ interface BookingRequestData {
   returnDate: string; // YYYY-MM-DD
   estimatedKm?: number;
   requests?: string;
+  status?: 'pending' | 'confirmed' | 'canceled'; // Optional status for creation
 }
 
 // Stored in Firestore
@@ -35,7 +36,9 @@ export async function createBookingRequest(data: BookingRequestData) {
     const bookingRequestsCollectionRef = collection(db, "bookingRequests");
     await addDoc(bookingRequestsCollectionRef, {
       ...data,
-      status: 'pending', // Initial status
+      // If status is not provided, default to 'pending'.
+      // This allows manual bookings to be set as 'confirmed' directly.
+      status: data.status || 'pending', 
       createdAt: serverTimestamp(),
     });
     revalidatePath('/my-bookings');
@@ -156,5 +159,3 @@ export async function getPendingBookingCount(): Promise<number> {
         return 0;
     }
 }
-
-    

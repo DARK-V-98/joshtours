@@ -36,7 +36,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Upload, PlusCircle, DollarSign, Notebook, Bell } from "lucide-react";
+import { Loader2, Upload, PlusCircle, DollarSign, Notebook, Edit } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarList } from "@/components/admin/car-list";
 import { Separator } from "@/components/ui/separator";
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
             <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex gap-2">
                 <Button asChild>
                     <Link href="/admin/bookings" className="relative">
                         <Notebook className="mr-2" />
@@ -209,6 +209,12 @@ export default function AdminDashboard() {
                                 {pendingBookings}
                             </div>
                         )}
+                    </Link>
+                </Button>
+                <Button variant="secondary" asChild>
+                    <Link href="/admin/manual-booking">
+                        <Edit className="mr-2" />
+                        Manual Booking
                     </Link>
                 </Button>
             </CardContent>
