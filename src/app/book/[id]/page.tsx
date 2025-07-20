@@ -13,7 +13,7 @@ import { createBookingRequest } from "@/lib/bookingActions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar as CalendarIcon, CheckCircle, Loader2, Phone, Mail, User, Car as CarIcon, ArrowLeft } from "lucide-react";
+import { Calendar as CalendarIcon, CheckCircle, Loader2, Phone, Mail, User, Car as CarIcon, ArrowLeft, Route } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -49,6 +49,7 @@ const bookingFormSchema = z.object({
   returnDate: z.date({
     required_error: "A return date is required.",
   }),
+  estimatedKm: z.coerce.number().min(1, "Please enter an estimated mileage.").optional(),
   requests: z.string().max(500, "Message cannot exceed 500 characters.").optional(),
 }).refine((data) => data.returnDate > data.pickupDate, {
   message: "Return date must be after pickup date.",
@@ -71,6 +72,7 @@ export default function BookingPage() {
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
       requests: "",
+      estimatedKm: undefined,
     },
   });
 
@@ -116,6 +118,7 @@ export default function BookingPage() {
         customerPhone: user.phone || 'N/A',
         pickupDate: format(values.pickupDate, "yyyy-MM-dd"),
         returnDate: format(values.returnDate, "yyyy-MM-dd"),
+        estimatedKm: values.estimatedKm,
         requests: values.requests,
       });
       setIsSubmitted(true);
@@ -323,6 +326,23 @@ export default function BookingPage() {
                   />
                 </div>
 
+                 <FormField
+                  control={form.control}
+                  name="estimatedKm"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Estimated Mileage (Optional)</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Route className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input type="number" placeholder="e.g., 500" className="pl-8" {...field} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="requests"
@@ -356,3 +376,5 @@ export default function BookingPage() {
     </div>
   );
 }
+
+    

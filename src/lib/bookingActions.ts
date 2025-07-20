@@ -14,6 +14,7 @@ interface BookingRequestData {
   customerPhone: string;
   pickupDate: string; // YYYY-MM-DD
   returnDate: string; // YYYY-MM-DD
+  estimatedKm?: number;
   requests?: string;
 }
 
@@ -155,3 +156,5 @@ export async function getPendingBookingCount(): Promise<number> {
         return 0;
     }
 }
+
+    

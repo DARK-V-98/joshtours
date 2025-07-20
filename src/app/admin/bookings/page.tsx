@@ -29,7 +29,8 @@ import {
   Info,
   Car,
   ArrowLeft,
-  AlertCircle
+  AlertCircle,
+  Route
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -173,6 +174,16 @@ export default function AdminBookingsPage() {
                                 <Calendar className="h-4 w-4 text-muted-foreground" />
                                 <span>{format(parseISO(booking.pickupDate), "MMM dd, yyyy")} to {format(parseISO(booking.returnDate), "MMM dd, yyyy")}</span>
                             </div>
+                             {booking.estimatedKm && (
+                                <>
+                                <Separator />
+                                <h4 className="font-semibold">Estimated Mileage</h4>
+                                <div className="flex items-center gap-2 text-sm">
+                                    <Route className="h-4 w-4 text-muted-foreground" />
+                                    <span>{booking.estimatedKm} km</span>
+                                </div>
+                                </>
+                             )}
                         </div>
 
                          <div className="space-y-4">
@@ -230,3 +241,5 @@ export default function AdminBookingsPage() {
     </div>
   );
 }
+
+    
