@@ -1,5 +1,5 @@
 
-import { collection, getDocs, doc, getDoc, query, orderBy, Timestamp } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, query, orderBy, Timestamp, limit } from "firebase/firestore";
 import { db } from "./firebase";
 
 export interface Car {
@@ -65,6 +65,20 @@ export async function getAllCars(): Promise<Car[]> {
   const carsList = carsSnapshot.docs.map(toCarObject);
   return carsList;
 }
+
+// Fetches the 3 most recent cars for the homepage
+export async function getFeaturedCars(): Promise<Car[]> {
+    if (!db) {
+        console.error("Firestore is not initialized.");
+        return [];
+    }
+    const carsCollectionRef = collection(db, "cars");
+    const q = query(carsCollectionRef, orderBy("createdAt", "desc"), limit(3));
+    const carsSnapshot = await getDocs(q);
+    const carsList = carsSnapshot.docs.map(toCarObject);
+    return carsList;
+}
+
 
 // Fetches a single car by its ID from Firestore
 export async function getCarById(id: string): Promise<Car | null> {

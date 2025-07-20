@@ -4,14 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Phone, Mail, MapPin, Star, Shield, Clock, Users, Car, Zap, CheckCircle } from "lucide-react";
 import Image from "next/image";
-import { getAllCars } from "@/lib/data";
+import { getFeaturedCars } from "@/lib/data";
 import Link from "next/link";
 import { CarCard } from "@/components/car-card";
 
 export default async function Index() {
 
-  const allCars = await getAllCars();
-  const featuredCars = allCars.slice(0, 3);
+  const featuredCars = await getFeaturedCars();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
