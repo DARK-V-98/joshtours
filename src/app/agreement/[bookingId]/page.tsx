@@ -406,7 +406,7 @@ export default function AgreementPage() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="clientFullName" render={({ field }) => (
-                        <FormItem><FormLabel>{t.clientFullName}</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl></FormItem>
+                        <FormItem><FormLabel>{t.clientFullName}</FormLabel><FormControl><Input {...field} value={field.value ?? ''} /></FormControl></FormItem>
                     )} />
                     <FormField control={form.control} name="clientContactNumber" render={({ field }) => (
                         <FormItem><FormLabel>{t.clientContact}</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl></FormItem>
