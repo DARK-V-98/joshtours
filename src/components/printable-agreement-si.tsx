@@ -12,7 +12,7 @@ interface PrintableAgreementProps {
 const Field = ({ label, value, className }: { label: string; value?: string, className?: string }) => (
   <div className={`flex flex-col ${className}`}>
     <p className="text-xs font-semibold text-gray-600 mb-0.5">{label}</p>
-    <p className="text-sm border-b border-gray-400 border-dotted pb-0.5 min-h-[20px] font-['Iskoola Pota']">
+    <p className="text-sm border-b border-gray-400 border-dotted pb-0.5 min-h-[20px] font-sinhala">
       {value || ''}
     </p>
   </div>
@@ -33,13 +33,13 @@ const PageHeader = () => (
                 <p className="text-xs">Your trusted partner for reliable car rentals.</p>
              </div>
         </div>
-        <h2 className="text-xl font-semibold mt-3 border-b-2 border-black pb-1">වාහන කුලියට දීමේ ගිවිසුම</h2>
+        <h2 className="text-xl font-semibold mt-3 border-b-2 border-black pb-1 font-sinhala">වාහන කුලියට දීමේ ගිවිසුම</h2>
       </div>
 );
 
 const PrintableAgreementSi = React.forwardRef<HTMLDivElement, PrintableAgreementProps>(({ data }, ref) => {
   return (
-    <div ref={ref} className="bg-white text-black font-sans w-[210mm]">
+    <div ref={ref} className="bg-white text-black font-sans w-[210mm] font-sinhala">
       {/* Page 1 */}
       <div data-page="1" className="p-8 min-h-[297mm] flex flex-col">
         <PageHeader />
@@ -135,7 +135,7 @@ const PrintableAgreementSi = React.forwardRef<HTMLDivElement, PrintableAgreement
                     </div>
                 </div>
             </div>
-             <div className="text-xs text-gray-600 mt-4 p-2 border border-dashed font-['Iskoola Pota']">
+             <div className="text-xs text-gray-600 mt-4 p-2 border border-dashed font-sinhala">
                 <h4 className="font-bold">නියමයන් සහ කොන්දේසි සාරාංශය</h4>
                 <p>වාහනය නියමිත දිනයේ ආපසු භාර දිය යුතුය. ඕනෑම ප්‍රමාදයක් සඳහා අමතර ගාස්තු අය කෙරේ. රක්ෂණයෙන් ආවරණය නොවන ඕනෑම හානියක් සඳහා කුලීකරු වගකිව යුතුය. ඉන්ධන ලැබුණු මට්ටමටම ආපසු ලබා දිය යුතුය. සම්පූර්ණ නියමයන් ඉල්ලීම මත ලබා ගත හැක.</p>
             </div>
@@ -148,5 +148,3 @@ const PrintableAgreementSi = React.forwardRef<HTMLDivElement, PrintableAgreement
 
 PrintableAgreementSi.displayName = 'PrintableAgreementSi';
 export default PrintableAgreementSi;
-
-    

@@ -19,6 +19,7 @@ export default {
       fontFamily: {
         body: ['Inter', 'sans-serif'],
         headline: ['Inter', 'sans-serif'],
+        sinhala: ['Iskoola Pota', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -103,5 +104,3 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
-
-    
