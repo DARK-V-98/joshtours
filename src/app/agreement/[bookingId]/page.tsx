@@ -169,22 +169,42 @@ export default function AgreementPage() {
   }
 
   const handleDownloadPdf = async () => {
-    const element = printableRef.current;
-    if (!element) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not find printable content.' });
-        return;
+    const printableElement = printableRef.current;
+    if (!printableElement) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not find printable content.' });
+      return;
     }
+    
+    const page1 = printableElement.querySelector<HTMLElement>('[data-page="1"]');
+    const page2 = printableElement.querySelector<HTMLElement>('[data-page="2"]');
+
+    if (!page1 || !page2) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not find page elements for PDF generation.' });
+      return;
+    }
+
     setIsDownloading(true);
 
     try {
-        const canvas = await html2canvas(element, { scale: 2 });
-        const imgData = canvas.toDataURL('image/png');
-        
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        const processPage = async (element: HTMLElement) => {
+            const canvas = await html2canvas(element, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pageHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            return { imgData, pdfWidth, pageHeight };
+        };
+
+        const page1Data = await processPage(page1);
+        pdf.addImage(page1Data.imgData, 'PNG', 0, 0, page1Data.pdfWidth, page1Data.pageHeight);
+
+        pdf.addPage();
+        const page2Data = await processPage(page2);
+        pdf.addImage(page2Data.imgData, 'PNG', 0, 0, page2Data.pdfWidth, page2Data.pageHeight);
+
         pdf.save(`rental-agreement-${bookingId}.pdf`);
     } catch (error) {
         console.error("Error generating PDF:", error);
@@ -308,13 +328,13 @@ export default function AgreementPage() {
 
              <Card>
                 <CardHeader>
-                    <CardTitle>Form Sections (For Future Use)</CardTitle>
-                    <CardDescription>The following sections for signatures, extensions, and returns will be enabled in a future update for printing and PDF generation.</CardDescription>
+                    <CardTitle>Printable Sections</CardTitle>
+                    <CardDescription>The following sections are part of the downloadable PDF and are intended to be filled out on the printed copy.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 text-muted-foreground italic">
-                    <p><strong>Agreement Confirmation:</strong> Client and company signatures will be captured here.</p>
-                    <p><strong>Extension Section:</strong> Details and signatures for rental extensions will be managed here.</p>
-                    <p><strong>Vehicle Return Section:</strong> Final charges, damages, and return signatures will be recorded here.</p>
+                    <p><strong>Agreement Confirmation:</strong> Client and company signatures.</p>
+                    <p><strong>Extension Section:</strong> Details and signatures for rental extensions.</p>
+                    <p><strong>Vehicle Return Section:</strong> Final charges, damages, and return signatures.</p>
                 </CardContent>
             </Card>
 
