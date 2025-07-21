@@ -32,12 +32,15 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, ArrowLeft, FileSignature, User, Car, Calendar, UserCheck, Download } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, FileSignature, User, Car, Calendar, UserCheck, Download, Languages } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 import { format, parseISO } from 'date-fns';
 import PrintableAgreement from '@/components/printable-agreement';
+import PrintableAgreementSi from '@/components/printable-agreement-si';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
 
 const agreementFormSchema = z.object({
   agreementDate: z.string().optional(),
@@ -62,6 +65,103 @@ const agreementFormSchema = z.object({
 
 export type AgreementFormValues = z.infer<typeof agreementFormSchema>;
 
+const labels = {
+    en: {
+        backToBookings: 'Back to Bookings',
+        downloadAsPdf: 'Download as PDF',
+        downloading: 'Downloading...',
+        agreementDetails: 'Agreement Details',
+        agreementDesc: 'Records of the rental transaction basics.',
+        date: 'Date',
+        nicPassport: 'NIC or Passport No',
+        nicPassportPlaceholder: 'Client\'s National ID or Passport',
+        address: 'Address',
+        addressPlaceholder: 'Full address of the renter',
+        vehicleDetails: 'Vehicle Details',
+        rentalStartDate: 'Rental Start Date',
+        rentalDuration: 'Rental Duration (Days/Months)',
+        rentalDurationPlaceholder: 'e.g., 7 Days',
+        rentCost: 'Rent Cost Per Day/Month',
+        rentCostPlaceholder: 'e.g., $50 / Day',
+        totalRentCost: 'Total Rent Cost',
+        totalRentCostPlaceholder: 'Total calculated price',
+        depositMoney: 'Deposit Money',
+        depositMoneyPlaceholder: 'Refundable security deposit',
+        dailyKmLimit: 'Daily KM Limit',
+        dailyKmLimitPlaceholder: 'e.g., 100km',
+        priceForAdditionalKm: 'Price for Additional KM',
+        priceForAdditionalKmPlaceholder: 'e.g., $0.50 / km',
+        clientDetails: 'Client Details',
+        clientFullName: 'Client Full Name',
+        clientContact: 'Contact Number',
+        dateOfSigning: 'Date of Signing',
+        guarantorDetails: 'Guarantor Details',
+        guarantorName: 'Guarantor Name',
+        guarantorNamePlaceholder: 'Full name of guarantor',
+        guarantorNic: 'Guarantor NIC',
+        guarantorNicPlaceholder: 'National ID of guarantor',
+        guarantorAddress: 'Guarantor Address',
+        guarantorAddressPlaceholder: 'Guarantor\'s home or office address',
+        guarantorContact: 'Guarantor Contact Number',
+        guarantorContactPlaceholder: 'Guarantor\'s phone number',
+        printableSections: 'Printable Sections',
+        printableDesc: 'The following sections are part of the downloadable PDF and are intended to be filled out on the printed copy.',
+        agreementConfirmation: 'Agreement Confirmation: Client and company signatures.',
+        extensionSection: 'Extension Section: Details and signatures for rental extensions.',
+        vehicleReturnSection: 'Vehicle Return Section: Final charges, damages, and return signatures.',
+        saveAgreement: 'Save Agreement',
+        saving: 'Saving...',
+        selectLanguage: 'Select Language'
+    },
+    si: {
+        backToBookings: 'වෙන්කිරීම් වෙත ආපසු',
+        downloadAsPdf: 'PDF ලෙස බාගන්න',
+        downloading: 'බාගත වෙමින් පවතී...',
+        agreementDetails: 'ගිවිසුම් විස්තර',
+        agreementDesc: 'කුලී ගනුදෙනුවේ මූලික වාර්තා.',
+        date: 'දිනය',
+        nicPassport: 'ජාතික හැඳුනුම්පත් අංකය හෝ ගමන් බලපත්‍ර අංකය',
+        nicPassportPlaceholder: 'සේවාදායකයාගේ ජාතික හැඳුනුම්පත හෝ ගමන් බලපත්‍රය',
+        address: 'ලිපිනය',
+        addressPlaceholder: 'කුලීකරුගේ සම්පූර්ණ ලිපිනය',
+        vehicleDetails: 'වාහන විස්තර',
+        rentalStartDate: 'කුලියට දෙන දිනය',
+        rentalDuration: 'කුලී කාලය (දින/මාස)',
+        rentalDurationPlaceholder: 'උදා: දින 7',
+        rentCost: 'දිනකට/මාසයකට කුලී ගාස්තුව',
+        rentCostPlaceholder: 'උදා: $50 / දිනකට',
+        totalRentCost: 'සම්පූර්ණ කුලී ගාස්තුව',
+        totalRentCostPlaceholder: 'ගණනය කළ සම්පූර්ණ මිල',
+        depositMoney: 'තැන්පතු මුදල',
+        depositMoneyPlaceholder: 'ආපසු ගෙවිය හැකි ආරක්ෂක තැන්පතුව',
+        dailyKmLimit: 'දෛනික කි.මී. සීමාව',
+        dailyKmLimitPlaceholder: 'උදා: 100km',
+        priceForAdditionalKm: 'අමතර කි.මී. සඳහා මිල',
+        priceForAdditionalKmPlaceholder: 'උදා: $0.50 / කි.මී.',
+        clientDetails: 'සේවාදායකයාගේ විස්තර',
+        clientFullName: 'සේවාදායකයාගේ සම්පූර්ණ නම',
+        clientContact: 'සම්බන්ධතා අංකය',
+        dateOfSigning: 'අත්සන් කළ දිනය',
+        guarantorDetails: 'ඇපකරුගේ විස්තර',
+        guarantorName: 'ඇපකරුගේ නම',
+        guarantorNamePlaceholder: 'ඇපකරුගේ සම්පූර්ණ නම',
+        guarantorNic: 'ඇපකරුගේ ජාතික හැඳුනුම්පත',
+        guarantorNicPlaceholder: 'ඇපකරුගේ ජාතික හැඳුනුම්පත',
+        guarantorAddress: 'ඇපකරුගේ ලිපිනය',
+        guarantorAddressPlaceholder: 'ඇපකරුගේ නිවසේ හෝ කාර්යාල ලිපිනය',
+        guarantorContact: 'ඇපකරුගේ සම්බන්ධතා අංකය',
+        guarantorContactPlaceholder: 'ඇපකරුගේ දුරකථන අංකය',
+        printableSections: 'මුද්‍රණය කළ හැකි කොටස්',
+        printableDesc: 'පහත කොටස් බාගත හැකි PDF හි කොටසක් වන අතර මුද්‍රිත පිටපතේ පිරවීම සඳහා අදහස් කෙරේ.',
+        agreementConfirmation: 'ගිවිසුම් තහවුරු කිරීම: සේවාදායකයාගේ සහ සමාගමේ අත්සන්.',
+        extensionSection: 'දීර්ඝ කිරීමේ කොටස: කුලී දීර්ඝ කිරීම් සඳහා විස්තර සහ අත්සන්.',
+        vehicleReturnSection: 'වාහන ආපසු භාරදීමේ කොටස: අවසාන ගාස්තු, හානි, සහ ආපසු භාරදීමේ අත්සන්.',
+        saveAgreement: 'ගිවිසුම සුරකින්න',
+        saving: 'සුරැකෙමින්...',
+        selectLanguage: 'භාෂාව තෝරන්න'
+    }
+};
+
 export default function AgreementPage() {
   const { user, loading: authLoading } = useAuth();
   const params = useParams();
@@ -69,9 +169,13 @@ export default function AgreementPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [language, setLanguage] = useState<'en' | 'si'>('en');
   
   const bookingId = Array.isArray(params.bookingId) ? params.bookingId[0] : params.bookingId;
-  const printableRef = useRef<HTMLDivElement>(null);
+  const printableRefEn = useRef<HTMLDivElement>(null);
+  const printableRefSi = useRef<HTMLDivElement>(null);
+
+  const t = labels[language];
 
   const form = useForm<AgreementFormValues>({
     resolver: zodResolver(agreementFormSchema),
@@ -169,7 +273,8 @@ export default function AgreementPage() {
   }
 
   const handleDownloadPdf = async () => {
-    const printableElement = printableRef.current;
+    const printableElement = language === 'en' ? printableRefEn.current : printableRefSi.current;
+
     if (!printableElement) {
       toast({ variant: 'destructive', title: 'Error', description: 'Could not find printable content.' });
       return;
@@ -205,7 +310,7 @@ export default function AgreementPage() {
         const page2Data = await processPage(page2);
         pdf.addImage(page2Data.imgData, 'PNG', 0, 0, page2Data.pdfWidth, page2Data.pageHeight);
 
-        pdf.save(`rental-agreement-${bookingId}.pdf`);
+        pdf.save(`rental-agreement-${bookingId}-${language}.pdf`);
     } catch (error) {
         console.error("Error generating PDF:", error);
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to generate PDF.' });
@@ -233,120 +338,129 @@ export default function AgreementPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
-       <div className="mb-8 flex justify-between items-center">
+       <div className="mb-8 flex justify-between items-center gap-4">
             <Button variant="outline" asChild>
                 <Link href={user?.role === 'admin' ? '/admin/bookings' : '/my-bookings'}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Bookings
+                    {t.backToBookings}
                 </Link>
             </Button>
-            <Button onClick={handleDownloadPdf} disabled={isDownloading}>
-                {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Download className="mr-2 h-4 w-4"/>}
-                {isDownloading ? 'Downloading...' : 'Download as PDF'}
-            </Button>
+            <div className="flex items-center gap-2">
+                <ToggleGroup type="single" value={language} onValueChange={(value: 'en' | 'si') => {if(value) setLanguage(value)}} aria-label={t.selectLanguage}>
+                    <ToggleGroupItem value="en" aria-label="English">EN</ToggleGroupItem>
+                    <ToggleGroupItem value="si" aria-label="Sinhala">සිං</ToggleGroupItem>
+                </ToggleGroup>
+                <Button onClick={handleDownloadPdf} disabled={isDownloading}>
+                    {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Download className="mr-2 h-4 w-4"/>}
+                    {isDownloading ? t.downloading : t.downloadAsPdf}
+                </Button>
+            </div>
         </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl"><FileSignature className="h-6 w-6"/>Agreement Details</CardTitle>
-                    <CardDescription>Records of the rental transaction basics.</CardDescription>
+                    <CardTitle className="flex items-center gap-2 text-2xl"><FileSignature className="h-6 w-6"/>{t.agreementDetails}</CardTitle>
+                    <CardDescription>{t.agreementDesc}</CardDescription>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="agreementDate" render={({ field }) => (
-                        <FormItem><FormLabel>Date</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.date}</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="renterIdOrPassport" render={({ field }) => (
-                        <FormItem><FormLabel>NIC or Passport No</FormLabel><FormControl><Input placeholder="Client's National ID or Passport" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.nicPassport}</FormLabel><FormControl><Input placeholder={t.nicPassportPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="renterAddress" render={({ field }) => (
-                        <FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Textarea placeholder="Full address of the renter" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem className="md:col-span-2"><FormLabel>{t.address}</FormLabel><FormControl><Textarea placeholder={t.addressPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="vehicleDetails" render={({ field }) => (
-                        <FormItem><FormLabel>Vehicle Details</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.vehicleDetails}</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="rentalStartDate" render={({ field }) => (
-                        <FormItem><FormLabel>Rental Start Date</FormLabel><FormControl><Input type="date" disabled {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.rentalStartDate}</FormLabel><FormControl><Input type="date" disabled {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="rentalDuration" render={({ field }) => (
-                        <FormItem><FormLabel>Rental Duration (Days/Months)</FormLabel><FormControl><Input placeholder="e.g., 7 Days" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.rentalDuration}</FormLabel><FormControl><Input placeholder={t.rentalDurationPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="rentCostPerDayMonth" render={({ field }) => (
-                        <FormItem><FormLabel>Rent Cost Per Day/Month</FormLabel><FormControl><Input placeholder="e.g., $50 / Day" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.rentCost}</FormLabel><FormControl><Input placeholder={t.rentCostPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="totalRentCost" render={({ field }) => (
-                        <FormItem><FormLabel>Total Rent Cost</FormLabel><FormControl><Input placeholder="Total calculated price" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.totalRentCost}</FormLabel><FormControl><Input placeholder={t.totalRentCostPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="depositMoney" render={({ field }) => (
-                        <FormItem><FormLabel>Deposit Money</FormLabel><FormControl><Input placeholder="Refundable security deposit" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.depositMoney}</FormLabel><FormControl><Input placeholder={t.depositMoneyPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="dailyKMLimit" render={({ field }) => (
-                        <FormItem><FormLabel>Daily KM Limit</FormLabel><FormControl><Input placeholder="e.g., 100km" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.dailyKmLimit}</FormLabel><FormControl><Input placeholder={t.dailyKmLimitPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="priceForAdditionalKM" render={({ field }) => (
-                        <FormItem><FormLabel>Price for Additional KM</FormLabel><FormControl><Input placeholder="e.g., $0.50 / km" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.priceForAdditionalKm}</FormLabel><FormControl><Input placeholder={t.priceForAdditionalKmPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                 </CardContent>
             </Card>
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl"><User className="h-6 w-6"/>Client Details</CardTitle>
+                    <CardTitle className="flex items-center gap-2 text-2xl"><User className="h-6 w-6"/>{t.clientDetails}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField control={form.control} name="clientFullName" render={({ field }) => (
-                        <FormItem><FormLabel>Client Full Name</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl></FormItem>
+                        <FormItem><FormLabel>{t.clientFullName}</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl></FormItem>
                     )} />
                     <FormField control={form.control} name="clientContactNumber" render={({ field }) => (
-                        <FormItem><FormLabel>Contact Number</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl></FormItem>
+                        <FormItem><FormLabel>{t.clientContact}</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl></FormItem>
                     )} />
                     <FormField control={form.control} name="clientSignDate" render={({ field }) => (
-                        <FormItem><FormLabel>Date of Signing</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ''} /></FormControl></FormItem>
+                        <FormItem><FormLabel>{t.dateOfSigning}</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ''} /></FormControl></FormItem>
                     )} />
                 </CardContent>
             </Card>
 
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl"><UserCheck className="h-6 w-6"/>Guarantor Details</CardTitle>
+                    <CardTitle className="flex items-center gap-2 text-2xl"><UserCheck className="h-6 w-6"/>{t.guarantorDetails}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <FormField control={form.control} name="guarantorName" render={({ field }) => (
-                        <FormItem><FormLabel>Guarantor Name</FormLabel><FormControl><Input placeholder="Full name of guarantor" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.guarantorName}</FormLabel><FormControl><Input placeholder={t.guarantorNamePlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                      )} />
                      <FormField control={form.control} name="guarantorNIC" render={({ field }) => (
-                        <FormItem><FormLabel>Guarantor NIC</FormLabel><FormControl><Input placeholder="National ID of guarantor" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.guarantorNic}</FormLabel><FormControl><Input placeholder={t.guarantorNicPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                      )} />
                      <FormField control={form.control} name="guarantorAddress" render={({ field }) => (
-                        <FormItem className="md:col-span-2"><FormLabel>Guarantor Address</FormLabel><FormControl><Textarea placeholder="Guarantor's home or office address" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem className="md:col-span-2"><FormLabel>{t.guarantorAddress}</FormLabel><FormControl><Textarea placeholder={t.guarantorAddressPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                      )} />
                      <FormField control={form.control} name="guarantorContact" render={({ field }) => (
-                        <FormItem><FormLabel>Guarantor Contact Number</FormLabel><FormControl><Input placeholder="Guarantor's phone number" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.guarantorContact}</FormLabel><FormControl><Input placeholder={t.guarantorContactPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                      )} />
                 </CardContent>
             </Card>
 
              <Card>
                 <CardHeader>
-                    <CardTitle>Printable Sections</CardTitle>
-                    <CardDescription>The following sections are part of the downloadable PDF and are intended to be filled out on the printed copy.</CardDescription>
+                    <CardTitle>{t.printableSections}</CardTitle>
+                    <CardDescription>{t.printableDesc}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 text-muted-foreground italic">
-                    <p><strong>Agreement Confirmation:</strong> Client and company signatures.</p>
-                    <p><strong>Extension Section:</strong> Details and signatures for rental extensions.</p>
-                    <p><strong>Vehicle Return Section:</strong> Final charges, damages, and return signatures.</p>
+                    <p><strong>{t.agreementConfirmation}</strong></p>
+                    <p><strong>{t.extensionSection}</strong></p>
+                    <p><strong>{t.vehicleReturnSection}</strong></p>
                 </CardContent>
             </Card>
 
             <Button type="submit" size="lg" disabled={form.formState.isSubmitting} className="w-full">
                 {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                {form.formState.isSubmitting ? 'Saving...' : 'Save Agreement'}
+                {form.formState.isSubmitting ? t.saving : t.saveAgreement}
             </Button>
         </form>
       </Form>
       <div className="absolute -z-50 -left-[9999px] top-0">
-        <PrintableAgreement ref={printableRef} data={form.getValues()} />
+        <PrintableAgreement ref={printableRefEn} data={form.getValues()} />
+        <PrintableAgreementSi ref={printableRefSi} data={form.getValues()} />
       </div>
     </div>
   );
 }
+
+    
