@@ -11,13 +11,6 @@ import { addCar, uploadImages } from "@/lib/carActions";
 import { getPendingBookingCount } from "@/lib/bookingActions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
   Form,
@@ -36,10 +29,9 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Upload, PlusCircle, DollarSign, Notebook, Edit } from "lucide-react";
+import { Loader2, Upload, PlusCircle, DollarSign, Notebook, Edit, List } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarList } from "@/components/admin/car-list";
-import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import {
   Tabs,
@@ -47,6 +39,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -69,12 +62,7 @@ const carFormSchema = z.object({
       (files) => !files || Array.from(files).every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type)),
       ".jpg, .jpeg, .png and .webp files are accepted."
     ),
-  specs: z.object({
-    engine: z.string().min(1, "Engine spec is required."),
-    transmission: z.enum(["Automatic", "Manual"]),
-    seats: z.coerce.number().min(1, "Number of seats is required."),
-    fuel: z.enum(["Gasoline", "Diesel", "Electric"]),
-  }),
+  specifications: z.string().min(1, "Please provide car specifications."),
 });
 
 export default function AdminDashboard() {
@@ -97,12 +85,7 @@ export default function AdminDashboard() {
         eur: 45,
       },
       priceEnabled: true,
-      specs: {
-        engine: "",
-        transmission: "Automatic",
-        seats: 5,
-        fuel: "Gasoline",
-      },
+      specifications: "5 Seats\nAutomatic Transmission\nAir Conditioning\nBluetooth",
     },
   });
 
@@ -138,7 +121,7 @@ export default function AdminDashboard() {
         dataAiHint: `${values.type} car`,
         pricePerDay: values.pricePerDay,
         priceEnabled: values.priceEnabled,
-        specs: values.specs,
+        specifications: values.specifications.split('\n').filter(spec => spec.trim() !== ''),
         bookedDates: [],
       };
 
@@ -269,69 +252,20 @@ export default function AdminDashboard() {
                             </div>
 
                             <Card className="bg-card/50">
-                                <CardHeader><CardTitle className="text-lg">Specifications</CardTitle></CardHeader>
-                                <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                    <FormField
+                                <CardHeader><CardTitle className="text-lg flex items-center"><List className="mr-2 h-5 w-5"/>Specifications</CardTitle></CardHeader>
+                                <CardContent>
+                                     <FormField
                                         control={form.control}
-                                        name="specs.engine"
+                                        name="specifications"
                                         render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Engine</FormLabel>
+                                            <FormLabel>Features</FormLabel>
                                             <FormControl>
-                                            <Input placeholder="e.g., 2.5L V6" {...field} />
+                                                <Textarea placeholder="e.g., 5 Seats&#10;Automatic Transmission&#10;2.5L Engine" {...field} rows={5} />
                                             </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="specs.transmission"
-                                        render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Transmission</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger><SelectValue placeholder="Select transmission" /></SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="Automatic">Automatic</SelectItem>
-                                                    <SelectItem value="Manual">Manual</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="specs.seats"
-                                        render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Seats</FormLabel>
-                                            <FormControl>
-                                            <Input type="number" placeholder="e.g., 5" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="specs.fuel"
-                                        render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Fuel Type</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger><SelectValue placeholder="Select fuel type" /></SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="Gasoline">Gasoline</SelectItem>
-                                                    <SelectItem value="Diesel">Diesel</SelectItem>
-                                                    <SelectItem value="Electric">Electric</SelectItem>
-                                                </SelectContent>
-                                            </Select>
+                                            <FormDescription>
+                                                List each feature on a new line. This will be shown to customers.
+                                            </FormDescription>
                                             <FormMessage />
                                         </FormItem>
                                         )}

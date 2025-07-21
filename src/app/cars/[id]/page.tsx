@@ -5,7 +5,7 @@ import { getCarById, Car } from "@/lib/data";
 import { notFound, useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Users, Gauge, Settings, Fuel, CheckCircle, XCircle, ArrowLeft } from "lucide-react";
+import { CheckCircle, XCircle, ArrowLeft, Check } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
@@ -133,27 +133,17 @@ export default function CarDetailPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Specifications</CardTitle>
+              <CardTitle>Features</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <Users className="text-primary h-5 w-5" />
-                  <span>{car.specs.seats} Seats</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Gauge className="text-primary h-5 w-5" />
-                  <span>{car.specs.engine}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Settings className="text-primary h-5 w-5" />
-                  <span>{car.specs.transmission}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Fuel className="text-primary h-5 w-5" />
-                  <span>{car.specs.fuel}</span>
-                </div>
-              </div>
+              <ul className="space-y-2">
+                  {car.specifications.map((spec, index) => (
+                    <li key={index} className="flex items-center gap-3">
+                      <Check className="h-5 w-5 text-primary" />
+                      <span>{spec}</span>
+                    </li>
+                  ))}
+              </ul>
             </CardContent>
           </Card>
         </div>

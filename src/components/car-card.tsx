@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { Users, Gauge, Settings, CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, Check } from "lucide-react";
 import React from "react";
 import { useCurrency } from "@/context/CurrencyContext";
 
@@ -63,19 +63,15 @@ export function CarCard({ car }: CarCardProps) {
             {car.name}
           </Link>
         </CardTitle>
-        <div className="text-sm text-muted-foreground grid grid-cols-3 gap-2">
-          <div className="flex items-center gap-1.5">
-            <Users size={16} />
-            <span>{car.specs.seats} Seats</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Gauge size={16} />
-            <span>{car.specs.engine}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Settings size={16} />
-            <span>{car.specs.transmission}</span>
-          </div>
+        <div className="text-sm text-muted-foreground">
+            <ul className="space-y-1">
+                {car.specifications.slice(0, 3).map((spec, index) => (
+                    <li key={index} className="flex items-center gap-1.5">
+                        <Check size={16} className="text-primary" />
+                        <span>{spec}</span>
+                    </li>
+                ))}
+            </ul>
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0">

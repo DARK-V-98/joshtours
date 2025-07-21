@@ -15,17 +15,12 @@ export interface Car {
     eur: number;
   };
   priceEnabled: boolean;
-  specs: {
-    engine: string;
-    transmission: "Automatic" | "Manual";
-    seats: number;
-    fuel: "Gasoline" | "Diesel" | "Electric";
-  };
+  specifications: string[]; // List of features
   bookedDates: string[]; // Array of dates in 'YYYY-MM-DD' format
   createdAt?: string; // Stored as a string after conversion
 }
 
-export interface AdminCar extends Omit<Car, 'createdAt' | 'bookedDates' | 'pricePerDay' | 'specs'> {
+export interface AdminCar extends Omit<Car, 'createdAt' | 'bookedDates' | 'pricePerDay' | 'specifications'> {
     createdAt: string | null;
 }
 
@@ -46,7 +41,7 @@ function toCarObject(doc: any): Car {
       isAvailable: data.isAvailable === true,
       pricePerDay: data.pricePerDay || { usd: 0, lkr: 0, eur: 0 },
       priceEnabled: data.priceEnabled === true,
-      specs: data.specs || { engine: "", transmission: "Automatic", seats: 0, fuel: "Gasoline"},
+      specifications: data.specifications || [],
       bookedDates: data.bookedDates || [],
       createdAt,
     };
