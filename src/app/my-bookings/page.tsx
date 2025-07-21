@@ -14,7 +14,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Trash2, Calendar, Car, AlertCircle, Info, CheckCircle } from "lucide-react";
+import { Loader2, Trash2, Calendar, Car, AlertCircle, Info, CheckCircle, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO } from "date-fns";
@@ -29,6 +29,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Link from "next/link";
 
 export default function MyBookingsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -167,23 +168,33 @@ export default function MyBookingsPage() {
                             </AlertDescription>
                         </Alert>
                     )}
-                    {booking.status === 'pending' && (
-                        <div className="flex justify-end">
+                    
+                    <div className="flex justify-end items-center gap-2">
+                        {booking.status === 'pending' && (
                             <Button variant="destructive" size="sm" onClick={() => handleCancelClick(booking)} disabled={isCanceling}>
                                 <Trash2 className="mr-2 h-4 w-4"/>
                                 Cancel Request
                             </Button>
-                        </div>
-                    )}
+                        )}
+                        {booking.status === 'confirmed' && (
+                            <Button asChild>
+                                <Link href={`/agreement/${booking.id}`}>
+                                    <FileText className="mr-2 h-4 w-4"/>
+                                    Complete Agreement
+                                </Link>
+                            </Button>
+                        )}
+                    </div>
+                    
                      {booking.status === 'confirmed' && (
-                        <Alert className="border-green-600">
+                        <Alert className="border-green-600 mt-4">
                              <CheckCircle className="h-4 w-4 text-green-600" />
                             <AlertTitle className="text-green-600">Booking Confirmed!</AlertTitle>
-                            <AlertDescription>Please contact us to finalize payment and pickup details.</AlertDescription>
+                            <AlertDescription>Please complete the rental agreement to finalize your booking.</AlertDescription>
                         </Alert>
                      )}
                      {booking.status === 'canceled' && (
-                        <Alert variant="destructive">
+                        <Alert variant="destructive" className="mt-4">
                              <AlertCircle className="h-4 w-4"/>
                             <AlertTitle>Booking Canceled</AlertTitle>
                             <AlertDescription>This booking request has been canceled.</AlertDescription>

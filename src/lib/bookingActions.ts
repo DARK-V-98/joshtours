@@ -49,6 +49,29 @@ export async function createBookingRequest(data: BookingRequestData) {
   }
 }
 
+export async function getBookingRequestById(bookingId: string): Promise<BookingRequest | null> {
+    if (!db) {
+        throw new Error("Database not initialized");
+    }
+    const docRef = doc(db, 'bookingRequests', bookingId);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+        return null;
+    }
+
+    const data = docSnap.data();
+    const createdAt = data.createdAt instanceof Timestamp 
+        ? data.createdAt.toDate().toISOString() 
+        : new Date().toISOString();
+    
+    return {
+        id: docSnap.id,
+        ...data,
+        createdAt,
+    } as BookingRequest;
+}
+
 export async function getBookingRequestsForUser(userId: string): Promise<BookingRequest[]> {
     if (!db) {
         throw new Error("Database not initialized");

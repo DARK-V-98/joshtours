@@ -30,7 +30,8 @@ import {
   Car,
   ArrowLeft,
   AlertCircle,
-  Route
+  Route,
+  FileText
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -216,8 +217,16 @@ export default function AdminBookingsPage() {
                                         <AlertTitle>
                                             Request {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                                         </AlertTitle>
-                                        <AlertDescription>
+                                        <AlertDescription className="flex items-center justify-between">
                                             This booking request has already been processed.
+                                            {booking.status === 'confirmed' && (
+                                                <Button asChild variant="secondary" size="sm">
+                                                    <Link href={`/agreement/${booking.id}`}>
+                                                        <FileText className="mr-2 h-4 w-4" />
+                                                        View Agreement
+                                                    </Link>
+                                                </Button>
+                                            )}
                                         </AlertDescription>
                                     </Alert>
                                 </div>
@@ -241,5 +250,3 @@ export default function AdminBookingsPage() {
     </div>
   );
 }
-
-    
