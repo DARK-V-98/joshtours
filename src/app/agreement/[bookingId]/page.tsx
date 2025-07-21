@@ -33,7 +33,7 @@ import { Loader2, Save, ArrowLeft, FileSignature, User, Car, Calendar, UserCheck
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
 const agreementFormSchema = z.object({
   agreementDate: z.string().optional(),
@@ -69,7 +69,26 @@ export default function AgreementPage() {
 
   const form = useForm<AgreementFormValues>({
     resolver: zodResolver(agreementFormSchema),
-    defaultValues: {},
+    defaultValues: {
+        agreementDate: '',
+        renterIdOrPassport: '',
+        renterAddress: '',
+        vehicleDetails: '',
+        rentalStartDate: '',
+        clientFullName: '',
+        clientContactNumber: '',
+        rentalDuration: '',
+        rentCostPerDayMonth: '',
+        totalRentCost: '',
+        depositMoney: '',
+        dailyKMLimit: '',
+        priceForAdditionalKM: '',
+        clientSignDate: '',
+        guarantorName: '',
+        guarantorNIC: '',
+        guarantorAddress: '',
+        guarantorContact: '',
+    },
   });
 
   useEffect(() => {
@@ -82,19 +101,19 @@ export default function AgreementPage() {
     async function fetchData() {
       setLoading(true);
       try {
-        const [booking, agreement, car] = await Promise.all([
-            getBookingRequestById(bookingId),
-            getRentalAgreement(bookingId),
-            getCarById(bookingId) // Assuming carId is part of booking details, needs adjustment
-        ]);
+        const booking = await getBookingRequestById(bookingId);
 
         if (!booking) {
             toast({ variant: 'destructive', title: 'Error', description: 'Booking not found.' });
             router.push('/my-bookings');
             return;
         }
+        
+        const [agreement, carDetails] = await Promise.all([
+            getRentalAgreement(bookingId),
+            getCarById(booking.carId)
+        ]);
 
-        const carDetails = await getCarById(booking.carId);
         
         // Populate form with existing agreement data or pre-fill from booking/user
         form.reset({
@@ -184,7 +203,7 @@ export default function AgreementPage() {
                     <FormField control={form.control} name="renterAddress" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Textarea placeholder="Full address of the renter" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="vehicleDetails" render={({ field }) => (<FormItem><FormLabel>Vehicle Details</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="rentalStartDate" render={({ field }) => (<FormItem><FormLabel>Rental Start Date</FormLabel><FormControl><Input type="date" disabled {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="rentalDuration" render={({ field }) => (<FormItem><FormLabel>Rental Duration (Days/Months)</FormLabel><FormControl><Input placeholder="e.g., 7 Days" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormMessage></FormItem>)} />
+                    <FormField control={form.control} name="rentalDuration" render={({ field }) => (<FormItem><FormLabel>Rental Duration (Days/Months)</FormLabel><FormControl><Input placeholder="e.g., 7 Days" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="rentCostPerDayMonth" render={({ field }) => (<FormItem><FormLabel>Rent Cost Per Day/Month</FormLabel><FormControl><Input placeholder="e.g., $50 / Day" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="totalRentCost" render={({ field }) => (<FormItem><FormLabel>Total Rent Cost</FormLabel><FormControl><Input placeholder="Total calculated price" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="depositMoney" render={({ field }) => (<FormItem><FormLabel>Deposit Money</FormLabel><FormControl><Input placeholder="Refundable security deposit" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
