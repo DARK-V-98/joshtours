@@ -118,7 +118,7 @@ const labels = {
         downloadAsPdf: 'PDF ලෙස බාගන්න',
         downloading: 'බාගත වෙමින් පවතී...',
         agreementDetails: 'ගිවිසුම් විස්තර',
-        agreementDesc: 'කුලී ගනුදෙනුවේ මූලික වාර්තා.',
+        agreementDesc: '',
         date: 'දිනය',
         nicPassport: 'ජාතික හැඳුනුම්පත් අංකය හෝ ගමන් බලපත්‍ර අංකය',
         nicPassportPlaceholder: 'සේවාදායකයාගේ ජාතික හැඳුනුම්පත හෝ ගමන් බලපත්‍රය',
@@ -462,5 +462,3 @@ export default function AgreementPage() {
     </div>
   );
 }
-
-    
