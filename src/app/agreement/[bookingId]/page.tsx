@@ -1,11 +1,14 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
 import { useAuth } from '@/context/AuthContext';
 import { getBookingRequestById } from '@/lib/bookingActions';
 import { getCarById } from '@/lib/data';
@@ -29,11 +32,12 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, ArrowLeft, FileSignature, User, Car, Calendar, UserCheck } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, FileSignature, User, Car, Calendar, UserCheck, Download } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 import { format, parseISO } from 'date-fns';
+import PrintableAgreement from '@/components/printable-agreement';
 
 const agreementFormSchema = z.object({
   agreementDate: z.string().optional(),
@@ -56,7 +60,7 @@ const agreementFormSchema = z.object({
   guarantorContact: z.string().optional(),
 });
 
-type AgreementFormValues = z.infer<typeof agreementFormSchema>;
+export type AgreementFormValues = z.infer<typeof agreementFormSchema>;
 
 export default function AgreementPage() {
   const { user, loading: authLoading } = useAuth();
@@ -64,8 +68,10 @@ export default function AgreementPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
   
   const bookingId = Array.isArray(params.bookingId) ? params.bookingId[0] : params.bookingId;
+  const printableRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<AgreementFormValues>({
     resolver: zodResolver(agreementFormSchema),
@@ -115,7 +121,6 @@ export default function AgreementPage() {
         ]);
 
         
-        // Populate form with existing agreement data or pre-fill from booking/user
         form.reset({
             agreementDate: agreement?.agreementDate || format(new Date(), 'yyyy-MM-dd'),
             renterIdOrPassport: agreement?.renterIdOrPassport || '',
@@ -162,6 +167,32 @@ export default function AgreementPage() {
       });
     }
   }
+
+  const handleDownloadPdf = async () => {
+    const element = printableRef.current;
+    if (!element) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not find printable content.' });
+        return;
+    }
+    setIsDownloading(true);
+
+    try {
+        const canvas = await html2canvas(element, { scale: 2 });
+        const imgData = canvas.toDataURL('image/png');
+        
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`rental-agreement-${bookingId}.pdf`);
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to generate PDF.' });
+    } finally {
+        setIsDownloading(false);
+    }
+  };
   
   if (loading || authLoading) {
       return (
@@ -182,12 +213,16 @@ export default function AgreementPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
-       <div className="mb-8">
+       <div className="mb-8 flex justify-between items-center">
             <Button variant="outline" asChild>
                 <Link href={user?.role === 'admin' ? '/admin/bookings' : '/my-bookings'}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Bookings
                 </Link>
+            </Button>
+            <Button onClick={handleDownloadPdf} disabled={isDownloading}>
+                {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Download className="mr-2 h-4 w-4"/>}
+                {isDownloading ? 'Downloading...' : 'Download as PDF'}
             </Button>
         </div>
       <Form {...form}>
@@ -198,17 +233,39 @@ export default function AgreementPage() {
                     <CardDescription>Records of the rental transaction basics.</CardDescription>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField control={form.control} name="agreementDate" render={({ field }) => (<FormItem><FormLabel>Date</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="renterIdOrPassport" render={({ field }) => (<FormItem><FormLabel>NIC or Passport No</FormLabel><FormControl><Input placeholder="Client's National ID or Passport" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="renterAddress" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Textarea placeholder="Full address of the renter" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="vehicleDetails" render={({ field }) => (<FormItem><FormLabel>Vehicle Details</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="rentalStartDate" render={({ field }) => (<FormItem><FormLabel>Rental Start Date</FormLabel><FormControl><Input type="date" disabled {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="rentalDuration" render={({ field }) => (<FormItem><FormLabel>Rental Duration (Days/Months)</FormLabel><FormControl><Input placeholder="e.g., 7 Days" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="rentCostPerDayMonth" render={({ field }) => (<FormItem><FormLabel>Rent Cost Per Day/Month</FormLabel><FormControl><Input placeholder="e.g., $50 / Day" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="totalRentCost" render={({ field }) => (<FormItem><FormLabel>Total Rent Cost</FormLabel><FormControl><Input placeholder="Total calculated price" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="depositMoney" render={({ field }) => (<FormItem><FormLabel>Deposit Money</FormLabel><FormControl><Input placeholder="Refundable security deposit" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="dailyKMLimit" render={({ field }) => (<FormItem><FormLabel>Daily KM Limit</FormLabel><FormControl><Input placeholder="e.g., 100km" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="priceForAdditionalKM" render={({ field }) => (<FormItem><FormLabel>Price for Additional KM</FormLabel><FormControl><Input placeholder="e.g., $0.50 / km" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="agreementDate" render={({ field }) => (
+                        <FormItem><FormLabel>Date</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="renterIdOrPassport" render={({ field }) => (
+                        <FormItem><FormLabel>NIC or Passport No</FormLabel><FormControl><Input placeholder="Client's National ID or Passport" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="renterAddress" render={({ field }) => (
+                        <FormItem className="md:col-span-2"><FormLabel>Address</FormLabel><FormControl><Textarea placeholder="Full address of the renter" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="vehicleDetails" render={({ field }) => (
+                        <FormItem><FormLabel>Vehicle Details</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="rentalStartDate" render={({ field }) => (
+                        <FormItem><FormLabel>Rental Start Date</FormLabel><FormControl><Input type="date" disabled {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="rentalDuration" render={({ field }) => (
+                        <FormItem><FormLabel>Rental Duration (Days/Months)</FormLabel><FormControl><Input placeholder="e.g., 7 Days" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="rentCostPerDayMonth" render={({ field }) => (
+                        <FormItem><FormLabel>Rent Cost Per Day/Month</FormLabel><FormControl><Input placeholder="e.g., $50 / Day" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="totalRentCost" render={({ field }) => (
+                        <FormItem><FormLabel>Total Rent Cost</FormLabel><FormControl><Input placeholder="Total calculated price" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="depositMoney" render={({ field }) => (
+                        <FormItem><FormLabel>Deposit Money</FormLabel><FormControl><Input placeholder="Refundable security deposit" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="dailyKMLimit" render={({ field }) => (
+                        <FormItem><FormLabel>Daily KM Limit</FormLabel><FormControl><Input placeholder="e.g., 100km" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name="priceForAdditionalKM" render={({ field }) => (
+                        <FormItem><FormLabel>Price for Additional KM</FormLabel><FormControl><Input placeholder="e.g., $0.50 / km" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                    )} />
                 </CardContent>
             </Card>
 
@@ -217,9 +274,15 @@ export default function AgreementPage() {
                     <CardTitle className="flex items-center gap-2 text-2xl"><User className="h-6 w-6"/>Client Details</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField control={form.control} name="clientFullName" render={({ field }) => (<FormItem><FormLabel>Client Full Name</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl></FormItem>)} />
-                    <FormField control={form.control} name="clientContactNumber" render={({ field }) => (<FormItem><FormLabel>Contact Number</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl></FormItem>)} />
-                    <FormField control={form.control} name="clientSignDate" render={({ field }) => (<FormItem><FormLabel>Date of Signing</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ''} /></FormControl></FormItem>)} />
+                    <FormField control={form.control} name="clientFullName" render={({ field }) => (
+                        <FormItem><FormLabel>Client Full Name</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl></FormItem>
+                    )} />
+                    <FormField control={form.control} name="clientContactNumber" render={({ field }) => (
+                        <FormItem><FormLabel>Contact Number</FormLabel><FormControl><Input disabled {...field} value={field.value ?? ''} /></FormControl></FormItem>
+                    )} />
+                    <FormField control={form.control} name="clientSignDate" render={({ field }) => (
+                        <FormItem><FormLabel>Date of Signing</FormLabel><FormControl><Input type="date" {...field} value={field.value ?? ''} /></FormControl></FormItem>
+                    )} />
                 </CardContent>
             </Card>
 
@@ -228,10 +291,18 @@ export default function AgreementPage() {
                     <CardTitle className="flex items-center gap-2 text-2xl"><UserCheck className="h-6 w-6"/>Guarantor Details</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <FormField control={form.control} name="guarantorName" render={({ field }) => (<FormItem><FormLabel>Guarantor Name</FormLabel><FormControl><Input placeholder="Full name of guarantor" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                     <FormField control={form.control} name="guarantorNIC" render={({ field }) => (<FormItem><FormLabel>Guarantor NIC</FormLabel><FormControl><Input placeholder="National ID of guarantor" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                     <FormField control={form.control} name="guarantorAddress" render={({ field }) => (<FormItem className="md:col-span-2"><FormLabel>Guarantor Address</FormLabel><FormControl><Textarea placeholder="Guarantor's home or office address" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
-                     <FormField control={form.control} name="guarantorContact" render={({ field }) => (<FormItem><FormLabel>Guarantor Contact Number</FormLabel><FormControl><Input placeholder="Guarantor's phone number" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
+                     <FormField control={form.control} name="guarantorName" render={({ field }) => (
+                        <FormItem><FormLabel>Guarantor Name</FormLabel><FormControl><Input placeholder="Full name of guarantor" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                     )} />
+                     <FormField control={form.control} name="guarantorNIC" render={({ field }) => (
+                        <FormItem><FormLabel>Guarantor NIC</FormLabel><FormControl><Input placeholder="National ID of guarantor" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                     )} />
+                     <FormField control={form.control} name="guarantorAddress" render={({ field }) => (
+                        <FormItem className="md:col-span-2"><FormLabel>Guarantor Address</FormLabel><FormControl><Textarea placeholder="Guarantor's home or office address" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                     )} />
+                     <FormField control={form.control} name="guarantorContact" render={({ field }) => (
+                        <FormItem><FormLabel>Guarantor Contact Number</FormLabel><FormControl><Input placeholder="Guarantor's phone number" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                     )} />
                 </CardContent>
             </Card>
 
@@ -253,6 +324,9 @@ export default function AgreementPage() {
             </Button>
         </form>
       </Form>
+      <div className="absolute -z-50 -left-[9999px] top-0">
+        <PrintableAgreement ref={printableRef} data={form.getValues()} />
+      </div>
     </div>
   );
 }

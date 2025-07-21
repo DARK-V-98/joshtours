@@ -180,7 +180,7 @@ export default function MyBookingsPage() {
                             <Button asChild>
                                 <Link href={`/agreement/${booking.id}`}>
                                     <FileText className="mr-2 h-4 w-4"/>
-                                    Complete Agreement
+                                    View / Download Agreement
                                 </Link>
                             </Button>
                         )}
