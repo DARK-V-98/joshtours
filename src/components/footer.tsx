@@ -56,7 +56,7 @@ export function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">Business Hours</h4>
             <div className="space-y-2 text-muted-foreground">
-              <div>Open 24 hours every day</div>
+              <div>Open 24 hours</div>
             </div>
           </div>
         </div>

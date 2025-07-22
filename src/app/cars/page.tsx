@@ -1,6 +1,7 @@
+"use client";
 
 import { CarCard } from "@/components/car-card";
-import { getAllCars } from "@/lib/data";
+import { getAllCars, Car } from "@/lib/data";
 import {
   Select,
   SelectContent,
@@ -10,10 +11,40 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Car } from "lucide-react";
+import { Car as CarIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function CarsPage() {
-  const cars = await getAllCars();
+export default function CarsPage() {
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCars = async () => {
+      setLoading(true);
+      const fetchedCars = await getAllCars();
+      setCars(fetchedCars);
+      setLoading(false);
+    };
+    fetchCars();
+  }, []);
+
+  if (loading) {
+    return (
+       <div className="container mx-auto px-4 py-8">
+        <div className="text-center mb-12">
+            <Skeleton className="h-12 w-1/2 mx-auto" />
+            <Skeleton className="h-6 w-3/4 mx-auto mt-4" />
+        </div>
+        <div className="mb-8 p-4 bg-card rounded-lg border">
+            <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-96 w-full" />)}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -61,7 +92,7 @@ export default async function CarsPage() {
         </div>
       ) : (
         <Alert>
-            <Car className="h-4 w-4" />
+            <CarIcon className="h-4 w-4" />
             <AlertTitle>No Vehicles Found</AlertTitle>
             <AlertDescription>
                 There are currently no vehicles available. Please check back later or contact an administrator.
@@ -71,5 +102,3 @@ export default async function CarsPage() {
     </div>
   );
 }
-
-    
