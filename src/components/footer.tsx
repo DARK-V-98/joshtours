@@ -12,7 +12,7 @@ export function Footer() {
             <div className="flex items-center space-x-2 mb-4">
               <Link href="/">
                 <div className="relative h-14 w-14">
-                  <Image src="/jtr.png" alt="Josh Tours Logo" fill className="rounded-full object-cover" />
+                  <Image src="/jtr.png" alt="JOSH TOURS Logo" fill className="rounded-full object-cover" />
                 </div>
               </Link>
             </div>
@@ -66,7 +66,7 @@ export function Footer() {
         
         <div className="border-t border-border mt-12 pt-8 text-center">
           <p className="text-muted-foreground">
-            © {new Date().getFullYear()} Josh Tours. All rights reserved. | Powered by{' '}
+            © {new Date().getFullYear()} JOSH TOURS. All rights reserved. | Powered by{' '}
             <a href="https://www.esystemlk.xyz" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
               esystemlk
             </a>

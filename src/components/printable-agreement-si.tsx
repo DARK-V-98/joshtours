@@ -27,9 +27,9 @@ const SignatureField = ({ label, className }: { label: string, className?: strin
 const PageHeader = () => (
     <div className="text-center mb-4">
         <div className="flex justify-center items-center gap-4">
-             <Image src="/jtr.png" alt="Josh Tours Logo" width={60} height={60} className="rounded-full"/>
+             <Image src="/jtr.png" alt="JOSH TOURS Logo" width={60} height={60} className="rounded-full"/>
              <div>
-                <h1 className="text-3xl font-bold text-red-600">Josh Tours</h1>
+                <h1 className="text-3xl font-bold text-red-600">JOSH TOURS</h1>
                 <p className="text-xs">Your trusted partner for reliable car rentals.</p>
              </div>
         </div>

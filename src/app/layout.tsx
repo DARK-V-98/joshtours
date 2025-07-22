@@ -9,7 +9,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 
 export const metadata: Metadata = {
-  title: "Josh Tours",
+  title: "JOSH TOURS",
   description: "Your adventure starts here.",
 };
 

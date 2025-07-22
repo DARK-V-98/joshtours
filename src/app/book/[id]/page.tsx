@@ -170,7 +170,7 @@ export default function BookingPage() {
                 </Alert>
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                     <Button size="lg" className="flex-1" asChild>
-                       <a href="tel:+94701209694"><Phone className="mr-2"/>Call Josh Tours</a>
+                       <a href="tel:+94701209694"><Phone className="mr-2"/>Call JOSH TOURS</a>
                     </Button>
                     <Button size="lg" variant="secondary" className="flex-1" asChild>
                         <Link href="/my-bookings">

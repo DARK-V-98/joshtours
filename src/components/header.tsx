@@ -69,7 +69,7 @@ export function Header() {
         <div className="flex-1 flex justify-start">
             <Link href="/" className="flex items-center space-x-2">
               <div className="relative h-10 w-10">
-                <Image src="/jtr.png" alt="Josh Tours Logo" fill className="rounded-full object-cover" />
+                <Image src="/jtr.png" alt="JOSH TOURS Logo" fill className="rounded-full object-cover" />
               </div>
             </Link>
         </div>

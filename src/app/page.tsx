@@ -22,7 +22,7 @@ export default async function Index() {
           <div className="space-y-8 text-center lg:text-left">
             
             <h1 className="text-5xl lg:text-7xl font-bold leading-tight text-primary [text-shadow:0_0_2px_#fff,0_0_4px_#fff,0_0_6px_#fff]">
-              <span className="animate-pulse">Josh</span> <span className="animate-pulse">Tours</span>
+              <span className="animate-pulse">JOSH</span> <span className="animate-pulse">TOURS</span>
             </h1>
             
             <p className="text-xl text-muted-foreground max-w-lg mx-auto lg:mx-0">
@@ -73,7 +73,7 @@ export default async function Index() {
       <section id="services" className="py-20 bg-card">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Why Choose Josh Tours?</h2>
+            <h2 className="text-4xl font-bold mb-4">Why Choose JOSH TOURS?</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               We provide exceptional service with reliable vehicles and outstanding customer support
             </p>
@@ -142,7 +142,7 @@ export default async function Index() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">What Our Customers Say</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Real experiences from real customers who chose Josh Tours
+              Real experiences from real customers who chose JOSH TOURS
             </p>
           </div>
           
