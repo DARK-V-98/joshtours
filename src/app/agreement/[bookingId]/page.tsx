@@ -389,7 +389,7 @@ export default function AgreementPage() {
                         <FormItem><FormLabel>{t.totalRentCost}</FormLabel><FormControl><Input placeholder={t.totalRentCostPlaceholder} {...field} value={field.value ?? ''} disabled={user?.role !== 'admin'} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="depositMoney" render={({ field }) => (
-                        <FormItem><FormLabel>{t.depositMoney}</FormLabel><FormControl><Input placeholder={t.depositMoneyPlaceholder} {...field} value={field.value ?? ''} disabled={user?.role !== 'admin'} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.depositMoney}</FormLabel><FormControl><Input placeholder={t.depositMoneyPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="dailyKMLimit" render={({ field }) => (
                         <FormItem><FormLabel>{t.dailyKmLimit}</FormLabel><FormControl><Input placeholder={t.dailyKmLimitPlaceholder} {...field} value={field.value ?? ''} disabled={user?.role !== 'admin'} /></FormControl><FormMessage /></FormItem>

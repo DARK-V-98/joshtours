@@ -125,6 +125,11 @@ export default function LoginForm() {
                     </FormItem>
                   )}
                 />
+                 <div className="flex items-center justify-end text-sm">
+                    <Link href="#" className="underline hover:text-primary">
+                        Forgot password?
+                    </Link>
+                </div>
                 <Button
                   type="submit"
                   className="w-full"
