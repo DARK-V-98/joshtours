@@ -62,8 +62,10 @@ export function Footer() {
         </div>
         
         <div className="border-t border-border mt-12 pt-8 text-center">
-          <p className="text-muted-foreground">
-            © {new Date().getFullYear()} JOSH TOURS. All rights reserved. | Powered by{' '}
+          <p className="text-muted-foreground leading-relaxed">
+            © <span className="text-foreground">{new Date().getFullYear()}</span> JOSH TOURS. All rights reserved.
+            <br />
+            Powered by{' '}
             <a href="https://www.esystemlk.xyz" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
               esystemlk
             </a>
