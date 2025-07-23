@@ -37,12 +37,14 @@ import {
   FileBadge,
   Globe,
   FilePlus,
+  Search,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO } from "date-fns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 
 const DocumentLink = ({ url, label }: { url?: string; label: string }) => {
     if (!url) return null;
@@ -63,7 +65,14 @@ export default function BookingListClient({ bookings: initialBookings }: Booking
   const router = useRouter();
   const { toast } = useToast();
   const [bookings, setBookings] = useState<BookingRequest[]>(initialBookings);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isUpdating, startUpdateTransition] = useTransition();
+
+  const filteredBookings = bookings.filter(
+    (booking) =>
+      booking.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      booking.id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   useEffect(() => {
     if (authLoading) return;
@@ -116,8 +125,8 @@ export default function BookingListClient({ bookings: initialBookings }: Booking
 
   return (
     <div className="container mx-auto px-4 py-12">
-        <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-            <div>
+        <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+            <div className="flex-grow">
                  <h1 className="text-3xl font-headline font-bold mb-2">Booking Requests</h1>
                 <p className="text-muted-foreground">
                     Review, confirm, or cancel customer booking inquiries.
@@ -131,17 +140,29 @@ export default function BookingListClient({ bookings: initialBookings }: Booking
             </Button>
         </div>
 
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search by customer name or booking ID..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 h-12"
+          />
+        </div>
+      </div>
 
-      {bookings.length > 0 ? (
+      {filteredBookings.length > 0 ? (
         <div className="space-y-6">
-          {bookings.map((booking) => (
+          {filteredBookings.map((booking) => (
             <Card key={booking.id} className="overflow-hidden">
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                     <div>
                       <CardTitle className="flex items-center gap-2"><Car className="h-5 w-5 text-primary"/>{booking.carName}</CardTitle>
                        <CardDescription>
-                        Requested on {format(parseISO(booking.createdAt), "PPP, p")}
+                        Requested on {format(parseISO(booking.createdAt), "PPP, p")} | ID: <strong>{booking.id}</strong>
                       </CardDescription>
                     </div>
                     <Badge variant={getStatusVariant(booking.status)} className="capitalize text-sm py-1 px-3 self-start">
@@ -259,7 +280,7 @@ export default function BookingListClient({ bookings: initialBookings }: Booking
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>No Booking Requests Found</AlertTitle>
             <AlertDescription>
-              There are currently no customer inquiries. When a new request is made, it will appear here.
+              No bookings match your search criteria. Try a different name or ID, or clear the search field.
             </AlertDescription>
           </Alert>
       )}
