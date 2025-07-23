@@ -346,7 +346,7 @@ export default function AdminDashboard() {
                                         {...fieldProps}
                                         type="file"
                                         multiple
-                                        accept="image/png, image/jpeg, image/webp"
+                                        accept="image/png, image/jpeg, image/jpg, image/webp"
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                         onChange={(event) => {
                                             const files = event.target.files;
@@ -362,7 +362,7 @@ export default function AdminDashboard() {
                                             <p className="mt-2 text-sm text-muted-foreground">
                                                 <span className="font-semibold">Click to upload</span> or drag and drop
                                             </p>
-                                            <p className="text-xs text-muted-foreground">PNG, JPG, WEBP up to 5MB each</p>
+                                            <p className="text-xs text-muted-foreground">PNG, JPG, JPEG, WEBP up to 5MB each</p>
                                         </div>
                                     </div>
                                     </div>
@@ -439,3 +439,5 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
+    

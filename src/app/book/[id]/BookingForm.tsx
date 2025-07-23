@@ -167,7 +167,7 @@ export default function BookingForm({ car }: BookingFormProps) {
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
       requests: "",
-      estimatedKm: "" as any, // Initialize as empty string to avoid uncontrolled component error
+      estimatedKm: "", 
       customerName: '',
       customerPhone: '',
       customerNicOrPassport: '',
@@ -311,7 +311,7 @@ export default function BookingForm({ car }: BookingFormProps) {
                     <div className="relative">
                         <Input
                             type="file"
-                            accept="image/png, image/jpeg, image/webp"
+                            accept="image/png, image/jpeg, image/jpg, image/webp"
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             onChange={(e) => field.onChange(e.target.files?.[0])}
                         />
@@ -537,3 +537,5 @@ export default function BookingForm({ car }: BookingFormProps) {
     </div>
   );
 }
+
+    
