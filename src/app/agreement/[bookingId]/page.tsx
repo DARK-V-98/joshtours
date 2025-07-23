@@ -380,22 +380,22 @@ export default function AgreementPage() {
                         <FormItem><FormLabel>{t.rentalStartDate}</FormLabel><FormControl><Input type="date" disabled {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="rentalDuration" render={({ field }) => (
-                        <FormItem><FormLabel>{t.rentalDuration}</FormLabel><FormControl><Input placeholder={t.rentalDurationPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.rentalDuration}</FormLabel><FormControl><Input placeholder={t.rentalDurationPlaceholder} {...field} value={field.value ?? ''} disabled={user?.role !== 'admin'} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="rentCostPerDayMonth" render={({ field }) => (
-                        <FormItem><FormLabel>{t.rentCost}</FormLabel><FormControl><Input placeholder={t.rentCostPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.rentCost}</FormLabel><FormControl><Input placeholder={t.rentCostPlaceholder} {...field} value={field.value ?? ''} disabled={user?.role !== 'admin'} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="totalRentCost" render={({ field }) => (
-                        <FormItem><FormLabel>{t.totalRentCost}</FormLabel><FormControl><Input placeholder={t.totalRentCostPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.totalRentCost}</FormLabel><FormControl><Input placeholder={t.totalRentCostPlaceholder} {...field} value={field.value ?? ''} disabled={user?.role !== 'admin'} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="depositMoney" render={({ field }) => (
-                        <FormItem><FormLabel>{t.depositMoney}</FormLabel><FormControl><Input placeholder={t.depositMoneyPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.depositMoney}</FormLabel><FormControl><Input placeholder={t.depositMoneyPlaceholder} {...field} value={field.value ?? ''} disabled={user?.role !== 'admin'} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="dailyKMLimit" render={({ field }) => (
-                        <FormItem><FormLabel>{t.dailyKmLimit}</FormLabel><FormControl><Input placeholder={t.dailyKmLimitPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.dailyKmLimit}</FormLabel><FormControl><Input placeholder={t.dailyKmLimitPlaceholder} {...field} value={field.value ?? ''} disabled={user?.role !== 'admin'} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name="priceForAdditionalKM" render={({ field }) => (
-                        <FormItem><FormLabel>{t.priceForAdditionalKm}</FormLabel><FormControl><Input placeholder={t.priceForAdditionalKmPlaceholder} {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                        <FormItem><FormLabel>{t.priceForAdditionalKm}</FormLabel><FormControl><Input placeholder={t.priceForAdditionalKmPlaceholder} {...field} value={field.value ?? ''} disabled={user?.role !== 'admin'} /></FormControl><FormMessage /></FormItem>
                     )} />
                 </CardContent>
             </Card>
