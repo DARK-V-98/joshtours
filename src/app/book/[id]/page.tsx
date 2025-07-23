@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -128,7 +129,7 @@ export default function BookingPage() {
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
       requests: "",
-      estimatedKm: undefined,
+      estimatedKm: '',
       customerName: '',
       customerPhone: '',
       customerNicOrPassport: '',
