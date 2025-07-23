@@ -29,7 +29,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Upload, PlusCircle, DollarSign, Notebook, Edit, List, FilePlus } from "lucide-react";
+import { Loader2, Upload, PlusCircle, DollarSign, Notebook, Edit, List, FilePlus, MessageSquare } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CarList } from "@/components/admin/car-list";
 import Link from "next/link";
@@ -40,6 +40,8 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { TestimonialList } from "@/components/admin/testimonial-list";
+import { getPendingTestimonialCount } from "@/lib/testimonialActions";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -72,6 +74,8 @@ export default function AdminDashboard() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [formKey, setFormKey] = useState(Date.now());
   const [pendingBookings, setPendingBookings] = useState(0);
+  const [pendingTestimonials, setPendingTestimonials] = useState(0);
+  const [activeTab, setActiveTab] = useState("fleet");
 
   const form = useForm<z.infer<typeof carFormSchema>>({
     resolver: zodResolver(carFormSchema),
@@ -94,8 +98,9 @@ export default function AdminDashboard() {
         if (!user || user.role !== "admin") {
             router.push("/");
         } else {
-            // Fetch pending booking count only if user is admin
+            // Fetch pending counts
             getPendingBookingCount().then(setPendingBookings);
+            getPendingTestimonialCount().then(setPendingTestimonials);
         }
     }
   }, [user, loading, router]);
@@ -133,7 +138,8 @@ export default function AdminDashboard() {
       });
       form.reset();
       setSelectedFiles([]);
-      setFormKey(Date.now());
+      setFormKey(Date.now()); // This forces a re-render of CarList
+      setActiveTab("fleet"); // Switch back to the fleet view
     } catch (error) {
       console.error("Failed to add car:", error);
       toast({
@@ -182,7 +188,7 @@ export default function AdminDashboard() {
             <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col sm:flex-row gap-2">
+            <CardContent className="flex flex-wrap gap-2">
                 <Button asChild>
                     <Link href="/admin/bookings" className="relative">
                         <Notebook className="mr-2" />
@@ -209,10 +215,18 @@ export default function AdminDashboard() {
             </CardContent>
         </Card>
 
-        <Tabs defaultValue="fleet">
-            <TabsList className="grid w-full grid-cols-2">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="fleet">Manage Fleet</TabsTrigger>
                 <TabsTrigger value="add">Add New Car</TabsTrigger>
+                <TabsTrigger value="testimonials" className="relative">
+                  Manage Testimonials
+                   {pendingTestimonials > 0 && (
+                      <div className="absolute top-0 right-0 h-5 w-5 -translate-y-1/2 translate-x-1/2 rounded-full bg-red-600 text-white flex items-center justify-center text-xs">
+                          {pendingTestimonials}
+                      </div>
+                  )}
+                </TabsTrigger>
             </TabsList>
             <TabsContent value="fleet">
                  <CarList key={formKey} />
@@ -432,6 +446,9 @@ export default function AdminDashboard() {
                         </Form>
                     </CardContent>
                     </Card>
+            </TabsContent>
+             <TabsContent value="testimonials">
+                <TestimonialList />
             </TabsContent>
         </Tabs>
 

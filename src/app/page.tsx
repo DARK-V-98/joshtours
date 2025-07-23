@@ -7,10 +7,12 @@ import Image from "next/image";
 import { getFeaturedCars } from "@/lib/data";
 import Link from "next/link";
 import { CarCard } from "@/components/car-card";
+import { getApprovedTestimonials, Testimonial } from "@/lib/testimonialActions";
 
 export default async function Index() {
 
   const featuredCars = await getFeaturedCars();
+  const testimonials = await getApprovedTestimonials();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -146,42 +148,29 @@ export default async function Index() {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Sarah Johnson",
-                rating: 5,
-                comment: "Amazing service! The car was clean, reliable, and the booking process was so easy. Highly recommend!",
-                location: "New York"
-              },
-              {
-                name: "Mike Chen",
-                rating: 5,
-                comment: "Great prices and excellent customer service. The team went above and beyond to help me find the perfect car.",
-                location: "California"
-              },
-              {
-                name: "Emily Davis",
-                rating: 5,
-                comment: "Best car rental experience I've ever had. Professional, friendly, and incredibly convenient. Will definitely use again!",
-                location: "Texas"
-              }
-            ].map((testimonial, index) => (
-              <Card key={index} className="bg-card border-border hover:shadow-xl transition-all duration-300">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {testimonials.length > 0 ? (
+                testimonials.map((testimonial) => (
+              <Card key={testimonial.id} className="bg-card border-border hover:shadow-xl transition-all duration-300">
                 <CardHeader>
                   <div className="flex items-center space-x-1 mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} className="h-5 w-5 text-primary fill-primary" />
                     ))}
+                     {[...Array(5 - testimonial.rating)].map((_, i) => (
+                        <Star key={i + testimonial.rating} className="h-5 w-5 text-muted-foreground/50" />
+                    ))}
                   </div>
                   <CardTitle className="text-lg">{testimonial.name}</CardTitle>
-                  <CardDescription>{testimonial.location}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground italic">"{testimonial.comment}"</p>
                 </CardContent>
               </Card>
-            ))}
+            ))
+            ) : (
+                <p className="text-muted-foreground text-center col-span-full">No testimonials yet. Be the first to share your experience!</p>
+            )}
           </div>
         </div>
       </section>

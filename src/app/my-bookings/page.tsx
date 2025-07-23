@@ -14,7 +14,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, Trash2, Calendar, Car, AlertCircle, Info, CheckCircle, FileText } from "lucide-react";
+import { Loader2, Trash2, Calendar, Car, AlertCircle, Info, CheckCircle, FileText, PlusCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO } from "date-fns";
@@ -132,10 +132,21 @@ export default function MyBookingsPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-headline font-bold mb-2">My Bookings</h1>
-        <p className="text-muted-foreground mb-8">
-          Here you can view the status of your booking requests.
-        </p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-3xl font-headline font-bold mb-2">My Bookings</h1>
+            <p className="text-muted-foreground">
+              Here you can view the status of your booking requests.
+            </p>
+          </div>
+          <Button asChild>
+            <Link href="/add-testimonial">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Add a Testimonial
+            </Link>
+          </Button>
+        </div>
+
 
         {bookings.length > 0 ? (
           <div className="space-y-4">
