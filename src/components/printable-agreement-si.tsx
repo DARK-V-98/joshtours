@@ -121,18 +121,10 @@ const PrintableAgreementSi = React.forwardRef<HTMLDivElement, PrintableAgreement
 
             {/* Section 6 */}
             <div className="border border-black p-2 mt-1">
-                <h3 className="text-base font-bold mb-2">6. වාහනය ආපසු භාරදීමේ කොටස</h3>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                    <Field label="අමතරව භාවිතා කළ කි.මී." />
-                    <Field label="අමතර දින ගණන" />
-                    <Field label="සිදු වූ හානි" />
-                    <Field label="ප්‍රමාද ගෙවීම්" />
-                    <Field label="වෙනත් ගාස්තු" />
-                    <Field label="අවසාන සම්පූර්ණ පිරිවැය" />
-                    <div className="col-span-2 grid grid-cols-2 gap-x-8 pt-4">
-                        <SignatureField label="සේවාදායකයාගේ ආපසු භාරදීමේ අත්සන" />
-                        <SignatureField label="සමාගම් හිමිකරුගේ අත්සන" />
-                    </div>
+                <h3 className="text-base font-bold mb-2">6. වාහනය ආපසු භාරදීමේ අත්සන්</h3>
+                 <div className="col-span-2 grid grid-cols-2 gap-x-8 pt-4">
+                    <SignatureField label="සේවාදායකයාගේ ආපසු භාරදීමේ අත්සන" />
+                    <SignatureField label="සමාගම් හිමිකරුගේ අත්සන" />
                 </div>
             </div>
              <div className="text-xs text-gray-600 mt-4 p-2 border border-dashed font-sinhala">

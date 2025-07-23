@@ -121,18 +121,10 @@ const PrintableAgreement = React.forwardRef<HTMLDivElement, PrintableAgreementPr
 
             {/* Section 6 */}
             <div className="border border-black p-2">
-                <h3 className="text-base font-bold mb-2">6. Vehicle Return Section</h3>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                    <Field label="Additional KM Used" />
-                    <Field label="Additional Days" />
-                    <Field label="Damages" />
-                    <Field label="Delay Payments" />
-                    <Field label="Other Charges" />
-                    <Field label="Total Final Cost" />
-                    <div className="col-span-2 grid grid-cols-2 gap-x-8 pt-4">
-                        <SignatureField label="Client Return Signature" />
-                        <SignatureField label="Company Owner Signature" />
-                    </div>
+                <h3 className="text-base font-bold mb-2">6. Vehicle Return Signatures</h3>
+                 <div className="col-span-2 grid grid-cols-2 gap-x-8 pt-4">
+                    <SignatureField label="Client Return Signature" />
+                    <SignatureField label="Company Owner Signature" />
                 </div>
             </div>
              <div className="text-xs text-gray-600 mt-4 p-2 border border-dashed">
