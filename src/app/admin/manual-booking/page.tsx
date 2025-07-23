@@ -125,6 +125,12 @@ export default function ManualBookingPage() {
         customerName: values.customerName,
         customerEmail: values.customerEmail,
         customerPhone: values.customerPhone,
+        customerResidency: 'local', // Placeholder
+        customerNicOrPassport: 'N/A', // Placeholder
+        guarantorName: 'N/A', // Placeholder
+        guarantorPhone: 'N/A', // Placeholder
+        guarantorResidency: 'local', // Placeholder
+        guarantorNicOrPassport: 'N/A', // Placeholder
         pickupDate: format(values.pickupDate, 'yyyy-MM-dd'),
         returnDate: format(values.returnDate, 'yyyy-MM-dd'),
         estimatedKm: values.estimatedKm,

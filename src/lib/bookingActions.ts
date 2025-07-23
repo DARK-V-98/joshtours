@@ -32,7 +32,7 @@ export async function uploadBookingDocuments(bookingId: string, formData: FormDa
         const file = formData.get(field) as File | null;
         if (file && file.size > 0) {
             const path = `booking-documents/${bookingId}/${field}-${file.name}`;
-            urls[field] = await uploadFile(file, path);
+            urls[`${field}Url`] = await uploadFile(file, path);
         }
     }
     return urls;
@@ -88,7 +88,7 @@ export interface BookingRequest extends BookingRequestData {
 
 
 export async function createBookingRequest(
-    data: Omit<BookingRequestData, 'status'>, 
+    data: Omit<BookingRequestData, 'status' | 'customerNicFrontUrl' | 'customerNicBackUrl' | 'customerPassportFrontUrl' | 'customerPassportBackUrl' | 'customerLicenseFrontUrl' | 'customerLicenseBackUrl' | 'customerLightBillUrl' | 'guarantorNicFrontUrl' | 'guarantorNicBackUrl' | 'guarantorPassportFrontUrl' | 'guarantorPassportBackUrl' | 'guarantorLicenseFrontUrl' | 'guarantorLicenseBackUrl' | 'guarantorLightBillUrl' >, 
     documentFormData: FormData
 ) {
   if (!db) {
@@ -96,9 +96,11 @@ export async function createBookingRequest(
   }
 
   try {
+    const bookingStatus = (data as any).status || 'pending';
+    
     const bookingRequestData = {
         ...data,
-        status: 'pending',
+        status: bookingStatus,
         createdAt: serverTimestamp()
     };
     
@@ -110,24 +112,7 @@ export async function createBookingRequest(
     const documentUrls = await uploadBookingDocuments(docRef.id, documentFormData);
 
     // Step 3: Update the document with the image URLs
-    await updateDoc(docRef, {
-        customerNicFrontUrl: documentUrls.customerNicFront || '',
-        customerNicBackUrl: documentUrls.customerNicBack || '',
-        customerPassportFrontUrl: documentUrls.customerPassportFront || '',
-        customerPassportBackUrl: documentUrls.customerPassportBack || '',
-        customerLicenseFrontUrl: documentUrls.customerLicenseFront || '',
-        customerLicenseBackUrl: documentUrls.customerLicenseBack || '',
-        customerLightBillUrl: documentUrls.customerLightBill || '',
-
-        guarantorNicFrontUrl: documentUrls.guarantorNicFront || '',
-        guarantorNicBackUrl: documentUrls.guarantorNicBack || '',
-        guarantorPassportFrontUrl: documentUrls.guarantorPassportFront || '',
-        guarantorPassportBackUrl: documentUrls.guarantorPassportBack || '',
-        guarantorLicenseFrontUrl: documentUrls.guarantorLicenseFront || '',
-        guarantorLicenseBackUrl: documentUrls.guarantorLicenseBack || '',
-        guarantorLightBillUrl: documentUrls.guarantorLightBill || '',
-    });
-
+    await updateDoc(docRef, { ...documentUrls });
 
     revalidatePath('/my-bookings');
     revalidatePath('/admin/bookings');
