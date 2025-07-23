@@ -157,22 +157,24 @@ export function Header() {
         </nav>
 
         <div className="flex-1 flex justify-end items-center space-x-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Globe className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Select Currency</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuRadioGroup value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
-                <DropdownMenuRadioItem value="usd">USD ($)</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="lkr">LKR (Rs)</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="eur">EUR (€)</DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {isMounted && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Globe className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Select Currency</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
+                  <DropdownMenuRadioItem value="usd">USD ($)</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="lkr">LKR (Rs)</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="eur">EUR (€)</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           
           {renderAuthSection()}
         </div>
