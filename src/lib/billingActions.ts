@@ -26,7 +26,7 @@ export interface Bill {
   paidAmount: number;
   balanceDue: number;
 
-  createdAt?: any;
+  createdAt?: string;
   billDate?: string;
 }
 
@@ -66,7 +66,12 @@ export async function getBillById(bookingId: string): Promise<Bill | null> {
 
     if (docSnap.exists()) {
         const data = docSnap.data();
-        return { id: docSnap.id, ...data } as Bill;
+        // Convert timestamp to string to make it serializable for client components
+        const createdAt = data.createdAt instanceof Timestamp 
+            ? data.createdAt.toDate().toISOString()
+            : data.createdAt;
+            
+        return { id: docSnap.id, ...data, createdAt } as Bill;
     }
 
     return null;
