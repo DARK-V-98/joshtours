@@ -338,14 +338,14 @@ export default function AgreementPage() {
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
-       <div className="mb-8 flex justify-between items-center gap-4">
+       <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <Button variant="outline" asChild>
                 <Link href={user?.role === 'admin' ? '/admin/bookings' : '/my-bookings'}>
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     {t.backToBookings}
                 </Link>
             </Button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 self-end sm:self-center">
                 <ToggleGroup type="single" value={language} onValueChange={(value: 'en' | 'si') => {if(value) setLanguage(value)}} aria-label={t.selectLanguage}>
                     <ToggleGroupItem value="en" aria-label="English">EN</ToggleGroupItem>
                     <ToggleGroupItem value="si" aria-label="Sinhala">සිං</ToggleGroupItem>

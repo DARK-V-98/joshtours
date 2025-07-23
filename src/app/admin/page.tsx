@@ -182,7 +182,7 @@ export default function AdminDashboard() {
             <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
-            <CardContent className="flex gap-2">
+            <CardContent className="flex flex-col sm:flex-row gap-2">
                 <Button asChild>
                     <Link href="/admin/bookings" className="relative">
                         <Notebook className="mr-2" />
@@ -371,7 +371,7 @@ export default function AdminDashboard() {
                             )}
                             />
 
-                            <div className="grid grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                                 <FormField
                                 control={form.control}
                                 name="isAvailable"

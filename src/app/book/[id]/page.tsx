@@ -399,7 +399,7 @@ export default function BookingPage() {
                         <CardContent className="space-y-4">
                              <FormField control={form.control} name="customerResidency" render={({ field }) => (
                                 <FormItem className="space-y-3"><FormLabel>Residency Status</FormLabel><FormControl>
-                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex space-x-4">
+                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                     <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="local" /></FormControl><FormLabel className="font-normal">Sri Lankan</FormLabel></FormItem>
                                     <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="tourist" /></FormControl><FormLabel className="font-normal">Tourist / Foreign National</FormLabel></FormItem>
                                 </RadioGroup></FormControl><FormMessage />
@@ -445,7 +445,7 @@ export default function BookingPage() {
                         <CardContent className="space-y-4">
                              <FormField control={form.control} name="guarantorResidency" render={({ field }) => (
                                 <FormItem className="space-y-3"><FormLabel>Residency Status</FormLabel><FormControl>
-                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex space-x-4">
+                                <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                                     <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="local" /></FormControl><FormLabel className="font-normal">Sri Lankan</FormLabel></FormItem>
                                     <FormItem className="flex items-center space-x-2"><FormControl><RadioGroupItem value="tourist" /></FormControl><FormLabel className="font-normal">Tourist / Foreign National</FormLabel></FormItem>
                                 </RadioGroup></FormControl><FormMessage />
@@ -484,8 +484,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
-    
-
-    
-

@@ -141,7 +141,7 @@ export default function AdminBookingsPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-        <div className="mb-8 flex justify-between items-center">
+        <div className="mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
                  <h1 className="text-3xl font-headline font-bold mb-2">Booking Requests</h1>
                 <p className="text-muted-foreground">
@@ -162,14 +162,14 @@ export default function AdminBookingsPage() {
           {bookings.map((booking) => (
             <Card key={booking.id} className="overflow-hidden">
                 <CardHeader>
-                  <div className="flex justify-between items-start">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                     <div>
                       <CardTitle className="flex items-center gap-2"><Car className="h-5 w-5 text-primary"/>{booking.carName}</CardTitle>
                        <CardDescription>
                         Requested on {format(parseISO(booking.createdAt), "PPP, p")}
                       </CardDescription>
                     </div>
-                    <Badge variant={getStatusVariant(booking.status)} className="capitalize text-sm py-1 px-3">
+                    <Badge variant={getStatusVariant(booking.status)} className="capitalize text-sm py-1 px-3 self-start">
                         {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                         {booking.status}
                     </Badge>
@@ -247,11 +247,11 @@ export default function AdminBookingsPage() {
                     {/* Action Area */}
                     <div className="flex justify-end">
                      {booking.status === 'pending' && (
-                        <div className="flex items-center gap-2">
-                            <Button onClick={() => handleStatusUpdate(booking.id, 'confirmed')} disabled={isUpdating} className="bg-green-600 hover:bg-green-700">
+                        <div className="flex flex-col sm:flex-row items-center gap-2">
+                            <Button onClick={() => handleStatusUpdate(booking.id, 'confirmed')} disabled={isUpdating} className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
                                 <Check className="mr-2"/> Confirm
                             </Button>
-                            <Button variant="destructive" onClick={() => handleStatusUpdate(booking.id, 'canceled')} disabled={isUpdating}>
+                            <Button variant="destructive" onClick={() => handleStatusUpdate(booking.id, 'canceled')} disabled={isUpdating} className="w-full sm:w-auto">
                                 <X className="mr-2"/> Reject
                             </Button>
                         </div>
@@ -263,8 +263,8 @@ export default function AdminBookingsPage() {
                                 <AlertTitle>
                                     Request {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                                 </AlertTitle>
-                                <AlertDescription className="flex items-center justify-between">
-                                    This booking request has already been processed.
+                                <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                    <span>This booking request has already been processed.</span>
                                     {booking.status === 'confirmed' && (
                                         <Button asChild variant="secondary" size="sm">
                                             <Link href={`/agreement/${booking.id}`}>

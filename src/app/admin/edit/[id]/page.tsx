@@ -306,7 +306,7 @@ export default function EditCarPage() {
                 </Card>
 
 
-                 <div className="grid grid-cols-2 gap-8">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <FormField
                     control={form.control}
                     name="isAvailable"
