@@ -14,7 +14,7 @@ export default function CarDetailClient({ bookedDates }: CarDetailClientProps) {
   const [hydrated, setHydrated] = useState(false);
 
   // Memoize the disabled dates calculation to avoid re-computing on every render
-  const disabledDates = useMemo(() => {
+  const bookedDateObjects = useMemo(() => {
     return bookedDates.map(d => {
         // The date from firestore might be malformed, so we should handle it gracefully
         try {
@@ -33,7 +33,7 @@ export default function CarDetailClient({ bookedDates }: CarDetailClientProps) {
     if (day < today) return true;
     
     // Check if the current day is one of the booked dates.
-    return disabledDates.some(
+    return bookedDateObjects.some(
       (disabledDate) => isSameDay(day, disabledDate)
     );
   };
@@ -51,7 +51,7 @@ export default function CarDetailClient({ bookedDates }: CarDetailClientProps) {
   return (
     <Calendar
       mode="single"
-      selected={date}
+      selected={bookedDateObjects}
       onSelect={setDate}
       className="rounded-md border"
       disabled={isDisabled}
