@@ -43,6 +43,7 @@ const billingFormSchema = z.object({
   additionalKm: z.coerce.number().min(0).optional().default(0),
   pricePerKm: z.coerce.number().min(0).optional().default(0),
   additionalDays: z.coerce.number().min(0).optional().default(0),
+  pricePerDay: z.coerce.number().min(0).optional().default(0),
   damages: z.coerce.number().min(0).optional().default(0),
   delayPayments: z.coerce.number().min(0).optional().default(0),
   otherCharges: z.coerce.number().min(0).optional().default(0),
@@ -71,6 +72,7 @@ export default function BillingPage() {
       additionalKm: 0,
       pricePerKm: 0,
       additionalDays: 0,
+      pricePerDay: 0,
       damages: 0,
       delayPayments: 0,
       otherCharges: 0,
@@ -83,7 +85,7 @@ export default function BillingPage() {
 
   const subTotal =
     (Number(watchFields.additionalKm) || 0) * (Number(watchFields.pricePerKm) || 0) +
-    (Number(watchFields.additionalDays) || 0) * (Number(car?.pricePerDay.lkr) || 0);
+    (Number(watchFields.additionalDays) || 0) * (Number(watchFields.pricePerDay) || 0);
 
   const totalAmount =
     subTotal +
@@ -132,6 +134,7 @@ export default function BillingPage() {
                 additionalKm: billData.additionalKm,
                 pricePerKm: billData.pricePerKm,
                 additionalDays: billData.additionalDays,
+                pricePerDay: billData.pricePerDay || carData.pricePerDay.lkr,
                 damages: billData.damages,
                 delayPayments: billData.delayPayments,
                 otherCharges: billData.otherCharges,
@@ -141,6 +144,7 @@ export default function BillingPage() {
         } else {
             form.reset({
                 ...form.getValues(),
+                pricePerDay: carData.pricePerDay.lkr,
                 billDate: format(new Date(), 'yyyy-MM-dd')
             });
         }
@@ -173,7 +177,7 @@ export default function BillingPage() {
             additionalKm: values.additionalKm || 0,
             pricePerKm: values.pricePerKm || 0,
             additionalDays: values.additionalDays || 0,
-            pricePerDay: car.pricePerDay.lkr,
+            pricePerDay: values.pricePerDay || 0,
             damages: values.damages || 0,
             delayPayments: values.delayPayments || 0,
             otherCharges: values.otherCharges || 0,
@@ -274,7 +278,9 @@ export default function BillingPage() {
                         <FormField control={form.control} name="additionalDays" render={({ field }) => (
                             <FormItem><FormLabel>Additional Days</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
-                        <FormItem><FormLabel>Price per Additional Day</FormLabel><FormControl><Input type="number" disabled value={car?.pricePerDay.lkr || 0} /></FormControl></FormItem>
+                        <FormField control={form.control} name="pricePerDay" render={({ field }) => (
+                           <FormItem><FormLabel>Price per Additional Day</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
                     </div>
                 </CardContent>
             </Card>
@@ -336,5 +342,3 @@ export default function BillingPage() {
     </div>
   );
 }
-
-    

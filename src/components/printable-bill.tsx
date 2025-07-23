@@ -75,7 +75,7 @@ const PrintableBill = React.forwardRef<HTMLDivElement, PrintableBillProps>(({ da
                 <Field label="Additional Kilometers" value={`${data.additionalKm || 0} km`} isCurrency={false}/>
                 <Field label="Price per Additional KM" value={data.pricePerKm || 0} />
                 <Field label="Additional Days" value={`${data.additionalDays || 0} days`} isCurrency={false}/>
-                <Field label="Price per Additional Day" value={car.pricePerDay.lkr} />
+                <Field label="Price per Additional Day" value={data.pricePerDay || 0} />
                 <div className="flex justify-between items-center py-1 border-t-2 border-gray-400 mt-0.5 pt-0.5">
                     <p className="text-[10px] font-bold">Sub-Total (KM & Days)</p>
                     <p className="text-[10px] font-bold">Rs {subTotal.toFixed(2)}</p>
