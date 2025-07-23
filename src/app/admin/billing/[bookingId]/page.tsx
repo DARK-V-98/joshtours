@@ -128,7 +128,6 @@ export default function BillingPage() {
         }
         setCar(carData);
         
-        // If a bill already exists, populate the form
         if (billData) {
             form.reset({
                 additionalKm: billData.additionalKm,
@@ -160,7 +159,7 @@ export default function BillingPage() {
       }
     }
     fetchBookingData();
-  }, [bookingId, toast, router, form]);
+  }, [bookingId, form, router, toast]);
 
   
   async function onSubmit(values: BillingFormValues) {
@@ -170,7 +169,7 @@ export default function BillingPage() {
     }
 
     try {
-        await saveBill(booking.id, {
+        const billDataToSave: Omit<Bill, 'id' | 'createdAt'> = {
             bookingId: booking.id,
             customerName: booking.customerName,
             vehicleName: booking.carName,
@@ -186,7 +185,8 @@ export default function BillingPage() {
             paidAmount: values.paidAmount || 0,
             balanceDue: balanceDue,
             billDate: values.billDate
-        });
+        };
+        await saveBill(booking.id, billDataToSave);
         toast({
             title: 'Bill Saved!',
             description: 'The final bill has been recorded successfully.',

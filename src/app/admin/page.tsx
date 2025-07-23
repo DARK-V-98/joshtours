@@ -94,15 +94,21 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    if (!loading) {
-        if (!user || user.role !== "admin") {
-            router.push("/");
-        } else {
-            // Fetch pending counts
-            getPendingBookingCount().then(setPendingBookings);
-            getPendingTestimonialCount().then(setPendingTestimonials);
-        }
+    if (loading) return;
+
+    if (!user || user.role !== "admin") {
+      router.push("/");
+      return;
     }
+
+    const fetchPendingCounts = async () => {
+        const bookingCount = await getPendingBookingCount();
+        const testimonialCount = await getPendingTestimonialCount();
+        setPendingBookings(bookingCount);
+        setPendingTestimonials(testimonialCount);
+    };
+
+    fetchPendingCounts();
   }, [user, loading, router]);
 
 

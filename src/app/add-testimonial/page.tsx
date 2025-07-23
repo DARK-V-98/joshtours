@@ -52,6 +52,8 @@ export default function AddTestimonialPage() {
   const form = useForm<TestimonialFormValues>({
     resolver: zodResolver(testimonialSchema),
     defaultValues: {
+      name: '',
+      comment: '',
       rating: 0,
     },
   });
