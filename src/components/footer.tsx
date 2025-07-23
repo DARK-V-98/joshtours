@@ -39,7 +39,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-5 w-5 text-primary" />
-                <span>123 Main St, Anytown, USA 12345</span>
+                <span>68/2A,WELIKADAMULLA RD, MABOLA ,WATTALA</span>
               </div>
             </div>
           </div>
