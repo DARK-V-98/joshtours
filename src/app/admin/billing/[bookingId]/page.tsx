@@ -67,6 +67,16 @@ export default function BillingPage() {
 
   const form = useForm<BillingFormValues>({
     resolver: zodResolver(billingFormSchema),
+    defaultValues: {
+      additionalKm: 0,
+      pricePerKm: 0,
+      additionalDays: 0,
+      damages: 0,
+      delayPayments: 0,
+      otherCharges: 0,
+      paidAmount: 0,
+      billDate: format(new Date(), 'yyyy-MM-dd'),
+    },
   });
 
   const watchFields = form.watch();
@@ -130,6 +140,7 @@ export default function BillingPage() {
             });
         } else {
             form.reset({
+                ...form.getValues(),
                 billDate: format(new Date(), 'yyyy-MM-dd')
             });
         }
