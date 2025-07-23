@@ -31,7 +31,12 @@ import {
   ArrowLeft,
   AlertCircle,
   Route,
-  FileText
+  FileText,
+  Download,
+  Contact,
+  Shield,
+  FileBadge,
+  Globe
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +44,16 @@ import { format, parseISO } from "date-fns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+
+const DocumentLink = ({ url, label }: { url?: string; label: string }) => {
+    if (!url) return null;
+    return (
+        <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline flex items-center gap-1">
+            <Download className="h-3 w-3"/>
+            {label}
+        </a>
+    )
+}
 
 export default function AdminBookingsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -161,78 +176,107 @@ export default function AdminBookingsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {/* Booking Info */}
                         <div className="space-y-4">
-                            <h4 className="font-semibold">Customer Details</h4>
-                            <div className="text-sm space-y-2">
-                                <div className="flex items-center gap-2"><User className="h-4 w-4 text-muted-foreground"/>{booking.customerName}</div>
-                                <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-muted-foreground"/>{booking.customerEmail}</div>
-                                <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-muted-foreground"/>{booking.customerPhone}</div>
-                            </div>
-                             <Separator />
-                             <h4 className="font-semibold">Booking Period</h4>
-                             <div className="flex items-center gap-2 text-sm">
-                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                             <h4 className="font-semibold text-lg flex items-center gap-2"><Calendar className="h-5 w-5"/>Booking Period</h4>
+                             <div className="flex items-center gap-2 text-sm ml-2">
                                 <span>{format(parseISO(booking.pickupDate), "MMM dd, yyyy")} to {format(parseISO(booking.returnDate), "MMM dd, yyyy")}</span>
                             </div>
                              {booking.estimatedKm && (
                                 <>
-                                <Separator />
-                                <h4 className="font-semibold">Estimated Mileage</h4>
-                                <div className="flex items-center gap-2 text-sm">
-                                    <Route className="h-4 w-4 text-muted-foreground" />
+                                <h4 className="font-semibold text-lg flex items-center gap-2"><Route className="h-5 w-5"/>Estimated Mileage</h4>
+                                <div className="flex items-center gap-2 text-sm ml-2">
                                     <span>{booking.estimatedKm} km</span>
                                 </div>
                                 </>
                              )}
+                              {booking.requests && (
+                                <>
+                                <h4 className="font-semibold text-lg flex items-center gap-2"><Info className="h-5 w-5"/>Special Requests</h4>
+                                <p className="text-sm text-muted-foreground italic ml-2">{booking.requests}</p>
+                                </>
+                             )}
+                        </div>
+                        
+                        {/* Customer Info */}
+                        <div className="space-y-4">
+                            <h4 className="font-semibold text-lg flex items-center gap-2"><Contact className="h-5 w-5"/>Customer Details</h4>
+                            <div className="text-sm space-y-2 ml-2">
+                                <p className="flex items-center gap-2"><User className="h-4 w-4 text-muted-foreground"/>{booking.customerName}</p>
+                                <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-muted-foreground"/>{booking.customerEmail}</p>
+                                <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-muted-foreground"/>{booking.customerPhone}</p>
+                                <p className="flex items-center gap-2"><FileBadge className="h-4 w-4 text-muted-foreground"/><strong>ID:</strong> {booking.customerNicOrPassport}</p>
+                                <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-muted-foreground"/><strong>Residency:</strong> <span className="capitalize">{booking.customerResidency}</span></p>
+                            </div>
+                             <h4 className="font-semibold text-lg flex items-center gap-2"><FileText className="h-5 w-5"/>Customer Documents</h4>
+                             <div className="grid grid-cols-2 gap-y-1 ml-2">
+                                <DocumentLink url={booking.customerNicFrontUrl} label="NIC Front"/>
+                                <DocumentLink url={booking.customerNicBackUrl} label="NIC Back"/>
+                                <DocumentLink url={booking.customerPassportFrontUrl} label="Passport Front"/>
+                                <DocumentLink url={booking.customerPassportBackUrl} label="Passport Back"/>
+                                <DocumentLink url={booking.customerLicenseFrontUrl} label="License Front"/>
+                                <DocumentLink url={booking.customerLicenseBackUrl} label="License Back"/>
+                                <DocumentLink url={booking.customerLightBillUrl} label="Utility Bill"/>
+                             </div>
                         </div>
 
-                         <div className="space-y-4">
-                            <h4 className="font-semibold">Special Requests</h4>
-                             {booking.requests ? (
-                                <Alert variant="default">
-                                    <Info className="h-4 w-4" />
-                                    <AlertDescription>
-                                        {booking.requests}
-                                    </AlertDescription>
-                                </Alert>
-                            ) : (
-                                <p className="text-sm text-muted-foreground italic">No special requests submitted.</p>
-                            )}
+                         {/* Guarantor Info */}
+                        <div className="space-y-4">
+                            <h4 className="font-semibold text-lg flex items-center gap-2"><Shield className="h-5 w-5"/>Guarantor Details</h4>
+                            <div className="text-sm space-y-2 ml-2">
+                                <p className="flex items-center gap-2"><User className="h-4 w-4 text-muted-foreground"/>{booking.guarantorName}</p>
+                                <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-muted-foreground"/>{booking.guarantorPhone}</p>
+                                <p className="flex items-center gap-2"><FileBadge className="h-4 w-4 text-muted-foreground"/><strong>ID:</strong> {booking.guarantorNicOrPassport}</p>
+                                <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-muted-foreground"/><strong>Residency:</strong> <span className="capitalize">{booking.guarantorResidency}</span></p>
+                            </div>
+                             <h4 className="font-semibold text-lg flex items-center gap-2"><FileText className="h-5 w-5"/>Guarantor Documents</h4>
+                             <div className="grid grid-cols-2 gap-y-1 ml-2">
+                                <DocumentLink url={booking.guarantorNicFrontUrl} label="NIC Front"/>
+                                <DocumentLink url={booking.guarantorNicBackUrl} label="NIC Back"/>
+                                <DocumentLink url={booking.guarantorPassportFrontUrl} label="Passport Front"/>
+                                <DocumentLink url={booking.guarantorPassportBackUrl} label="Passport Back"/>
+                                <DocumentLink url={booking.guarantorLicenseFrontUrl} label="License Front"/>
+                                <DocumentLink url={booking.guarantorLicenseBackUrl} label="License Back"/>
+                                <DocumentLink url={booking.guarantorLightBillUrl} label="Utility Bill"/>
+                             </div>
+                        </div>
+                    </div>
+                    <Separator className="my-6"/>
+                    
+                    {/* Action Area */}
+                    <div className="flex justify-end">
+                     {booking.status === 'pending' && (
+                        <div className="flex items-center gap-2">
+                            <Button onClick={() => handleStatusUpdate(booking.id, 'confirmed')} disabled={isUpdating} className="bg-green-600 hover:bg-green-700">
+                                <Check className="mr-2"/> Confirm
+                            </Button>
+                            <Button variant="destructive" onClick={() => handleStatusUpdate(booking.id, 'canceled')} disabled={isUpdating}>
+                                <X className="mr-2"/> Reject
+                            </Button>
+                        </div>
+                    )}
 
-                             {booking.status === 'pending' && (
-                                <div className="flex items-center gap-2 pt-4">
-                                    <Button onClick={() => handleStatusUpdate(booking.id, 'confirmed')} disabled={isUpdating} className="flex-1 bg-green-600 hover:bg-green-700">
-                                        <Check className="mr-2"/> Confirm
-                                    </Button>
-                                    <Button variant="destructive" onClick={() => handleStatusUpdate(booking.id, 'canceled')} disabled={isUpdating} className="flex-1">
-                                        <X className="mr-2"/> Reject
-                                    </Button>
-                                </div>
-                            )}
-
-                            {booking.status !== 'pending' && (
-                                <div className="pt-4">
-                                     <Alert variant={booking.status === 'confirmed' ? 'default' : 'destructive'}>
-                                        <AlertTitle>
-                                            Request {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                                        </AlertTitle>
-                                        <AlertDescription className="flex items-center justify-between">
-                                            This booking request has already been processed.
-                                            {booking.status === 'confirmed' && (
-                                                <Button asChild variant="secondary" size="sm">
-                                                    <Link href={`/agreement/${booking.id}`}>
-                                                        <FileText className="mr-2 h-4 w-4" />
-                                                        View Agreement
-                                                    </Link>
-                                                </Button>
-                                            )}
-                                        </AlertDescription>
-                                    </Alert>
-                                </div>
-                            )}
-                         </div>
-
+                    {booking.status !== 'pending' && (
+                        <div className="w-full">
+                             <Alert variant={booking.status === 'confirmed' ? 'default' : 'destructive'}>
+                                <AlertTitle>
+                                    Request {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                                </AlertTitle>
+                                <AlertDescription className="flex items-center justify-between">
+                                    This booking request has already been processed.
+                                    {booking.status === 'confirmed' && (
+                                        <Button asChild variant="secondary" size="sm">
+                                            <Link href={`/agreement/${booking.id}`}>
+                                                <FileText className="mr-2 h-4 w-4" />
+                                                View Agreement
+                                            </Link>
+                                        </Button>
+                                    )}
+                                </AlertDescription>
+                            </Alert>
+                        </div>
+                    )}
                     </div>
                 </CardContent>
             </Card>

@@ -2,22 +2,82 @@
 "use server";
 
 import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, getDoc, Timestamp, orderBy, updateDoc,getCountFromServer } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, app } from "@/lib/firebase";
 import { revalidatePath } from "next/cache";
 
-interface BookingRequestData {
+
+// Helper function to upload a single file and return its URL
+async function uploadFile(file: File, path: string): Promise<string> {
+    if (!app) throw new Error("Firebase not initialized");
+    const storage = getStorage(app);
+    const storageRef = ref(storage, path);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+}
+
+// New function to handle uploading all booking-related documents
+export async function uploadBookingDocuments(bookingId: string, formData: FormData) {
+    const fileFields = [
+        'customerNicFront', 'customerNicBack', 'customerLicenseFront', 'customerLicenseBack',
+        'customerPassportFront', 'customerPassportBack', 'customerLightBill',
+        'guarantorNicFront', 'guarantorNicBack', 'guarantorLicenseFront', 'guarantorLicenseBack',
+        'guarantorPassportFront', 'guarantorPassportBack', 'guarantorLightBill'
+    ];
+    
+    const urls: { [key: string]: string } = {};
+
+    for (const field of fileFields) {
+        const file = formData.get(field) as File | null;
+        if (file && file.size > 0) {
+            const path = `booking-documents/${bookingId}/${field}-${file.name}`;
+            urls[field] = await uploadFile(file, path);
+        }
+    }
+    return urls;
+}
+
+
+// All possible fields for a booking request
+export interface BookingRequestData {
   carId: string;
   carName: string;
   userId: string;
-  customerName: string;
-  customerEmail: string;
-  customerPhone: string;
   pickupDate: string; // YYYY-MM-DD
   returnDate: string; // YYYY-MM-DD
   estimatedKm?: number;
   requests?: string;
-  status?: 'pending' | 'confirmed' | 'canceled'; // Optional status for creation
+  status?: 'pending' | 'confirmed' | 'canceled';
+
+  // Customer Details
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  customerResidency: 'local' | 'tourist';
+  customerNicOrPassport: string;
+  customerNicFrontUrl?: string;
+  customerNicBackUrl?: string;
+  customerPassportFrontUrl?: string;
+  customerPassportBackUrl?: string;
+  customerLicenseFrontUrl?: string;
+  customerLicenseBackUrl?: string;
+  customerLightBillUrl?: string;
+
+  // Guarantor Details
+  guarantorName: string;
+  guarantorPhone: string;
+  guarantorResidency: 'local' | 'tourist';
+  guarantorNicOrPassport: string;
+  guarantorNicFrontUrl?: string;
+  guarantorNicBackUrl?: string;
+  guarantorPassportFrontUrl?: string;
+  guarantorPassportBackUrl?: string;
+  guarantorLicenseFrontUrl?: string;
+  guarantorLicenseBackUrl?: string;
+  guarantorLightBillUrl?: string;
 }
+
 
 // Stored in Firestore
 export interface BookingRequest extends BookingRequestData {
@@ -27,20 +87,48 @@ export interface BookingRequest extends BookingRequestData {
 }
 
 
-export async function createBookingRequest(data: BookingRequestData) {
+export async function createBookingRequest(
+    data: Omit<BookingRequestData, 'status'>, 
+    documentFormData: FormData
+) {
   if (!db) {
     throw new Error("Database not initialized");
   }
 
   try {
+    const bookingRequestData = {
+        ...data,
+        status: 'pending',
+        createdAt: serverTimestamp()
+    };
+    
+    // Step 1: Create the document first to get an ID
     const bookingRequestsCollectionRef = collection(db, "bookingRequests");
-    await addDoc(bookingRequestsCollectionRef, {
-      ...data,
-      // If status is not provided, default to 'pending'.
-      // This allows manual bookings to be set as 'confirmed' directly.
-      status: data.status || 'pending', 
-      createdAt: serverTimestamp(),
+    const docRef = await addDoc(bookingRequestsCollectionRef, bookingRequestData);
+    
+    // Step 2: Upload documents using the new document's ID
+    const documentUrls = await uploadBookingDocuments(docRef.id, documentFormData);
+
+    // Step 3: Update the document with the image URLs
+    await updateDoc(docRef, {
+        customerNicFrontUrl: documentUrls.customerNicFront || '',
+        customerNicBackUrl: documentUrls.customerNicBack || '',
+        customerPassportFrontUrl: documentUrls.customerPassportFront || '',
+        customerPassportBackUrl: documentUrls.customerPassportBack || '',
+        customerLicenseFrontUrl: documentUrls.customerLicenseFront || '',
+        customerLicenseBackUrl: documentUrls.customerLicenseBack || '',
+        customerLightBillUrl: documentUrls.customerLightBill || '',
+
+        guarantorNicFrontUrl: documentUrls.guarantorNicFront || '',
+        guarantorNicBackUrl: documentUrls.guarantorNicBack || '',
+        guarantorPassportFrontUrl: documentUrls.guarantorPassportFront || '',
+        guarantorPassportBackUrl: documentUrls.guarantorPassportBack || '',
+        guarantorLicenseFrontUrl: documentUrls.guarantorLicenseFront || '',
+        guarantorLicenseBackUrl: documentUrls.guarantorLicenseBack || '',
+        guarantorLightBillUrl: documentUrls.guarantorLightBill || '',
     });
+
+
     revalidatePath('/my-bookings');
     revalidatePath('/admin/bookings');
   } catch (error) {
