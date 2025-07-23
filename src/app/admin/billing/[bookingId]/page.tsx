@@ -82,16 +82,16 @@ export default function BillingPage() {
   const watchFields = form.watch();
 
   const subTotal =
-    (watchFields.additionalKm || 0) * (watchFields.pricePerKm || 0) +
-    (watchFields.additionalDays || 0) * (car?.pricePerDay.lkr || 0);
+    (Number(watchFields.additionalKm) || 0) * (Number(watchFields.pricePerKm) || 0) +
+    (Number(watchFields.additionalDays) || 0) * (Number(car?.pricePerDay.lkr) || 0);
 
   const totalAmount =
     subTotal +
-    (watchFields.damages || 0) +
-    (watchFields.delayPayments || 0) +
-    (watchFields.otherCharges || 0);
+    (Number(watchFields.damages) || 0) +
+    (Number(watchFields.delayPayments) || 0) +
+    (Number(watchFields.otherCharges) || 0);
 
-  const balanceDue = totalAmount - (watchFields.paidAmount || 0);
+  const balanceDue = totalAmount - (Number(watchFields.paidAmount) || 0);
 
 
   useEffect(() => {
@@ -336,3 +336,5 @@ export default function BillingPage() {
     </div>
   );
 }
+
+    
