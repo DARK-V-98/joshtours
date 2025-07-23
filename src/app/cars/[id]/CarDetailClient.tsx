@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Car } from "@/lib/data";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, ArrowLeft, Check } from "lucide-react";
+import { CheckCircle, XCircle, ArrowLeft, Check, Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { useCurrency } from "@/context/CurrencyContext";
 import Link from "next/link";
 import { parse, startOfDay, isSameDay } from "date-fns";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 interface CarDetailClientProps {
   car: Car;
@@ -105,6 +107,14 @@ export default function CarDetailClient({ car }: CarDetailClientProps) {
                 <span className="text-xl font-normal text-muted-foreground">/day</span>
             </div>
            )}
+
+          <Alert className="mb-6">
+            <Info className="h-4 w-4" />
+            <AlertTitle>Check Availability First!</AlertTitle>
+            <AlertDescription>
+              Please review the calendar below to see booked dates before proceeding with your rental.
+            </AlertDescription>
+          </Alert>
 
           <div className="flex items-stretch gap-4 mb-6">
             <Button size="lg" className="flex-1 h-12 text-lg" disabled={!car.isAvailable} asChild>
