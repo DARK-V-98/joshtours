@@ -168,7 +168,7 @@ export default function BookingPage() {
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
       requests: "",
-      estimatedKm: undefined,
+      estimatedKm: "" as any, // Initialize as empty string to avoid uncontrolled component error
       customerName: '',
       customerPhone: '',
       customerNicOrPassport: '',
