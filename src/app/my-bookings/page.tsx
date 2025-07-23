@@ -146,7 +146,7 @@ export default function MyBookingsPage() {
                     <div>
                       <CardTitle>{booking.carName}</CardTitle>
                        <CardDescription>
-                        Requested on {format(parseISO(booking.createdAt), "PPP")}
+                        Requested on {format(parseISO(booking.createdAt), "PPP")} | ID: <strong>{booking.id}</strong>
                       </CardDescription>
                     </div>
                     <Badge variant={getStatusVariant(booking.status)} className="capitalize">{booking.status}</Badge>
