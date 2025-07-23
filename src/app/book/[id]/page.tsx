@@ -168,7 +168,7 @@ export default function BookingPage() {
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
       requests: "",
-      estimatedKm: '',
+      estimatedKm: undefined,
       customerName: '',
       customerPhone: '',
       customerNicOrPassport: '',
@@ -264,6 +264,7 @@ export default function BookingPage() {
     try {
       await createBookingRequest(bookingData, documentFormData);
       setIsSubmitted(true);
+      form.reset();
     } catch (error) {
       console.error("Failed to create booking request:", error);
       toast({
@@ -563,5 +564,7 @@ export default function BookingPage() {
     </div>
   );
 }
+
+    
 
     
