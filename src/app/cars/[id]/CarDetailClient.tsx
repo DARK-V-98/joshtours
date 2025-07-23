@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Calendar } from "@/components/ui/calendar";
-import { parse, startOfDay } from "date-fns";
+import { parse, startOfDay, isSameDay } from "date-fns";
 
 interface CarDetailClientProps {
   bookedDates: string[]; // Dates in 'yyyy-MM-dd' format
@@ -14,18 +14,26 @@ export default function CarDetailClient({ bookedDates }: CarDetailClientProps) {
   const [hydrated, setHydrated] = useState(false);
 
   // Memoize the disabled dates calculation to avoid re-computing on every render
-  const disabledDates = React.useMemo(() => {
-    return bookedDates.map(d => startOfDay(parse(d, 'yyyy-MM-dd', new Date())));
+  const disabledDates = useMemo(() => {
+    return bookedDates.map(d => {
+        // The date from firestore might be malformed, so we should handle it gracefully
+        try {
+            return startOfDay(parse(d, 'yyyy-MM-dd', new Date()));
+        } catch (e) {
+            return null;
+        }
+    }).filter(d => d !== null) as Date[];
   }, [bookedDates]);
-  
+
   // Disable past dates and already booked dates
   const isDisabled = (day: Date) => {
     const today = startOfDay(new Date());
+    // Dates in the past (before today) should be disabled.
     const isPast = day < today;
     
-    // Check if the current day is in the list of disabled (booked) dates
+    // Check if the current day is one of the booked dates.
     const isBooked = disabledDates.some(
-      (disabledDate) => disabledDate.getTime() === day.getTime()
+      (disabledDate) => isSameDay(day, disabledDate)
     );
 
     return isPast || isBooked;
@@ -37,7 +45,8 @@ export default function CarDetailClient({ bookedDates }: CarDetailClientProps) {
 
   if (!hydrated) {
     // Render a placeholder or null on the server to avoid hydration mismatch
-    return <div className="h-[298px] w-[280px] rounded-md border" />;
+    // and layout shift when the real component renders.
+    return <div className="h-[298px] w-full rounded-md border" />;
   }
 
   return (
