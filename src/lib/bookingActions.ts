@@ -6,6 +6,7 @@ import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, getDoc
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, app } from "@/lib/firebase";
 import { revalidatePath } from "next/cache";
+import { eachDayOfInterval, format, parseISO } from "date-fns";
 
 // Helper function to upload a single file and return its URL
 async function uploadFile(file: File, path: string): Promise<string> {
@@ -91,11 +92,15 @@ export interface BookingRequest extends BookingRequestData {
 async function blockCarDates(carId: string, pickupDateStr: string, returnDateStr: string) {
     if (!db) return;
     const carDocRef = doc(db, 'cars', carId);
-    
-    // Instead of reading and then writing, we atomically add the new date range to the array.
-    // The bookedDates array will store pairs of [startDate, endDate].
+
+    const startDate = parseISO(pickupDateStr);
+    const endDate = parseISO(returnDateStr);
+    const dateRange = eachDayOfInterval({ start: startDate, end: endDate });
+    const dateStrings = dateRange.map(date => format(date, 'yyyy-MM-dd'));
+
+    // Atomically add the new date strings to the array.
     await updateDoc(carDocRef, {
-        bookedDates: arrayUnion(pickupDateStr, returnDateStr)
+        bookedDates: arrayUnion(...dateStrings)
     });
 }
 

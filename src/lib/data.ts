@@ -1,4 +1,5 @@
 
+
 import { collection, getDocs, doc, getDoc, query, orderBy, Timestamp, limit } from "firebase/firestore";
 import { db } from "./firebase";
 import { eachDayOfInterval, format, parseISO, isValid } from 'date-fns';
@@ -33,27 +34,6 @@ function toCarObject(doc: any): Car {
     const createdAt = data.createdAt instanceof Timestamp 
       ? data.createdAt.toDate().toISOString() 
       : (data.createdAt || null);
-    
-    // NEW: Reliably expand all booked date ranges into individual dates
-    const allBookedDates: Set<string> = new Set();
-    if (data.bookedDates && Array.isArray(data.bookedDates)) {
-        for (let i = 0; i < data.bookedDates.length; i += 2) {
-            const startStr = data.bookedDates[i];
-            const endStr = data.bookedDates[i + 1];
-
-            if (startStr && endStr) {
-                 const startDate = parseISO(startStr);
-                 const endDate = parseISO(endStr);
-                 if (isValid(startDate) && isValid(endDate) && endDate >= startDate) {
-                     const datesInRange = eachDayOfInterval({ start: startDate, end: endDate });
-                     datesInRange.forEach(date => {
-                         allBookedDates.add(format(date, 'yyyy-MM-dd'));
-                     });
-                 }
-            }
-        }
-    }
-
 
     return {
       id: doc.id,
@@ -65,7 +45,7 @@ function toCarObject(doc: any): Car {
       pricePerDay: data.pricePerDay || { usd: 0, lkr: 0, eur: 0 },
       priceEnabled: data.priceEnabled === true,
       specifications: data.specifications || [],
-      bookedDates: Array.from(allBookedDates),
+      bookedDates: data.bookedDates || [], // Directly use the stored array
       createdAt,
     };
 }
