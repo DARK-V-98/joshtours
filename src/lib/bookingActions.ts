@@ -1,4 +1,5 @@
 
+
 "use server";
 
 import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, getDoc, Timestamp, orderBy, updateDoc,getCountFromServer } from "firebase/firestore";
@@ -22,9 +23,9 @@ async function uploadFile(file: File, path: string): Promise<string> {
 export async function uploadBookingDocuments(bookingId: string, formData: FormData) {
     const fileFields = [
         'customerNicFront', 'customerNicBack', 'customerLicenseFront', 'customerLicenseBack',
-        'customerPassportFront', 'customerPassportBack', 'customerLightBill',
+        'customerPassportFront', 'customerPassportBack', 'customerLightBill', 'customerWaterBill',
         'guarantorNicFront', 'guarantorNicBack', 'guarantorLicenseFront', 'guarantorLicenseBack',
-        'guarantorPassportFront', 'guarantorPassportBack', 'guarantorLightBill'
+        'guarantorPassportFront', 'guarantorPassportBack', 'guarantorLightBill', 'guarantorWaterBill'
     ];
     
     const urls: { [key: string]: string } = {};
@@ -64,6 +65,7 @@ export interface BookingRequestData {
   customerLicenseFrontUrl?: string;
   customerLicenseBackUrl?: string;
   customerLightBillUrl?: string;
+  customerWaterBillUrl?: string;
 
   // Guarantor Details
   guarantorName: string;
@@ -77,6 +79,7 @@ export interface BookingRequestData {
   guarantorLicenseFrontUrl?: string;
   guarantorLicenseBackUrl?: string;
   guarantorLightBillUrl?: string;
+  guarantorWaterBillUrl?: string;
 }
 
 
@@ -116,7 +119,7 @@ async function blockCarDates(carId: string, pickupDateStr: string, returnDateStr
 
 
 export async function createBookingRequest(
-    data: Omit<BookingRequestData, 'status' | 'customerNicFrontUrl' | 'customerNicBackUrl' | 'customerPassportFrontUrl' | 'customerPassportBackUrl' | 'customerLicenseFrontUrl' | 'customerLicenseBackUrl' | 'customerLightBillUrl' | 'guarantorNicFrontUrl' | 'guarantorNicBackUrl' | 'guarantorPassportFrontUrl' | 'guarantorPassportBackUrl' | 'guarantorLicenseFrontUrl' | 'guarantorLicenseBackUrl' | 'guarantorLightBillUrl' >, 
+    data: Omit<BookingRequestData, 'status' | 'customerNicFrontUrl' | 'customerNicBackUrl' | 'customerPassportFrontUrl' | 'customerPassportBackUrl' | 'customerLicenseFrontUrl' | 'customerLicenseBackUrl' | 'customerLightBillUrl' | 'customerWaterBillUrl' | 'guarantorNicFrontUrl' | 'guarantorNicBackUrl' | 'guarantorPassportFrontUrl' | 'guarantorPassportBackUrl' | 'guarantorLicenseFrontUrl' | 'guarantorLicenseBackUrl' | 'guarantorLightBillUrl' | 'guarantorWaterBillUrl'>, 
     documentFormData: FormData
 ) {
   if (!db) {
@@ -308,4 +311,5 @@ export async function getPendingBookingCount(): Promise<number> {
         return 0;
     }
 }
+
 

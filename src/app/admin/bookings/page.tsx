@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
@@ -217,7 +218,8 @@ export default function AdminBookingsPage() {
                                 <DocumentLink url={booking.customerPassportBackUrl} label="Passport Back"/>
                                 <DocumentLink url={booking.customerLicenseFrontUrl} label="License Front"/>
                                 <DocumentLink url={booking.customerLicenseBackUrl} label="License Back"/>
-                                <DocumentLink url={booking.customerLightBillUrl} label="Utility Bill"/>
+                                <DocumentLink url={booking.customerLightBillUrl} label="Light Bill"/>
+                                <DocumentLink url={booking.customerWaterBillUrl} label="Water Bill"/>
                              </div>
                         </div>
 
@@ -238,7 +240,8 @@ export default function AdminBookingsPage() {
                                 <DocumentLink url={booking.guarantorPassportBackUrl} label="Passport Back"/>
                                 <DocumentLink url={booking.guarantorLicenseFrontUrl} label="License Front"/>
                                 <DocumentLink url={booking.guarantorLicenseBackUrl} label="License Back"/>
-                                <DocumentLink url={booking.guarantorLightBillUrl} label="Utility Bill"/>
+                                <DocumentLink url={booking.guarantorLightBillUrl} label="Light Bill"/>
+                                <DocumentLink url={booking.guarantorWaterBillUrl} label="Water Bill"/>
                              </div>
                         </div>
                     </div>
