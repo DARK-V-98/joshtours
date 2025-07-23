@@ -2,12 +2,10 @@
 
 "use server";
 
-import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, getDoc, Timestamp, orderBy, updateDoc,getCountFromServer } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, getDoc, Timestamp, orderBy, updateDoc,getCountFromServer, arrayUnion } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, app } from "@/lib/firebase";
 import { revalidatePath } from "next/cache";
-import { eachDayOfInterval, format, parseISO } from 'date-fns';
-
 
 // Helper function to upload a single file and return its URL
 async function uploadFile(file: File, path: string): Promise<string> {
@@ -93,28 +91,12 @@ export interface BookingRequest extends BookingRequestData {
 async function blockCarDates(carId: string, pickupDateStr: string, returnDateStr: string) {
     if (!db) return;
     const carDocRef = doc(db, 'cars', carId);
-    const carSnap = await getDoc(carDocRef);
-
-    if (carSnap.exists()) {
-        const carData = carSnap.data();
-        const existingBookedDates = new Set(carData.bookedDates || []);
-        
-        const pickupDate = parseISO(pickupDateStr);
-        const returnDate = parseISO(returnDateStr);
-        
-        const newDates = eachDayOfInterval({
-            start: pickupDate,
-            end: returnDate
-        });
-        
-        newDates.forEach(date => {
-            existingBookedDates.add(format(date, 'yyyy-MM-dd'));
-        });
-
-        await updateDoc(carDocRef, {
-            bookedDates: Array.from(existingBookedDates)
-        });
-    }
+    
+    // Instead of reading and then writing, we atomically add the new date range to the array.
+    // The bookedDates array will store pairs of [startDate, endDate].
+    await updateDoc(carDocRef, {
+        bookedDates: arrayUnion(pickupDateStr, returnDateStr)
+    });
 }
 
 
@@ -311,5 +293,3 @@ export async function getPendingBookingCount(): Promise<number> {
         return 0;
     }
 }
-
-
