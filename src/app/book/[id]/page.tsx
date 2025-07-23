@@ -83,6 +83,8 @@ const bookingFormSchema = z.object({
 })
 .superRefine((data, ctx) => {
     // Customer validation
+    if (!data.customerLicenseFront) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "License front is required.", path: ["customerLicenseFront"] });
+    if (!data.customerLicenseBack) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "License back is required.", path: ["customerLicenseBack"] });
     if (data.customerResidency === 'local') {
         if (!data.customerNicFront) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "NIC front is required.", path: ["customerNicFront"] });
         if (!data.customerNicBack) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "NIC back is required.", path: ["customerNicBack"] });
@@ -90,10 +92,13 @@ const bookingFormSchema = z.object({
     } else if (data.customerResidency === 'tourist') {
         if (!data.customerPassportFront) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Passport front is required.", path: ["customerPassportFront"] });
         if (!data.customerPassportBack) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Passport back is required.", path: ["customerPassportBack"] });
-        if (!data.customerLicenseFront) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "License front is required.", path: ["customerLicenseFront"] });
-        if (!data.customerLicenseBack) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "License back is required.", path: ["customerLicenseBack"] });
+        if (!data.customerNicFront) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "NIC front is required.", path: ["customerNicFront"] });
+        if (!data.customerNicBack) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "NIC back is required.", path: ["customerNicBack"] });
     }
+
     // Guarantor validation
+    if (!data.guarantorLicenseFront) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Guarantor's License front is required.", path: ["guarantorLicenseFront"] });
+    if (!data.guarantorLicenseBack) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Guarantor's License back is required.", path: ["guarantorLicenseBack"] });
     if (data.guarantorResidency === 'local') {
         if (!data.guarantorNicFront) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Guarantor's NIC front is required.", path: ["guarantorNicFront"] });
         if (!data.guarantorNicBack) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Guarantor's NIC back is required.", path: ["guarantorNicBack"] });
@@ -101,8 +106,8 @@ const bookingFormSchema = z.object({
     } else if (data.guarantorResidency === 'tourist') {
         if (!data.guarantorPassportFront) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Guarantor's Passport front is required.", path: ["guarantorPassportFront"] });
         if (!data.guarantorPassportBack) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Guarantor's Passport back is required.", path: ["guarantorPassportBack"] });
-        if (!data.guarantorLicenseFront) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Guarantor's License front is required.", path: ["guarantorLicenseFront"] });
-        if (!data.guarantorLicenseBack) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Guarantor's License back is required.", path: ["guarantorLicenseBack"] });
+        if (!data.guarantorNicFront) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Guarantor's NIC front is required.", path: ["guarantorNicFront"] });
+        if (!data.guarantorNicBack) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Guarantor's NIC back is required.", path: ["guarantorNicBack"] });
     }
 });
 
@@ -388,21 +393,25 @@ export default function BookingPage() {
                                 </RadioGroup></FormControl><FormMessage />
                             </FormItem>
                             )}/>
-                            {customerResidency === 'local' && (
-                                <div className="grid md:grid-cols-2 gap-4 pt-2">
-                                    <FileUploadField name="customerNicFront" label="NIC (Front Side)" />
-                                    <FileUploadField name="customerNicBack" label="NIC (Back Side)" />
-                                    <FileUploadField name="customerLightBill" label="Utility Bill (e.g., Light Bill)" />
-                                </div>
-                            )}
-                            {customerResidency === 'tourist' && (
-                                <div className="grid md:grid-cols-2 gap-4 pt-2">
-                                    <FileUploadField name="customerPassportFront" label="Passport (Front Side)" />
-                                    <FileUploadField name="customerPassportBack" label="Passport (Back Side)" />
-                                    <FileUploadField name="customerLicenseFront" label="Driving License (Front)" />
-                                    <FileUploadField name="customerLicenseBack" label="Driving License (Back)" />
-                                </div>
-                            )}
+                            <div className="grid md:grid-cols-2 gap-4 pt-2">
+                                <FileUploadField name="customerLicenseFront" label="Driving License (Front)" />
+                                <FileUploadField name="customerLicenseBack" label="Driving License (Back)" />
+                                {customerResidency === 'local' && (
+                                    <>
+                                        <FileUploadField name="customerNicFront" label="NIC (Front Side)" />
+                                        <FileUploadField name="customerNicBack" label="NIC (Back Side)" />
+                                        <FileUploadField name="customerLightBill" label="Utility Bill (e.g., Light Bill)" />
+                                    </>
+                                )}
+                                {customerResidency === 'tourist' && (
+                                    <>
+                                        <FileUploadField name="customerPassportFront" label="Passport (Front Side)" />
+                                        <FileUploadField name="customerPassportBack" label="Passport (Back Side)" />
+                                        <FileUploadField name="customerNicFront" label="NIC (Front Side)" />
+                                        <FileUploadField name="customerNicBack" label="NIC (Back Side)" />
+                                    </>
+                                )}
+                            </div>
                         </CardContent>
                     </Card>
                     
@@ -430,21 +439,25 @@ export default function BookingPage() {
                                 </RadioGroup></FormControl><FormMessage />
                             </FormItem>
                             )}/>
-                            {guarantorResidency === 'local' && (
-                                <div className="grid md:grid-cols-2 gap-4 pt-2">
-                                    <FileUploadField name="guarantorNicFront" label="NIC (Front Side)" />
-                                    <FileUploadField name="guarantorNicBack" label="NIC (Back Side)" />
-                                    <FileUploadField name="guarantorLightBill" label="Utility Bill (e.g., Light Bill)" />
-                                </div>
-                            )}
-                            {guarantorResidency === 'tourist' && (
-                                <div className="grid md:grid-cols-2 gap-4 pt-2">
-                                    <FileUploadField name="guarantorPassportFront" label="Passport (Front Side)" />
-                                    <FileUploadField name="guarantorPassportBack" label="Passport (Back Side)" />
-                                    <FileUploadField name="guarantorLicenseFront" label="Driving License (Front)" />
-                                    <FileUploadField name="guarantorLicenseBack" label="Driving License (Back)" />
-                                </div>
-                            )}
+                            <div className="grid md:grid-cols-2 gap-4 pt-2">
+                                <FileUploadField name="guarantorLicenseFront" label="Driving License (Front)" />
+                                <FileUploadField name="guarantorLicenseBack" label="Driving License (Back)" />
+                                {guarantorResidency === 'local' && (
+                                    <>
+                                        <FileUploadField name="guarantorNicFront" label="NIC (Front Side)" />
+                                        <FileUploadField name="guarantorNicBack" label="NIC (Back Side)" />
+                                        <FileUploadField name="guarantorLightBill" label="Utility Bill (e.g., Light Bill)" />
+                                    </>
+                                )}
+                                {guarantorResidency === 'tourist' && (
+                                    <>
+                                        <FileUploadField name="guarantorPassportFront" label="Passport (Front Side)" />
+                                        <FileUploadField name="guarantorPassportBack" label="Passport (Back Side)" />
+                                        <FileUploadField name="guarantorNicFront" label="NIC (Front Side)" />
+                                        <FileUploadField name="guarantorNicBack" label="NIC (Back Side)" />
+                                    </>
+                                )}
+                            </div>
                         </CardContent>
                     </Card>
 
@@ -459,5 +472,7 @@ export default function BookingPage() {
     </div>
   );
 }
+
+    
 
     
