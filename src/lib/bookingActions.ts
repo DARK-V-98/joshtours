@@ -5,6 +5,7 @@ import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, getDoc
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, app } from "@/lib/firebase";
 import { revalidatePath } from "next/cache";
+import { eachDayOfInterval, format, parseISO } from 'date-fns';
 
 
 // Helper function to upload a single file and return its URL
@@ -86,6 +87,33 @@ export interface BookingRequest extends BookingRequestData {
   createdAt: string; // ISO String
 }
 
+async function blockCarDates(carId: string, pickupDateStr: string, returnDateStr: string) {
+    if (!db) return;
+    const carDocRef = doc(db, 'cars', carId);
+    const carSnap = await getDoc(carDocRef);
+
+    if (carSnap.exists()) {
+        const carData = carSnap.data();
+        const existingBookedDates = new Set(carData.bookedDates || []);
+        
+        const pickupDate = parseISO(pickupDateStr);
+        const returnDate = parseISO(returnDateStr);
+        
+        const newDates = eachDayOfInterval({
+            start: pickupDate,
+            end: returnDate
+        });
+        
+        newDates.forEach(date => {
+            existingBookedDates.add(format(date, 'yyyy-MM-dd'));
+        });
+
+        await updateDoc(carDocRef, {
+            bookedDates: Array.from(existingBookedDates)
+        });
+    }
+}
+
 
 export async function createBookingRequest(
     data: Omit<BookingRequestData, 'status' | 'customerNicFrontUrl' | 'customerNicBackUrl' | 'customerPassportFrontUrl' | 'customerPassportBackUrl' | 'customerLicenseFrontUrl' | 'customerLicenseBackUrl' | 'customerLightBillUrl' | 'guarantorNicFrontUrl' | 'guarantorNicBackUrl' | 'guarantorPassportFrontUrl' | 'guarantorPassportBackUrl' | 'guarantorLicenseFrontUrl' | 'guarantorLicenseBackUrl' | 'guarantorLightBillUrl' >, 
@@ -118,9 +146,16 @@ export async function createBookingRequest(
         }
     }
 
+    // Step 4: If booking is confirmed directly (e.g., manual booking), block the dates
+    if (bookingStatus === 'confirmed') {
+        await blockCarDates(data.carId, data.pickupDate, data.returnDate);
+    }
+
 
     revalidatePath('/my-bookings');
     revalidatePath('/admin/bookings');
+    revalidatePath(`/cars/${data.carId}`);
+    revalidatePath('/cars');
   } catch (error) {
     console.error("Error creating booking request:", error);
     throw new Error("Failed to submit booking request.");
@@ -236,8 +271,21 @@ export async function updateBookingStatus(bookingId: string, status: 'confirmed'
     
     try {
         await updateDoc(bookingDocRef, { status });
+
+        // If the booking is confirmed, find the car and update its bookedDates
+        if (status === 'confirmed') {
+            const bookingSnap = await getDoc(bookingDocRef);
+            if (!bookingSnap.exists()) {
+                throw new Error("Booking not found after status update.");
+            }
+            const bookingData = bookingSnap.data() as BookingRequestData;
+            await blockCarDates(bookingData.carId, bookingData.pickupDate, bookingData.returnDate);
+            revalidatePath(`/cars/${bookingData.carId}`);
+        }
+
         revalidatePath('/admin/bookings');
-        revalidatePath('/my-bookings'); // Also revalidate user's page
+        revalidatePath('/my-bookings');
+        revalidatePath('/cars');
     } catch (error) {
         console.error("Error updating booking status:", error);
         throw new Error("Failed to update booking status.");
