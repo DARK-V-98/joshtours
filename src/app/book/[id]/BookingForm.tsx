@@ -19,6 +19,7 @@ import { Calendar as CalendarIcon, CheckCircle, Loader2, Phone, Mail, User, Car 
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -323,6 +324,9 @@ export default function BookingForm({ car }: BookingFormProps) {
                         </div>
                     </div>
                 </FormControl>
+                <FormDescription>
+                  Allowed: PNG, JPG, JPEG, WEBP. Max 5MB.
+                </FormDescription>
                 <FormMessage />
             </FormItem>
         )}
