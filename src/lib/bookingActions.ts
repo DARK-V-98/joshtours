@@ -108,11 +108,16 @@ export async function createBookingRequest(
     const bookingRequestsCollectionRef = collection(db, "bookingRequests");
     const docRef = await addDoc(bookingRequestsCollectionRef, bookingRequestData);
     
-    // Step 2: Upload documents using the new document's ID
-    const documentUrls = await uploadBookingDocuments(docRef.id, documentFormData);
+    // Step 2: Upload documents using the new document's ID, if any exist
+    if (documentFormData.entries().next().value) {
+        const documentUrls = await uploadBookingDocuments(docRef.id, documentFormData);
 
-    // Step 3: Update the document with the image URLs
-    await updateDoc(docRef, { ...documentUrls });
+        // Step 3: Update the document with the image URLs
+        if (Object.keys(documentUrls).length > 0) {
+            await updateDoc(docRef, { ...documentUrls });
+        }
+    }
+
 
     revalidatePath('/my-bookings');
     revalidatePath('/admin/bookings');
@@ -255,3 +260,4 @@ export async function getPendingBookingCount(): Promise<number> {
         return 0;
     }
 }
+
