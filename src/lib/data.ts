@@ -1,6 +1,8 @@
 
 import { collection, getDocs, doc, getDoc, query, orderBy, Timestamp, limit } from "firebase/firestore";
 import { db } from "./firebase";
+import { eachDayOfInterval, format, parseISO } from 'date-fns';
+
 
 export interface Car {
   id: string; // Firestore document ID

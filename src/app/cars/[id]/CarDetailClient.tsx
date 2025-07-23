@@ -20,6 +20,7 @@ export default function CarDetailClient({ bookedDates }: CarDetailClientProps) {
         try {
             return startOfDay(parse(d, 'yyyy-MM-dd', new Date()));
         } catch (e) {
+            console.warn(`Invalid date format found in bookedDates: ${d}`);
             return null;
         }
     }).filter(d => d !== null) as Date[];
@@ -29,14 +30,12 @@ export default function CarDetailClient({ bookedDates }: CarDetailClientProps) {
   const isDisabled = (day: Date) => {
     const today = startOfDay(new Date());
     // Dates in the past (before today) should be disabled.
-    const isPast = day < today;
+    if (day < today) return true;
     
     // Check if the current day is one of the booked dates.
-    const isBooked = disabledDates.some(
+    return disabledDates.some(
       (disabledDate) => isSameDay(day, disabledDate)
     );
-
-    return isPast || isBooked;
   };
 
   useEffect(() => {
