@@ -124,6 +124,12 @@ export default function BookingPage() {
     defaultValues: {
       requests: "",
       estimatedKm: undefined,
+      customerName: '',
+      customerPhone: '',
+      customerNicOrPassport: '',
+      guarantorName: '',
+      guarantorPhone: '',
+      guarantorNicOrPassport: '',
     },
   });
 
@@ -453,3 +459,5 @@ export default function BookingPage() {
     </div>
   );
 }
+
+    
