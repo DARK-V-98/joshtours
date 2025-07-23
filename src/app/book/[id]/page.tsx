@@ -129,7 +129,7 @@ export default function BookingPage() {
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
       requests: "",
-      estimatedKm: '',
+      estimatedKm: '' as any,
       customerName: '',
       customerPhone: '',
       customerNicOrPassport: '',
@@ -183,7 +183,7 @@ export default function BookingPage() {
     }
     
     const documentFormData = new FormData();
-    const fileFields = [
+    const fileFields: (keyof BookingFormValues)[] = [
         'customerNicFront', 'customerNicBack', 'customerLicenseFront', 'customerLicenseBack',
         'customerPassportFront', 'customerPassportBack', 'customerLightBill',
         'guarantorNicFront', 'guarantorNicBack', 'guarantorLicenseFront', 'guarantorLicenseBack',
@@ -191,18 +191,29 @@ export default function BookingPage() {
     ];
 
     fileFields.forEach(field => {
-        const file = values[field as keyof BookingFormValues] as File | undefined;
+        const file = values[field] as File | undefined;
         if(file) {
             documentFormData.append(field, file);
         }
-    })
+    });
 
     const bookingData = {
         carId: car.id,
         carName: car.name,
         userId: user.uid,
         customerEmail: user.email || 'N/A',
-        ...values
+        pickupDate: format(values.pickupDate, 'yyyy-MM-dd'),
+        returnDate: format(values.returnDate, 'yyyy-MM-dd'),
+        estimatedKm: values.estimatedKm,
+        requests: values.requests,
+        customerName: values.customerName,
+        customerPhone: values.customerPhone,
+        customerResidency: values.customerResidency,
+        customerNicOrPassport: values.customerNicOrPassport,
+        guarantorName: values.guarantorName,
+        guarantorPhone: values.guarantorPhone,
+        guarantorResidency: values.guarantorResidency,
+        guarantorNicOrPassport: values.guarantorNicOrPassport,
     };
     
     try {
@@ -477,3 +488,4 @@ export default function BookingPage() {
     
 
     
+
