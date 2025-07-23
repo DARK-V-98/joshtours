@@ -2,7 +2,7 @@
 
 "use server";
 
-import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, getDoc, Timestamp, orderBy, updateDoc,getCountFromServer, arrayUnion } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, getDoc, Timestamp, orderBy, updateDoc,getCountFromServer, arrayUnion, setDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, app } from "@/lib/firebase";
 import { revalidatePath } from "next/cache";
@@ -104,6 +104,13 @@ async function blockCarDates(carId: string, pickupDateStr: string, returnDateStr
     });
 }
 
+// Generates a random ID: one capital letter followed by 5 numbers (e.g., A12345)
+function generateCustomBookingId(): string {
+    const letter = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // A-Z
+    const numbers = Math.floor(10000 + Math.random() * 90000).toString(); // 10000-99999
+    return `${letter}${numbers}`;
+}
+
 
 export async function createBookingRequest(
     data: Omit<BookingRequestData, 'status' | 'customerNicFrontUrl' | 'customerNicBackUrl' | 'customerPassportFrontUrl' | 'customerPassportBackUrl' | 'customerLicenseFrontUrl' | 'customerLicenseBackUrl' | 'customerLightBillUrl' | 'customerWaterBillUrl' | 'guarantorNicFrontUrl' | 'guarantorNicBackUrl' | 'guarantorPassportFrontUrl' | 'guarantorPassportBackUrl' | 'guarantorLicenseFrontUrl' | 'guarantorLicenseBackUrl' | 'guarantorLightBillUrl' | 'guarantorWaterBillUrl'>, 
@@ -115,28 +122,32 @@ export async function createBookingRequest(
 
   try {
     const bookingStatus = (data as any).status || 'pending';
+    const customId = generateCustomBookingId(); // Generate our new custom ID
     
     const bookingRequestData = {
         ...data,
         status: bookingStatus,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        id: customId // Include the custom ID in the document data
     };
     
-    // Step 1: Create the document first to get an ID
-    const bookingRequestsCollectionRef = collection(db, "bookingRequests");
-    const docRef = await addDoc(bookingRequestsCollectionRef, bookingRequestData);
+    // Step 1: Use the custom ID to create a document reference
+    const bookingDocRef = doc(db, "bookingRequests", customId);
     
-    // Step 2: Upload documents using the new document's ID, if any exist
+    // Step 2: Set the document with the custom ID
+    await setDoc(bookingDocRef, bookingRequestData);
+    
+    // Step 3: Upload documents using the new document's ID, if any exist
     if (documentFormData.entries().next().value) {
-        const documentUrls = await uploadBookingDocuments(docRef.id, documentFormData);
+        const documentUrls = await uploadBookingDocuments(customId, documentFormData);
 
-        // Step 3: Update the document with the image URLs
+        // Step 4: Update the document with the image URLs
         if (Object.keys(documentUrls).length > 0) {
-            await updateDoc(docRef, { ...documentUrls });
+            await updateDoc(bookingDocRef, { ...documentUrls });
         }
     }
 
-    // Step 4: If booking is confirmed directly (e.g., manual booking), block the dates
+    // Step 5: If booking is confirmed directly (e.g., manual booking), block the dates
     if (bookingStatus === 'confirmed') {
         await blockCarDates(data.carId, data.pickupDate, data.returnDate);
     }
