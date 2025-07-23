@@ -1,7 +1,7 @@
 
 'use server';
 
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';
 
@@ -26,7 +26,8 @@ export interface Bill {
   paidAmount: number;
   balanceDue: number;
 
-  createdAt: any;
+  createdAt?: any;
+  billDate?: string;
 }
 
 export async function saveBill(
@@ -48,10 +49,25 @@ export async function saveBill(
       },
       { merge: true }
     );
-    revalidatePath(`/admin/billing`);
+    revalidatePath(`/admin/billing/${bookingId}`);
     return { success: true };
   } catch (error) {
     console.error('Error saving bill:', error);
     throw new Error('Failed to save bill.');
   }
+}
+
+export async function getBillById(bookingId: string): Promise<Bill | null> {
+    if (!db) {
+        throw new Error("Database not initialized");
+    }
+    const docRef = doc(db, "bills", bookingId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        return { id: docSnap.id, ...data } as Bill;
+    }
+
+    return null;
 }

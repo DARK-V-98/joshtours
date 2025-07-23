@@ -35,7 +35,8 @@ import {
   Contact,
   Shield,
   FileBadge,
-  Globe
+  Globe,
+  FilePlus,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO } from "date-fns";
@@ -221,7 +222,7 @@ export default function BookingListClient({ bookings: initialBookings }: Booking
                     <Separator className="my-6"/>
                     
                     {/* Action Area */}
-                    <div className="flex justify-end">
+                    <div className="flex justify-end gap-2">
                      {booking.status === 'pending' && (
                         <div className="flex flex-col sm:flex-row items-center gap-2">
                             <Button onClick={() => handleStatusUpdate(booking.id, 'confirmed')} disabled={isUpdating} className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
@@ -232,26 +233,21 @@ export default function BookingListClient({ bookings: initialBookings }: Booking
                             </Button>
                         </div>
                     )}
-
-                    {booking.status !== 'pending' && (
-                        <div className="w-full">
-                             <Alert variant={booking.status === 'confirmed' ? 'default' : 'destructive'}>
-                                <AlertTitle>
-                                    Request {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                                </AlertTitle>
-                                <AlertDescription className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                                    <span>This booking request has already been processed.</span>
-                                    {booking.status === 'confirmed' && (
-                                        <Button asChild variant="secondary" size="sm">
-                                            <Link href={`/agreement/${booking.id}`}>
-                                                <FileText className="mr-2 h-4 w-4" />
-                                                View Agreement
-                                            </Link>
-                                        </Button>
-                                    )}
-                                </AlertDescription>
-                            </Alert>
-                        </div>
+                    
+                    <Button asChild variant="outline" size="sm">
+                        <Link href={`/agreement/${booking.id}`}>
+                            <FileText className="mr-2 h-4 w-4" />
+                            Agreement
+                        </Link>
+                    </Button>
+                    
+                    {booking.status === 'confirmed' && (
+                         <Button asChild size="sm">
+                            <Link href={`/admin/billing/${booking.id}`}>
+                                <FilePlus className="mr-2 h-4 w-4"/>
+                                Create Bill
+                            </Link>
+                         </Button>
                     )}
                     </div>
                 </CardContent>

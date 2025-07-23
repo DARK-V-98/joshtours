@@ -201,7 +201,7 @@ export default function AdminDashboard() {
                     </Link>
                 </Button>
                  <Button variant="secondary" asChild>
-                    <Link href="/admin/billing">
+                    <Link href="/admin/bookings">
                         <FilePlus className="mr-2" />
                         Create Bill
                     </Link>
@@ -439,5 +439,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
-    
