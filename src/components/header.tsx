@@ -69,7 +69,7 @@ export function Header() {
   const currentNavLinks = user ? loggedInNavLinks : navLinks;
 
   const renderAuthSection = () => {
-    if (!isMounted) {
+    if (loading || !isMounted) {
       return <Skeleton className="h-10 w-24 rounded-md" />;
     }
     
@@ -157,7 +157,7 @@ export function Header() {
         </nav>
 
         <div className="flex-1 flex justify-end items-center space-x-2">
-          {isMounted && (
+          {isMounted ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -174,6 +174,8 @@ export function Header() {
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>
+          ) : (
+            <Skeleton className="h-10 w-10 rounded-full" />
           )}
           
           {renderAuthSection()}
