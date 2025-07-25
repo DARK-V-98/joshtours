@@ -35,10 +35,8 @@ import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const fileSchema = z.custom<File>((val) => val instanceof File, "Please upload a file")
-  .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
   .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), ".jpg, .jpeg, .png and .webp files are accepted.");
 
 const bookingFormSchema = z.object({
@@ -325,7 +323,7 @@ export default function BookingForm({ car }: BookingFormProps) {
                     </div>
                 </FormControl>
                 <FormDescription>
-                  Allowed: PNG, JPG, JPEG, WEBP. Max 5MB.
+                  Allowed: PNG, JPG, JPEG, WEBP.
                 </FormDescription>
                 <FormMessage />
             </FormItem>
