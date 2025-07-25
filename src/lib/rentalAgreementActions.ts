@@ -36,22 +36,16 @@ export interface RentalAgreement {
   guarantorAddress?: string;
   guarantorContact?: string;
   
-  // These fields are for later use and will be handled in future updates
-  // clientSignature?: string;
-  // guarantorSignature?: string;
-  // agreementAcceptSignature?: string;
-  // extensionDate?: string;
-  // renterExtensionSignature?: string;
-  // guarantorExtensionSignature?: string;
-  // companyExtensionSignature?: string;
-  // additionalKMUsed?: string;
-  // additionalDays?: string;
-  // damages?: string;
-  // delayPayments?: string;
-  // otherCharges?: string;
-  // totalFinalCost?: string;
-  // clientReturnSignature?: string;
-  // companyOwnerSignature?: string;
+  // Billing Fields
+  billDate?: string;
+  additionalKm?: number;
+  pricePerKm?: number;
+  additionalDays?: number;
+  pricePerDay?: number;
+  damages?: number;
+  delayPayments?: number;
+  otherCharges?: number;
+  paidAmount?: number;
 }
 
 // Function to save/update a rental agreement
@@ -124,6 +118,15 @@ export async function getRentalAgreement(bookingId: string): Promise<RentalAgree
     guarantorNIC: data.guarantorNIC || '',
     guarantorAddress: data.guarantorAddress || '',
     guarantorContact: data.guarantorContact || '',
+    // Billing fields
+    billDate: data.billDate || '',
+    additionalKm: data.additionalKm || 0,
+    pricePerKm: data.pricePerKm || 0,
+    additionalDays: data.additionalDays || 0,
+    pricePerDay: data.pricePerDay || 0,
+    damages: data.damages || 0,
+    delayPayments: data.delayPayments || 0,
+    otherCharges: data.otherCharges || 0,
+    paidAmount: data.paidAmount || 0,
   };
 }
-

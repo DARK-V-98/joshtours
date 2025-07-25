@@ -1,6 +1,10 @@
 
 'use client';
 
+// This component is DEPRECATED.
+// All billing logic has been merged into the printable agreement components.
+// This file can be safely removed in the future.
+
 import React from 'react';
 import Image from 'next/image';
 import { BookingRequest } from '@/lib/bookingActions';

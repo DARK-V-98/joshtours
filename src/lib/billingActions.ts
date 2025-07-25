@@ -1,6 +1,10 @@
 
 'use server';
 
+// This file is DEPRECATED.
+// All billing logic has been merged into rentalAgreementActions.ts
+// This file can be safely removed in the future.
+
 import { doc, setDoc, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { revalidatePath } from 'next/cache';

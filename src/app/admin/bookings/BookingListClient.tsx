@@ -255,21 +255,13 @@ export default function BookingListClient({ bookings: initialBookings }: Booking
                         </div>
                     )}
                     
-                    <Button asChild variant="outline" size="sm">
+                    <Button asChild variant="default" size="sm">
                         <Link href={`/agreement/${booking.id}`}>
                             <FileText className="mr-2 h-4 w-4" />
-                            Agreement
+                            View Agreement & Bill
                         </Link>
                     </Button>
                     
-                    {booking.status === 'confirmed' && (
-                         <Button asChild size="sm">
-                            <Link href={`/admin/billing/${booking.id}`}>
-                                <FilePlus className="mr-2 h-4 w-4"/>
-                                Create Bill
-                            </Link>
-                         </Button>
-                    )}
                     </div>
                 </CardContent>
             </Card>

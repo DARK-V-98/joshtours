@@ -10,8 +10,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 import { useAuth } from '@/context/AuthContext';
-import { getBookingRequestById } from '@/lib/bookingActions';
-import { getCarById } from '@/lib/data';
+import { getBookingRequestById, BookingRequest } from '@/lib/bookingActions';
+import { getCarById, Car } from '@/lib/data';
 import { getRentalAgreement, saveRentalAgreement, RentalAgreement } from '@/lib/rentalAgreementActions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,7 +32,7 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save, ArrowLeft, FileSignature, User, Car, Calendar, UserCheck, Download, Languages } from 'lucide-react';
+import { Loader2, Save, ArrowLeft, FileSignature, User, Car as CarIcon, Calendar, UserCheck, Download, Languages, FilePlus } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
@@ -61,6 +61,16 @@ const agreementFormSchema = z.object({
   guarantorNIC: z.string().optional(),
   guarantorAddress: z.string().optional(),
   guarantorContact: z.string().optional(),
+  // Billing fields
+  billDate: z.string().optional(),
+  additionalKm: z.coerce.number().min(0).optional().default(0),
+  pricePerKm: z.coerce.number().min(0).optional().default(0),
+  additionalDays: z.coerce.number().min(0).optional().default(0),
+  pricePerDay: z.coerce.number().min(0).optional().default(0),
+  damages: z.coerce.number().min(0).optional().default(0),
+  delayPayments: z.coerce.number().min(0).optional().default(0),
+  otherCharges: z.coerce.number().min(0).optional().default(0),
+  paidAmount: z.coerce.number().min(0).optional().default(0),
 });
 
 export type AgreementFormValues = z.infer<typeof agreementFormSchema>;
@@ -104,11 +114,6 @@ const labels = {
         guarantorAddressPlaceholder: 'Guarantor\'s home or office address',
         guarantorContact: 'Guarantor Contact Number',
         guarantorContactPlaceholder: 'Guarantor\'s phone number',
-        printableSections: 'Printable Sections',
-        printableDesc: 'The following sections are part of the downloadable PDF and are intended to be filled out on the printed copy.',
-        agreementConfirmation: 'Agreement Confirmation: Client and company signatures.',
-        extensionSection: 'Extension Section: Details and signatures for rental extensions.',
-        vehicleReturnSection: 'Vehicle Return Section: Final charges, damages, and return signatures.',
         saveAgreement: 'Save Agreement',
         saving: 'Saving...',
         selectLanguage: 'Select Language'
@@ -151,11 +156,6 @@ const labels = {
         guarantorAddressPlaceholder: 'ඇපකරුගේ නිවසේ හෝ කාර්යාල ලිපිනය',
         guarantorContact: 'ඇපකරුගේ සම්බන්ධතා අංකය',
         guarantorContactPlaceholder: 'ඇපකරුගේ දුරකථන අංකය',
-        printableSections: 'මුද්‍රණය කළ හැකි කොටස්',
-        printableDesc: 'පහත කොටස් බාගත හැකි PDF හි කොටසක් වන අතර මුද්‍රිත පිටපතේ පිරවීම සඳහා අදහස් කෙරේ.',
-        agreementConfirmation: 'ගිවිසුම් තහවුරු කිරීම: සේවාදායකයාගේ සහ සමාගමේ අත්සන්.',
-        extensionSection: 'දීර්ඝ කිරීමේ කොටස: කුලී දීර්ඝ කිරීම් සඳහා විස්තර සහ අත්සන්.',
-        vehicleReturnSection: 'වාහන ආපසු භාරදීමේ කොටස: අවසාන ගාස්තු, හානි, සහ ආපසු භාරදීමේ අත්සන්.',
         saveAgreement: 'ගිවිසුම සුරකින්න',
         saving: 'සුරැකෙමින්...',
         selectLanguage: 'භාෂාව තෝරන්න'
@@ -170,6 +170,8 @@ export default function AgreementPage() {
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const [language, setLanguage] = useState<'en' | 'si'>('en');
+  const [booking, setBooking] = useState<BookingRequest | null>(null);
+  const [car, setCar] = useState<Car | null>(null);
   
   const bookingId = Array.isArray(params.bookingId) ? params.bookingId[0] : params.bookingId;
   const printableRefEn = useRef<HTMLDivElement>(null);
@@ -198,8 +200,33 @@ export default function AgreementPage() {
         guarantorNIC: '',
         guarantorAddress: '',
         guarantorContact: '',
+        additionalKm: 0,
+        pricePerKm: 0,
+        additionalDays: 0,
+        pricePerDay: 0,
+        damages: 0,
+        delayPayments: 0,
+        otherCharges: 0,
+        paidAmount: 0,
+        billDate: format(new Date(), 'yyyy-MM-dd'),
     },
   });
+
+  const watchFields = form.watch();
+
+  const additionalChargesSubTotal =
+    (Number(watchFields.additionalKm) || 0) * (Number(watchFields.pricePerKm) || 0) +
+    (Number(watchFields.additionalDays) || 0) * (Number(watchFields.pricePerDay) || 0);
+
+  const finalTotalAmount =
+    (Number(watchFields.totalRentCost) || 0) +
+    additionalChargesSubTotal +
+    (Number(watchFields.damages) || 0) +
+    (Number(watchFields.delayPayments) || 0) +
+    (Number(watchFields.otherCharges) || 0);
+
+  const balanceDue = finalTotalAmount - (Number(watchFields.paidAmount) || 0);
+
 
   useEffect(() => {
     if (authLoading) return;
@@ -211,28 +238,35 @@ export default function AgreementPage() {
     async function fetchData() {
       setLoading(true);
       try {
-        const booking = await getBookingRequestById(bookingId);
+        const bookingData = await getBookingRequestById(bookingId);
 
-        if (!booking) {
+        if (!bookingData) {
             toast({ variant: 'destructive', title: 'Error', description: 'Booking not found.' });
             router.push('/my-bookings');
             return;
         }
+        setBooking(bookingData);
         
         const [agreement, carDetails] = await Promise.all([
             getRentalAgreement(bookingId),
-            getCarById(booking.carId)
+            getCarById(bookingData.carId)
         ]);
 
+        if (!carDetails) {
+            toast({ variant: 'destructive', title: 'Car not found.' });
+            return;
+        }
+        setCar(carDetails);
         
         form.reset({
+            // Agreement Fields
             agreementDate: agreement?.agreementDate || format(new Date(), 'yyyy-MM-dd'),
             renterIdOrPassport: agreement?.renterIdOrPassport || '',
             renterAddress: agreement?.renterAddress || '',
             vehicleDetails: agreement?.vehicleDetails || `${carDetails?.name} (${carDetails?.type})`,
-            rentalStartDate: agreement?.rentalStartDate || booking.pickupDate,
-            clientFullName: agreement?.clientFullName || booking.customerName,
-            clientContactNumber: agreement?.clientContactNumber || booking.customerPhone,
+            rentalStartDate: agreement?.rentalStartDate || bookingData.pickupDate,
+            clientFullName: agreement?.clientFullName || bookingData.customerName,
+            clientContactNumber: agreement?.clientContactNumber || bookingData.customerPhone,
             rentalDuration: agreement?.rentalDuration || '',
             rentCostPerDayMonth: agreement?.rentCostPerDayMonth || '',
             totalRentCost: agreement?.totalRentCost || '',
@@ -244,6 +278,17 @@ export default function AgreementPage() {
             guarantorNIC: agreement?.guarantorNIC || '',
             guarantorAddress: agreement?.guarantorAddress || '',
             guarantorContact: agreement?.guarantorContact || '',
+
+            // Billing Fields
+            billDate: agreement?.billDate || format(new Date(), 'yyyy-MM-dd'),
+            additionalKm: agreement?.additionalKm || 0,
+            pricePerKm: agreement?.pricePerKm || 0,
+            additionalDays: agreement?.additionalDays || 0,
+            pricePerDay: agreement?.pricePerDay || 0,
+            damages: agreement?.damages || 0,
+            delayPayments: agreement?.delayPayments || 0,
+            otherCharges: agreement?.otherCharges || 0,
+            paidAmount: agreement?.paidAmount || 0,
         });
 
       } catch (error) {
@@ -261,7 +306,7 @@ export default function AgreementPage() {
       await saveRentalAgreement(bookingId, values);
       toast({
         title: 'Success!',
-        description: 'Your rental agreement has been saved.',
+        description: 'Your rental agreement & bill has been saved.',
       });
     } catch (error) {
       toast({
@@ -280,20 +325,11 @@ export default function AgreementPage() {
       return;
     }
     
-    const page1 = printableElement.querySelector<HTMLElement>('[data-page="1"]');
-    const page2 = printableElement.querySelector<HTMLElement>('[data-page="2"]');
-
-    if (!page1 || !page2) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not find page elements for PDF generation.' });
-      return;
-    }
-
     setIsDownloading(true);
-
+    
     try {
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
 
         const processPage = async (element: HTMLElement) => {
             const canvas = await html2canvas(element, { scale: 2 });
@@ -302,13 +338,14 @@ export default function AgreementPage() {
             const pageHeight = (imgProps.height * pdfWidth) / imgProps.width;
             return { imgData, pdfWidth, pageHeight };
         };
-
-        const page1Data = await processPage(page1);
-        pdf.addImage(page1Data.imgData, 'PNG', 0, 0, page1Data.pdfWidth, page1Data.pageHeight);
-
-        pdf.addPage();
-        const page2Data = await processPage(page2);
-        pdf.addImage(page2Data.imgData, 'PNG', 0, 0, page2Data.pdfWidth, page2Data.pageHeight);
+        
+        const pages = printableElement.querySelectorAll<HTMLElement>('[data-page]');
+        
+        for (let i = 0; i < pages.length; i++) {
+            const pageData = await processPage(pages[i]);
+            if (i > 0) pdf.addPage();
+            pdf.addImage(pageData.imgData, 'PNG', 0, 0, pageData.pdfWidth, pageData.pageHeight);
+        }
 
         pdf.save(`rental-agreement-${bookingId}-${language}.pdf`);
     } catch (error) {
@@ -439,13 +476,54 @@ export default function AgreementPage() {
 
              <Card>
                 <CardHeader>
-                    <CardTitle>{t.printableSections}</CardTitle>
-                    <CardDescription>{t.printableDesc}</CardDescription>
+                    <CardTitle className="flex items-center gap-2 text-2xl"><FilePlus className="h-6 w-6"/>Final Bill Details</CardTitle>
+                    <CardDescription>All prices are in LKR.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4 text-muted-foreground italic">
-                    <p><strong>{t.agreementConfirmation}</strong></p>
-                    <p><strong>{t.extensionSection}</strong></p>
-                    <p><strong>{t.vehicleReturnSection}</strong></p>
+                <CardContent className="space-y-6">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                        <FormField control={form.control} name="additionalKm" render={({ field }) => (
+                            <FormItem><FormLabel>Additional KM Used</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="pricePerKm" render={({ field }) => (
+                            <FormItem><FormLabel>Price per Additional KM</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                        <FormField control={form.control} name="additionalDays" render={({ field }) => (
+                            <FormItem><FormLabel>Additional Days</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="pricePerDay" render={({ field }) => (
+                           <FormItem><FormLabel>Price per Additional Day</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                    </div>
+                     <div className="grid sm:grid-cols-3 gap-4">
+                        <FormField control={form.control} name="damages" render={({ field }) => (
+                            <FormItem><FormLabel>Damages</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="delayPayments" render={({ field }) => (
+                            <FormItem><FormLabel>Delay Payments</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="otherCharges" render={({ field }) => (
+                            <FormItem><FormLabel>Other Charges</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                    </div>
+                    <Separator />
+                    <div className="space-y-2 text-lg">
+                        <div className="flex justify-between items-center"><span className="text-muted-foreground">Rental Cost</span><span>Rs {Number(watchFields.totalRentCost || 0).toFixed(2)}</span></div>
+                        <div className="flex justify-between items-center"><span className="text-muted-foreground">Additional Charges</span><span>Rs {additionalChargesSubTotal.toFixed(2)}</span></div>
+                        <Separator/>
+                        <div className="flex justify-between items-center font-bold text-xl"><span className="text-foreground">Total Amount</span><span>Rs {finalTotalAmount.toFixed(2)}</span></div>
+                    </div>
+                    <Separator/>
+                    <div className="grid sm:grid-cols-2 gap-4 items-end">
+                        <FormField control={form.control} name="paidAmount" render={({ field }) => (
+                            <FormItem><FormLabel>Paid Amount (Advance, etc.)</FormLabel><FormControl><Input type="number" className="h-12 text-lg" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <div className="flex justify-between items-center font-bold text-2xl text-primary p-2 rounded-md bg-primary/10">
+                            <span>Balance Due</span>
+                            <span>Rs {balanceDue.toFixed(2)}</span>
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
 
@@ -456,8 +534,8 @@ export default function AgreementPage() {
         </form>
       </Form>
       <div className="absolute -z-50 -left-[9999px] top-0">
-        <PrintableAgreement ref={printableRefEn} data={form.getValues()} />
-        <PrintableAgreementSi ref={printableRefSi} data={form.getValues()} />
+        <PrintableAgreement ref={printableRefEn} data={form.getValues()} booking={booking} car={car} subTotal={additionalChargesSubTotal} totalAmount={finalTotalAmount} balanceDue={balanceDue} />
+        <PrintableAgreementSi ref={printableRefSi} data={form.getValues()} booking={booking} car={car} subTotal={additionalChargesSubTotal} totalAmount={finalTotalAmount} balanceDue={balanceDue} />
       </div>
     </div>
   );

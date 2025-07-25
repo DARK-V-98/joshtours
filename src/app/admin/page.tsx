@@ -212,12 +212,6 @@ export default function AdminDashboard() {
                         Manual Booking
                     </Link>
                 </Button>
-                 <Button variant="secondary" asChild>
-                    <Link href="/admin/bookings">
-                        <FilePlus className="mr-2" />
-                        Create Bill
-                    </Link>
-                </Button>
             </CardContent>
         </Card>
 
