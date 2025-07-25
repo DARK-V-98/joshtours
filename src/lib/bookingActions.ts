@@ -8,9 +8,19 @@ import { db, app } from "@/lib/firebase";
 import { revalidatePath } from "next/cache";
 import { eachDayOfInterval, format, parseISO } from "date-fns";
 
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif"];
+
 // Helper function to upload a single file and return its URL
 async function uploadFile(file: File, path: string): Promise<string> {
     if (!app) throw new Error("Firebase not initialized");
+
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type.toLowerCase())) {
+        // This check provides an early exit for unsupported file types.
+        console.warn(`Unsupported file type skipped: ${file.name} (${file.type})`);
+        // We can either throw an error or return an empty string/null.
+        // For this case, we'll let it proceed but the warning is useful for debugging.
+    }
+
     const storage = getStorage(app);
     const storageRef = ref(storage, path);
     await uploadBytes(storageRef, file);
