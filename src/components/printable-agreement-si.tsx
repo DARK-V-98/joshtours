@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -163,7 +164,7 @@ const PrintableAgreementSi = React.forwardRef<HTMLDivElement, PrintableAgreement
 
        {/* Page 3 - Bill */}
       <div data-page="3" className="p-8 min-h-[297mm] flex flex-col">
-        <PageHeader title="අවසාන බිල්පත" />
+        <PageHeader title="පිරිවැය සහ බිල්පත් සාරාංශය" />
         <div className="flex-grow">
              <div className="grid grid-cols-2 gap-x-6 mb-2 text-xs">
                 <div>

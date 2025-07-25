@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -163,7 +164,7 @@ const PrintableAgreement = React.forwardRef<HTMLDivElement, PrintableAgreementPr
       
        {/* Page 3 - Bill */}
       <div data-page="3" className="p-8 min-h-[297mm] flex flex-col">
-        <PageHeader title="Final Bill / Invoice"/>
+        <PageHeader title="Cost & Billing Summary"/>
         <div className="flex-grow">
             <div className="grid grid-cols-2 gap-x-6 mb-2 text-xs">
                 <div>

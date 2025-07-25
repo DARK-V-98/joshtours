@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
@@ -477,7 +478,7 @@ export default function AgreementPage() {
             {user?.role === 'admin' && (
               <Card>
                   <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-2xl"><FilePlus className="h-6 w-6"/>Final Bill Details</CardTitle>
+                      <CardTitle className="flex items-center gap-2 text-2xl"><FilePlus className="h-6 w-6"/>Cost & Billing Details</CardTitle>
                       <CardDescription>All prices are in LKR.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
