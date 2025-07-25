@@ -57,7 +57,7 @@ export default function LoginForm() {
     setError(null);
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
-      router.push(redirectUrl || '/my-bookings');
+      router.push(redirectUrl || '/');
     } catch (err: any) {
       if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-email') {
         setError('Invalid email or password. Please try again.');
