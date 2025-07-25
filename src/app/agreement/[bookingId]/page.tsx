@@ -474,58 +474,61 @@ export default function AgreementPage() {
                 </CardContent>
             </Card>
 
-             <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-2xl"><FilePlus className="h-6 w-6"/>Final Bill Details</CardTitle>
-                    <CardDescription>All prices are in LKR.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="grid sm:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="additionalKm" render={({ field }) => (
-                            <FormItem><FormLabel>Additional KM Used</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="pricePerKm" render={({ field }) => (
-                            <FormItem><FormLabel>Price per Additional KM</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                    </div>
-                    <div className="grid sm:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="additionalDays" render={({ field }) => (
-                            <FormItem><FormLabel>Additional Days</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="pricePerDay" render={({ field }) => (
-                           <FormItem><FormLabel>Price per Additional Day</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                    </div>
-                     <div className="grid sm:grid-cols-3 gap-4">
-                        <FormField control={form.control} name="damages" render={({ field }) => (
-                            <FormItem><FormLabel>Damages</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="delayPayments" render={({ field }) => (
-                            <FormItem><FormLabel>Delay Payments</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="otherCharges" render={({ field }) => (
-                            <FormItem><FormLabel>Other Charges</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                    </div>
-                    <Separator />
-                    <div className="space-y-2 text-lg">
-                        <div className="flex justify-between items-center"><span className="text-muted-foreground">Rental Cost</span><span>Rs {Number(watchFields.totalRentCost || 0).toFixed(2)}</span></div>
-                        <div className="flex justify-between items-center"><span className="text-muted-foreground">Additional Charges</span><span>Rs {additionalChargesSubTotal.toFixed(2)}</span></div>
-                        <Separator/>
-                        <div className="flex justify-between items-center font-bold text-xl"><span className="text-foreground">Total Amount</span><span>Rs {finalTotalAmount.toFixed(2)}</span></div>
-                    </div>
-                    <Separator/>
-                    <div className="grid sm:grid-cols-2 gap-4 items-end">
-                        <FormField control={form.control} name="paidAmount" render={({ field }) => (
-                            <FormItem><FormLabel>Paid Amount (Advance, etc.)</FormLabel><FormControl><Input type="number" className="h-12 text-lg" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <div className="flex justify-between items-center font-bold text-2xl text-primary p-2 rounded-md bg-primary/10">
-                            <span>Balance Due</span>
-                            <span>Rs {balanceDue.toFixed(2)}</span>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+            {user?.role === 'admin' && (
+              <Card>
+                  <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-2xl"><FilePlus className="h-6 w-6"/>Final Bill Details</CardTitle>
+                      <CardDescription>All prices are in LKR.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                      <div className="grid sm:grid-cols-2 gap-4">
+                          <FormField control={form.control} name="additionalKm" render={({ field }) => (
+                              <FormItem><FormLabel>Additional KM Used</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="pricePerKm" render={({ field }) => (
+                              <FormItem><FormLabel>Price per Additional KM</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                          )} />
+                      </div>
+                      <div className="grid sm:grid-cols-2 gap-4">
+                          <FormField control={form.control} name="additionalDays" render={({ field }) => (
+                              <FormItem><FormLabel>Additional Days</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="pricePerDay" render={({ field }) => (
+                            <FormItem><FormLabel>Price per Additional Day</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                          )} />
+                      </div>
+                      <div className="grid sm:grid-cols-3 gap-4">
+                          <FormField control={form.control} name="damages" render={({ field }) => (
+                              <FormItem><FormLabel>Damages</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="delayPayments" render={({ field }) => (
+                              <FormItem><FormLabel>Delay Payments</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                          )} />
+                          <FormField control={form.control} name="otherCharges" render={({ field }) => (
+                              <FormItem><FormLabel>Other Charges</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                          )} />
+                      </div>
+                      <Separator />
+                      <div className="space-y-2 text-lg">
+                          <div className="flex justify-between items-center"><span className="text-muted-foreground">Rental Cost</span><span>Rs {Number(watchFields.totalRentCost || 0).toFixed(2)}</span></div>
+                          <div className="flex justify-between items-center"><span className="text-muted-foreground">Additional Charges</span><span>Rs {additionalChargesSubTotal.toFixed(2)}</span></div>
+                          <Separator/>
+                          <div className="flex justify-between items-center font-bold text-xl"><span className="text-foreground">Total Amount</span><span>Rs {finalTotalAmount.toFixed(2)}</span></div>
+                      </div>
+                      <Separator/>
+                      <div className="grid sm:grid-cols-2 gap-4 items-end">
+                          <FormField control={form.control} name="paidAmount" render={({ field }) => (
+                              <FormItem><FormLabel>Paid Amount (Advance, etc.)</FormLabel><FormControl><Input type="number" className="h-12 text-lg" {...field} /></FormControl><FormMessage /></FormItem>
+                          )} />
+                          <div className="flex justify-between items-center font-bold text-2xl text-primary p-2 rounded-md bg-primary/10">
+                              <span>Balance Due</span>
+                              <span>Rs {balanceDue.toFixed(2)}</span>
+                          </div>
+                      </div>
+                  </CardContent>
+              </Card>
+            )}
+
 
             <Button type="submit" size="lg" disabled={form.formState.isSubmitting} className="w-full">
                 {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
