@@ -158,24 +158,27 @@ export function Header() {
 
         <div className="flex-1 flex justify-end items-center space-x-2">
           {isMounted ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Globe className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Select Currency</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuRadioGroup value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
-                  <DropdownMenuRadioItem value="usd">USD ($)</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="lkr">LKR (Rs)</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="eur">EUR (€)</DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center gap-2">
+               <span className="text-xs font-bold text-muted-foreground">{currency.toUpperCase()}</span>
+               <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Globe className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Select Currency</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuRadioGroup value={currency} onValueChange={(value) => setCurrency(value as Currency)}>
+                    <DropdownMenuRadioItem value="usd">USD ($)</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="lkr">LKR (Rs)</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="eur">EUR (€)</DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ) : (
-            <Skeleton className="h-10 w-10 rounded-full" />
+            <Skeleton className="h-10 w-20" />
           )}
           
           {renderAuthSection()}
