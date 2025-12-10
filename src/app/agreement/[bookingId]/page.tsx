@@ -228,7 +228,7 @@ export default function AgreementPage() {
 
   const balanceDue = finalTotalAmount - (Number(watchFields.paidAmount) || 0);
 
-
+  // Effect for handling authentication and redirection
   useEffect(() => {
     if (authLoading) {
       return; // Wait until authentication status is resolved
@@ -236,12 +236,18 @@ export default function AgreementPage() {
     if (!user) {
       if (bookingId) {
         router.push(`/login?redirect=/agreement/${bookingId}`);
+      } else {
+        router.push('/login');
       }
-      return;
     }
+  }, [user, authLoading, bookingId, router]);
+
+
+  // Effect for fetching data
+  useEffect(() => {
+    if (!bookingId || !user) return; // Don't fetch data if no bookingId or user
 
     async function fetchData() {
-      if (!bookingId) return;
       setLoading(true);
       try {
         const bookingData = await getBookingRequestById(bookingId);
@@ -252,6 +258,13 @@ export default function AgreementPage() {
             return;
         }
         setBooking(bookingData);
+        
+        // Security check: ensure the user is either an admin or the owner of the booking
+        if (user.role !== 'admin' && bookingData.userId !== user.uid) {
+            toast({ variant: 'destructive', title: 'Access Denied', description: 'You do not have permission to view this agreement.' });
+            router.push('/my-bookings');
+            return;
+        }
         
         const [agreement, carDetails] = await Promise.all([
             getRentalAgreement(bookingId),
@@ -265,7 +278,6 @@ export default function AgreementPage() {
         setCar(carDetails);
         
         form.reset({
-            // Agreement Fields
             agreementDate: agreement?.agreementDate || format(new Date(), 'yyyy-MM-dd'),
             renterIdOrPassport: agreement?.renterIdOrPassport || '',
             renterAddress: agreement?.renterAddress || '',
@@ -284,8 +296,6 @@ export default function AgreementPage() {
             guarantorNIC: agreement?.guarantorNIC || '',
             guarantorAddress: agreement?.guarantorAddress || '',
             guarantorContact: agreement?.guarantorContact || '',
-
-            // Billing Fields
             billDate: agreement?.billDate || format(new Date(), 'yyyy-MM-dd'),
             additionalKm: agreement?.additionalKm || 0,
             pricePerKm: agreement?.pricePerKm || 0,
@@ -305,7 +315,7 @@ export default function AgreementPage() {
       }
     }
     fetchData();
-  }, [bookingId, user, authLoading, router, toast, form]);
+  }, [bookingId, user, router, toast, form]);
 
   async function onSubmit(values: AgreementFormValues) {
     try {
