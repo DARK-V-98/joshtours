@@ -232,11 +232,14 @@ export default function AgreementPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      router.push(`/login?redirect=/agreement/${bookingId}`);
+      if (bookingId) {
+          router.push(`/login?redirect=/agreement/${bookingId}`);
+      }
       return;
     }
 
     async function fetchData() {
+      if (!bookingId) return;
       setLoading(true);
       try {
         const bookingData = await getBookingRequestById(bookingId);
