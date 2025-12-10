@@ -230,10 +230,12 @@ export default function AgreementPage() {
 
 
   useEffect(() => {
-    if (authLoading) return;
+    if (authLoading) {
+      return; // Wait until authentication status is resolved
+    }
     if (!user) {
       if (bookingId) {
-          router.push(`/login?redirect=/agreement/${bookingId}`);
+        router.push(`/login?redirect=/agreement/${bookingId}`);
       }
       return;
     }
